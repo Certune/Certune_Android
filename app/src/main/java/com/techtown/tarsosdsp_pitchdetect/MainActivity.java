@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
     public void recordAudio()
     {
         long start = System.currentTimeMillis(); // 시작 시간 측정
-        HashMap<Double, String> dictionary = new HashMap<Double, String>(); // { 시간 : 키 }
+        Map<Double, String> map = new HashMap<>(); // { 시간 : 키 }
 
         Log.v("start","start time measuring process");
         releaseDispatcher();
@@ -160,23 +160,19 @@ public class MainActivity extends AppCompatActivity {
                             pitchTextView.setText(octav);
                             long end = System.currentTimeMillis();
                             double time = (end-start)/(1000.0);
-                            dictionary.put(time, octav);
+                            Log.v("time", String.valueOf(time));
+                            map.put(time, octav);
+                            // dictionary에서 꺼내는 코드
+                            Log.v("end", "break");
+                            for (Double key : map.keySet()){
+                                Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
+                            }
+                            Log.v("end", "break2");
                         }
                     });
+
                 }
             };
-            Log.v("end", "break");
-            // for loop (entrySet())
-            /*for(Map.Entry<Double,String> entry : dictionary.entrySet()) {
-                Log.v("result", entry.getKey()+" "+ entry.getValue());
-            }*/
-            Set set = dictionary.entrySet();
-            Iterator iter2 = set.iterator();
-            while(iter2.hasNext()) {
-                Map.Entry entry = (Map.Entry)iter2.next();
-                Log.v("result",(Double)entry.getKey()+" "+(String)entry.getValue());
-            }
-            Log.v("end", "break2");
 
             AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
             dispatcher.addAudioProcessor(pitchProcessor);

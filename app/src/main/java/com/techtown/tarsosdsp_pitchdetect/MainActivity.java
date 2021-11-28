@@ -33,6 +33,8 @@ import be.tarsos.dsp.writer.WriterProcessor;
 
 
 public class MainActivity extends AppCompatActivity {
+    Map<Double, String> map; // {key : octav}
+
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
 
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void playAudio()
     {
+
         try{
             releaseDispatcher();
 
@@ -136,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void recordAudio()
     {
+        map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
-        Map<Double, String> map = new HashMap<>(); // { 시간 : 키 }
 
         Log.v("start","start time measuring process");
         releaseDispatcher();
@@ -160,15 +163,13 @@ public class MainActivity extends AppCompatActivity {
                             pitchTextView.setText(octav);
                             long end = System.currentTimeMillis();
                             double time = (end-start)/(1000.0);
-                            Log.v("time", String.valueOf(time));
-                            map.put(time, octav);
-                            // dictionary에서 꺼내는 코드
-                            Log.v("end", "break");
-                            for (Double key : map.keySet()){
-                                Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
+
+                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
+                                Log.v("time", String.valueOf(time));
+                                map.put(time, octav);
                             }
-                            Log.v("end", "break2");
                         }
+
                     });
 
                 }
@@ -187,6 +188,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopRecording()
     {
+        // map에서 꺼내는 코드
+        Log.v("end", "break");
+        for (Double key : map.keySet()){
+            Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
+        }
+        Log.v("end", "break2");
         releaseDispatcher();
     }
 

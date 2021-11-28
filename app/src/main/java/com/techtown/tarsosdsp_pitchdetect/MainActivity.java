@@ -170,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
             /*for(Map.Entry<Double,String> entry : dictionary.entrySet()) {
                 Log.v("result", entry.getKey()+" "+ entry.getValue());
             }*/
+
             Set set = dictionary.entrySet();
             Iterator iter2 = set.iterator();
             while(iter2.hasNext()) {

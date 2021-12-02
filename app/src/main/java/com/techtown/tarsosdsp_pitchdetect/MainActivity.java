@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -34,6 +35,7 @@ import be.tarsos.dsp.writer.WriterProcessor;
 
 public class MainActivity extends AppCompatActivity {
     Map<Double, String> map; // {key : octav}
+    Map<Double, String> musicMap;
 
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isRecording = false;
     String filename = "recorded_sound.wav";
+    File audiofile = new File("./Music.mp3");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,11 +103,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void playAudio()
     {
+        musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
+        long start = System.currentTimeMillis(); // 시작 시간 측정
 
         try{
             releaseDispatcher();
 
-            FileInputStream fileInputStream = new FileInputStream(file);
+            FileInputStream fileInputStream = new FileInputStream(audiofile);
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
             AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
@@ -119,6 +124,13 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             pitchTextView.setText(octav);
+                            long end = System.currentTimeMillis();
+                            double time = (end-start)/(1000.0);
+
+                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
+                                Log.v("time", String.valueOf(time));
+                                map.put(time, octav);
+                            }
                         }
                     });
                 }
@@ -190,7 +202,11 @@ public class MainActivity extends AppCompatActivity {
     {
         // map에서 꺼내는 코드
         Log.v("end", "break");
-        for (Double key : map.keySet()){
+
+        // 키로 정렬
+        Object[] mapkey = map.keySet().toArray();
+        Arrays.sort(mapkey);
+        for (Object key : mapkey){
             Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
         }
         Log.v("end", "break2");

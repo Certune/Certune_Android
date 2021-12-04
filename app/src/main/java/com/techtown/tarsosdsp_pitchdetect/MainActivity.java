@@ -1,5 +1,6 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -39,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
+    MediaPlayer mediaPlayer;
 
     File file;
+    File audiofile;
 
     TextView pitchTextView;
     Button recordButton;
@@ -48,7 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isRecording = false;
     String filename = "recorded_sound.wav";
-    File audiofile = new File("./Music.mp3");
+    String audiofilename = "music_wav.wav";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
         File sdCard = Environment.getExternalStorageDirectory();
         file = new File(sdCard, filename);
+        // 실패 ) 핸드폰의 동일한 위치에 mp3/wav 파일을 넣어놓고 재생시키는 방법 - 여전히 지지직 소리
+        audiofile = new File(sdCard, audiofilename);
 
         /*
         filePath = file.getAbsolutePath();
@@ -105,10 +112,15 @@ public class MainActivity extends AppCompatActivity {
     {
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
-
         try{
             releaseDispatcher();
 
+            // 성공 ) 얘는 dispatcher와 별개로 돌아가는 메소드
+            //mediaPlayer = MediaPlayer.create(this, R.raw.music);
+            //mediaPlayer.start();
+
+            // 실패 ) res/raw 밑에 있는 파일 읽어오기 -> 지지직 소리 해결 X
+            //InputStream fileInputStream = getResources().openRawResource(R.raw.music_wav);
             FileInputStream fileInputStream = new FileInputStream(audiofile);
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
@@ -129,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
                             if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
-                                map.put(time, octav);
+                                musicMap.put(time, octav);
                             }
                         }
                     });

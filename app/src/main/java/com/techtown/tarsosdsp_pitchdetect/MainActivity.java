@@ -1,8 +1,14 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.media.AudioAttributes;
+import android.media.AudioFormat;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -45,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     File file;
     File audiofile;
+    File newAudioFile;
 
     TextView pitchTextView;
     Button recordButton;
@@ -53,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     boolean isRecording = false;
     String filename = "recorded_sound.wav";
     String audiofilename = "music_wav.wav";
+    String newAudioFileName = "new.wav";
 
 
     @Override
@@ -63,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
         File sdCard = Environment.getExternalStorageDirectory();
         file = new File(sdCard, filename);
         // 실패 ) 핸드폰의 동일한 위치에 mp3/wav 파일을 넣어놓고 재생시키는 방법 - 여전히 지지직 소리
-        audiofile = new File(sdCard, audiofilename);
+        audiofile = File(sdCard, audiofilename);
+        newAudioFile = new File(sdCard, newAudioFileName);
 
         /*
         filePath = file.getAbsolutePath();
@@ -121,11 +131,24 @@ public class MainActivity extends AppCompatActivity {
 
             // 실패 ) res/raw 밑에 있는 파일 읽어오기 -> 지지직 소리 해결 X
             //InputStream fileInputStream = getResources().openRawResource(R.raw.music_wav);
+            //FileInputStream fileInputStream = new FileInputStream(audiofile);
+
+            // 실패) asset 폴더 밑의 파일 읽어오기
+            //AssetManager assetManager = getAssets();
+            //final AssetFileDescriptor fileDescriptor = getResources().openRawResourceFd(R.raw.music_wav);
+            //FileInputStream fileInputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+
+
             FileInputStream fileInputStream = new FileInputStream(audiofile);
+            // 마이크가 아닌 파일을 소스로 하는 dispatcher 생성 -> AudioDispatcher 객체 생성 시 UniversalAudioInputStream 사용
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
-            AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
-            dispatcher.addAudioProcessor(playerProcessor);
+            RandomAccessFile randomAccessAudioFile = new RandomAccessFile(newAudioFile,"rw");
+            AudioProcessor recordProcessorAudio = new WriterProcessor(tarsosDSPAudioFormat, randomAccessAudioFile);
+            dispatcher.addAudioProcessor(recordProcessorAudio);
+
+            //AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
+            //dispatcher.addAudioProcessor(playerProcessor);
 
             PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
                 @Override
@@ -212,16 +235,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void stopRecording()
     {
-        // map에서 꺼내는 코드
-        Log.v("end", "break");
-
         // 키로 정렬
         Object[] mapkey = map.keySet().toArray();
         Arrays.sort(mapkey);
         for (Object key : mapkey){
-            Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
+            Log.v("result", String.valueOf(key) + "/ value: "+map.get(key));
         }
-        Log.v("end", "break2");
         releaseDispatcher();
     }
 

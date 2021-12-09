@@ -6,7 +6,7 @@
 ## 🎵 유튜브 채널
 
 
-
+실행 방법은 https://dev-minji.tistory.com/119?category=984064를 참고해주세요!
 
 
 ## 🎵 프로젝트 목적

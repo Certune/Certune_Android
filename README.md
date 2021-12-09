@@ -1,6 +1,5 @@
-<<<<<<< Updated upstream
-# PitchDetection
-=======
+
+
 # PitchDetection
 
 # **🎯Certune🎵**
@@ -10,8 +9,6 @@
 
 
 ### 유튜브 채널
-
-
 
 
 
@@ -94,9 +91,7 @@
 
 ### 프로젝트 아키텍쳐
 
-------
 
-![](C:\Users\Kang Minji\Downloads\캡처.PNG)
 
 
 
@@ -124,6 +119,4 @@
 ### 참고 자료
 
 - TarsosDSP 라이브러리
-
-  https://github.com/JorenSix/TarsosDSP
->>>>>>> Stashed changes
+    https://github.com/JorenSix/TarsosDSP

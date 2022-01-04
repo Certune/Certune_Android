@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738446921024:android:262b1a2e97e86a086cbea5",
+        "android_client_info": {
+          "package_name": "com.techtown.tarsosdsp_pitchdetect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738446921024-8luumpp4r13hge7k0n4viov2bdq8vkp4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsMsBHv0iImuEDbefDT-qoUW825LNVjaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738446921024-8luumpp4r13hge7k0n4viov2bdq8vkp4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

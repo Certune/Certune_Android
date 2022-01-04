@@ -34,9 +34,8 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
-
 public class MainActivity extends AppCompatActivity {
-    Map<Double, String> map; // {key : octav}
+    Map<Double, String> map; // {key : octave}
     Map<Double, String> musicMap;
 
     AudioDispatcher dispatcher;
@@ -44,15 +43,15 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
 
     File file;
-    File audiofile;
+    File audioFile;
 
     TextView pitchTextView;
     Button recordButton;
     Button playButton;
 
     boolean isRecording = false;
-    String filename = "recorded_sound.wav";
-    String audiofilename = "music_wav.wav";
+    String fileName = "recorded_sound.wav";
+    String audioFileName = "music_wav.wav";
 
 
     @Override
@@ -60,22 +59,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Get a top-level shared/external storage directory for placing files of a particular type.
         File sdCard = Environment.getExternalStorageDirectory();
-        file = new File(sdCard, filename);
+        file = new File(sdCard, fileName); // File(File parent, String Child)
+
         // 실패 ) 핸드폰의 동일한 위치에 mp3/wav 파일을 넣어놓고 재생시키는 방법 - 여전히 지지직 소리
-        audiofile = new File(sdCard, audiofilename);
+        audioFile = new File(sdCard, audioFileName);
 
         /*
         filePath = file.getAbsolutePath();
         Log.e("MainActivity", "저장 파일 경로 :" + filePath); // 저장 파일 경로 : /storage/emulated/0/recorded.mp4
         */
 
-        tarsosDSPAudioFormat=new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
-                22050,
-                2 * 8,
-                1,
-                2 * 1,
-                22050,
+        // PCM(Pulse Code Modulation): 아날로그 신호 -> 양자화, 부호화 단계를 거쳐 2진 부호 형태로 전송하는 변조 방식
+        tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
+                22050, // sample rate
+                2 * 8, // sample size in bits
+                1, // channels
+                2 * 1, // frame size
+                22050, // frame rate
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         pitchTextView = findViewById(R.id.pitchTextView);
@@ -108,8 +110,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void playAudio()
-    {
+    public void playAudio() {
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
         try{
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 실패 ) res/raw 밑에 있는 파일 읽어오기 -> 지지직 소리 해결 X
             //InputStream fileInputStream = getResources().openRawResource(R.raw.music_wav);
-            FileInputStream fileInputStream = new FileInputStream(audiofile);
+            FileInputStream fileInputStream = new FileInputStream(audioFile);
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
             AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
@@ -131,17 +132,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void handlePitch(PitchDetectionResult res, AudioEvent e){
                     final float pitchInHz = res.getPitch();
-                    String octav = ProcessPitch.processPitch(pitchInHz);
+                    String octave = ProcessPitch.processPitch(pitchInHz);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pitchTextView.setText(octav);
+                            pitchTextView.setText(octave);
                             long end = System.currentTimeMillis();
                             double time = (end-start)/(1000.0);
 
-                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
+                            if (!octave.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
-                                musicMap.put(time, octav);
+                                musicMap.put(time, octave);
                             }
                         }
                     });
@@ -161,8 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void recordAudio()
-    {
+    public void recordAudio() {
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
 
@@ -180,17 +180,18 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void handlePitch(PitchDetectionResult res, AudioEvent e){
                     final float pitchInHz = res.getPitch();
-                    String octav = ProcessPitch.processPitch(pitchInHz);
+                    String octave = ProcessPitch.processPitch(pitchInHz);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pitchTextView.setText(octav);
+                            pitchTextView.setText(octave);
                             long end = System.currentTimeMillis();
-                            double time = (end-start)/(1000.0);
+                            double time = (end - start) / (1000.0);
 
-                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
+                            // 의미있는 값일 때만 입력받음
+                            if (!octave.equals("Nope")) {
                                 Log.v("time", String.valueOf(time));
-                                map.put(time, octav);
+                                map.put(time, octave);
                             }
                         }
 
@@ -210,23 +211,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void stopRecording()
-    {
-        // map에서 꺼내는 코드
+    public void stopRecording() {
         Log.v("end", "break");
 
-        // 키로 정렬
-        Object[] mapkey = map.keySet().toArray();
-        Arrays.sort(mapkey);
-        for (Object key : mapkey){
+        // 키로 정렬해서 pitch 값 가져오기
+        Object[] mapKey = map.keySet().toArray();
+        Arrays.sort(mapKey);
+        for (Object key : mapKey) {
             Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
         }
         Log.v("end", "break2");
         releaseDispatcher();
     }
 
-    public void releaseDispatcher()
-    {
+    public void releaseDispatcher() {
         if(dispatcher != null)
         {
             if(!dispatcher.isStopped())

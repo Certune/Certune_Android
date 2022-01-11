@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "738446921024",
+    "project_id": "certune-73ce6",
+    "storage_bucket": "certune-73ce6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:738446921024:android:262b1a2e97e86a086cbea5",
+        "android_client_info": {
+          "package_name": "com.techtown.tarsosdsp_pitchdetect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "738446921024-dd1r959msndbfrl4e8mie4j03ct4nsbd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techtown.tarsosdsp_pitchdetect",
+            "certificate_hash": "99f2a1c77d518fcc9c2fd8f6a39699869de5f8c8"
+          }
+        },
+        {
+          "client_id": "738446921024-8luumpp4r13hge7k0n4viov2bdq8vkp4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsMsBHv0iImuEDbefDT-qoUW825LNVjaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "738446921024-8luumpp4r13hge7k0n4viov2bdq8vkp4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

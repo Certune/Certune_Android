@@ -1,5 +1,6 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -8,7 +9,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.auth.User;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,9 +31,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,6 +53,32 @@ import be.tarsos.dsp.writer.WriterProcessor;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "Main_Activity";
+    private FirebaseFirestore db;
+    private List<SongList> songLists = new ArrayList<>();
+
+
+
+    // 실시간 데이터 변경 감지
+    private void myStream() {
+        final DocumentReference docRef = db.collection("songList").document("신호등");
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                Log.d(TAG, "myStream : onEvent: 데이터 변경됨");
+                SongList songList = documentSnapshot.toObject(SongList.class);
+                Log.d(TAG, "myStream : onEvent: user : " + songList);
+            }
+        });
+    }
+
+
+
+
+
+
+
     Map<Double, String> map; // {key : octav}
     Map<Double, String> musicMap;
 
@@ -52,18 +95,23 @@ public class MainActivity extends AppCompatActivity {
 
     boolean isRecording = false;
     String filename = "recorded_sound.wav";
-    String audiofilename = "music_wav.wav";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // 양방향 stream
+        db = FirebaseFirestore.getInstance();
+        myStream();
 
         File sdCard = Environment.getExternalStorageDirectory();
-        file = new File(sdCard, filename);
+        audiofile = new File(sdCard, filename);
         // 실패 ) 핸드폰의 동일한 위치에 mp3/wav 파일을 넣어놓고 재생시키는 방법 - 여전히 지지직 소리
-        audiofile = new File(sdCard, audiofilename);
+        //audiofile = new File(sdCard, audiofilename);
 
         /*
         filePath = file.getAbsolutePath();

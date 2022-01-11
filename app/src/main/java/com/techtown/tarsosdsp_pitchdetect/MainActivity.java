@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
-        // DB에서 읽어오기
+        // db에서 읽어오기
         database.document("song1/note1").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         //성공
@@ -131,11 +131,26 @@ public class MainActivity extends AppCompatActivity {
 
     public void playAudio() {
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
+
         long start = System.currentTimeMillis(); // 시작 시간 측정
         try {
             releaseDispatcher();
 
-            FileInputStream fileInputStream = new FileInputStream(audioFileName);
+            // 성공 ) 얘는 dispatcher와 별개로 돌아가는 메소드
+            //mediaPlayer = MediaPlayer.create(this, R.raw.music);
+            //mediaPlayer.start();
+
+            // 실패 ) res/raw 밑에 있는 파일 읽어오기 -> 지지직 소리 해결 X
+            //InputStream fileInputStream = getResources().openRawResource(R.raw.music_wav);
+            //FileInputStream fileInputStream = new FileInputStream(audiofile);
+
+            // 실패) asset 폴더 밑의 파일 읽어오기
+            //AssetManager assetManager = getAssets();
+            //final AssetFileDescriptor fileDescriptor = getResources().openRawResourceFd(R.raw.music_wav);
+            //FileInputStream fileInputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+
+
+            FileInputStream fileInputStream = new FileInputStream(audioFile);
             // 마이크가 아닌 파일을 소스로 하는 dispatcher 생성 -> AudioDispatcher 객체 생성 시 UniversalAudioInputStream 사용
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
@@ -150,17 +165,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void handlePitch(PitchDetectionResult res, AudioEvent e) {
                     final float pitchInHz = res.getPitch();
-                    String octave = ProcessPitch.processPitch(pitchInHz);
+                    String octav = ProcessPitch.processPitch(pitchInHz);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pitchTextView.setText(octave);
+                            pitchTextView.setText(octav);
                             long end = System.currentTimeMillis();
                             double time = (end - start) / (1000.0);
 
-                            if (!octave.equals("Nope")) {// 의미있는 값일 때만 입력받음
+                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
-                                musicMap.put(time, octave);
+                                musicMap.put(time, octav);
                             }
                         }
                     });
@@ -209,11 +224,6 @@ public class MainActivity extends AppCompatActivity {
                             if (!octave.equals("Nope")) {
                                 Log.v("time", String.valueOf(time));
                                 map.put(time, octave);
-
-                                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                DatabaseReference ref = database.getReference();
-
-                                ref.child("message").push().setValue("2");
                             }
                         }
 
@@ -242,9 +252,9 @@ public class MainActivity extends AppCompatActivity {
         Arrays.sort(mapkey);
         for (Object key : mapkey) {
             Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
-
-            releaseDispatcher();
         }
+
+        releaseDispatcher();
     }
 
     public void releaseDispatcher() {

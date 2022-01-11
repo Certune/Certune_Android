@@ -10,24 +10,26 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
+
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.TarsosDSPAudioFormat;
 import be.tarsos.dsp.io.UniversalAudioInputStream;
-import be.tarsos.dsp.io.android.AndroidAudioPlayer;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     File file;
     File audiofile;
+    File newAudioFile;
 
     TextView pitchTextView;
     Button recordButton;
@@ -53,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
     boolean isRecording = false;
     String filename = "recorded_sound.wav";
     String audiofilename = "music_wav.wav";
+    String newAudioFileName = "new.wav";
 
+    // firebase db 연동
+    private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,21 +68,36 @@ public class MainActivity extends AppCompatActivity {
 
         File sdCard = Environment.getExternalStorageDirectory();
         file = new File(sdCard, filename);
-        // 실패 ) 핸드폰의 동일한 위치에 mp3/wav 파일을 넣어놓고 재생시키는 방법 - 여전히 지지직 소리
-        audiofile = new File(sdCard, audiofilename);
 
-        /*
-        filePath = file.getAbsolutePath();
-        Log.e("MainActivity", "저장 파일 경로 :" + filePath); // 저장 파일 경로 : /storage/emulated/0/recorded.mp4
-        */
-
-        tarsosDSPAudioFormat=new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
+        tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
                 22050,
                 2 * 8,
                 1,
                 2 * 1,
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
+
+        // db에서 읽어오기
+        database.document("song1/note1").get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //성공
+                        DocumentSnapshot document = task.getResult();
+                        List list = (List) document.getData().get("list");
+                        for (int i = 0; i < list.size(); i++) {
+                            Log.i("TEST", "data[" + i + "] > " + list.get(i).toString());
+                            HashMap map = (HashMap) list.get(i);
+                            MusicDto musicDto = new MusicDto(
+                                    Objects.requireNonNull(map.get("cumul_time")).toString(),
+                                    Objects.requireNonNull(map.get("note")).toString(),
+                                    Objects.requireNonNull(map.get("time")).toString()
+                            );
+                            Log.i("TEST", "[" + i + "] > " + (list.get(i) instanceof HashMap) + " / " + (list.get(i).getClass().getName()) + " / " + list.get(i).toString());
+                        }
+                    } else {
+                        //실패
+                    }
+                }
+        );
 
         pitchTextView = findViewById(R.id.pitchTextView);
         recordButton = findViewById(R.id.recordButton);
@@ -85,14 +106,11 @@ public class MainActivity extends AppCompatActivity {
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isRecording)
-                {
+                if (!isRecording) {
                     recordAudio();
                     isRecording = true;
                     recordButton.setText("중지");
-                }
-                else
-                {
+                } else {
                     stopRecording();
                     isRecording = false;
                     recordButton.setText("녹음");
@@ -108,11 +126,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void playAudio()
-    {
+    public void playAudio() {
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
-        try{
+        try {
             releaseDispatcher();
 
             // 성공 ) 얘는 dispatcher와 별개로 돌아가는 메소드
@@ -121,15 +138,28 @@ public class MainActivity extends AppCompatActivity {
 
             // 실패 ) res/raw 밑에 있는 파일 읽어오기 -> 지지직 소리 해결 X
             //InputStream fileInputStream = getResources().openRawResource(R.raw.music_wav);
+            //FileInputStream fileInputStream = new FileInputStream(audiofile);
+
+            // 실패) asset 폴더 밑의 파일 읽어오기
+            //AssetManager assetManager = getAssets();
+            //final AssetFileDescriptor fileDescriptor = getResources().openRawResourceFd(R.raw.music_wav);
+            //FileInputStream fileInputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+
+
             FileInputStream fileInputStream = new FileInputStream(audiofile);
+            // 마이크가 아닌 파일을 소스로 하는 dispatcher 생성 -> AudioDispatcher 객체 생성 시 UniversalAudioInputStream 사용
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
-            AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
-            dispatcher.addAudioProcessor(playerProcessor);
+            RandomAccessFile randomAccessAudioFile = new RandomAccessFile(newAudioFile, "rw");
+            AudioProcessor recordProcessorAudio = new WriterProcessor(tarsosDSPAudioFormat, randomAccessAudioFile);
+            dispatcher.addAudioProcessor(recordProcessorAudio);
+
+            //AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
+            //dispatcher.addAudioProcessor(playerProcessor);
 
             PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
                 @Override
-                public void handlePitch(PitchDetectionResult res, AudioEvent e){
+                public void handlePitch(PitchDetectionResult res, AudioEvent e) {
                     final float pitchInHz = res.getPitch();
                     String octav = ProcessPitch.processPitch(pitchInHz);
                     runOnUiThread(new Runnable() {
@@ -137,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             pitchTextView.setText(octav);
                             long end = System.currentTimeMillis();
-                            double time = (end-start)/(1000.0);
+                            double time = (end - start) / (1000.0);
 
                             if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
@@ -154,31 +184,29 @@ public class MainActivity extends AppCompatActivity {
             Thread audioThread = new Thread(dispatcher, "Audio Thread");
             audioThread.start();
 
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    public void recordAudio()
-    {
+    public void recordAudio() {
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
 
-        Log.v("start","start time measuring process");
+        Log.v("start", "start time measuring process");
         releaseDispatcher();
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050,1024,0);
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
         try {
             Log.v("start2", "try문");
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file,"rw");
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
             AudioProcessor recordProcessor = new WriterProcessor(tarsosDSPAudioFormat, randomAccessFile);
             dispatcher.addAudioProcessor(recordProcessor);
 
             PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
                 @Override
-                public void handlePitch(PitchDetectionResult res, AudioEvent e){
+                public void handlePitch(PitchDetectionResult res, AudioEvent e) {
                     final float pitchInHz = res.getPitch();
                     String octav = ProcessPitch.processPitch(pitchInHz);
                     runOnUiThread(new Runnable() {
@@ -186,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                         public void run() {
                             pitchTextView.setText(octav);
                             long end = System.currentTimeMillis();
-                            double time = (end-start)/(1000.0);
+                            double time = (end - start) / (1000.0);
 
                             if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
@@ -210,26 +238,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void stopRecording()
-    {
-        // map에서 꺼내는 코드
-        Log.v("end", "break");
-
-        // 키로 정렬
+    public void stopRecording() {
+        // 사용자가 부른 정보를 키로 정렬
         Object[] mapkey = map.keySet().toArray();
         Arrays.sort(mapkey);
-        for (Object key : mapkey){
-            Log.v("please", String.valueOf(key) + "/ value: "+map.get(key));
+        for (Object key : mapkey) {
+            Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
         }
-        Log.v("end", "break2");
+
+        // DB에서 값 받아서 비교
+
         releaseDispatcher();
     }
 
-    public void releaseDispatcher()
-    {
-        if(dispatcher != null)
-        {
-            if(!dispatcher.isStopped())
+    public void releaseDispatcher() {
+        if (dispatcher != null) {
+            if (!dispatcher.isStopped())
                 dispatcher.stop();
             dispatcher = null;
         }

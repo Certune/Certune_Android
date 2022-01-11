@@ -1,5 +1,7 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import static android.content.ContentValues.TAG;
+
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
@@ -8,7 +10,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,11 +67,28 @@ public class MainActivity extends AppCompatActivity {
     String fileName = "recorded_sound.wav";
     String audioFileName = "music_wav.wav";
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.v("msg", "Hi");
+        db.collection("cities")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.v("fromDB", document.getId() + " => " + document.getData());
+                            }
+                        } else {
+                            Log.v("fromDB", "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         // Get a top-level shared/external storage directory for placing files of a particular type.
         File sdCard = Environment.getExternalStorageDirectory();
@@ -155,14 +186,16 @@ public class MainActivity extends AppCompatActivity {
             Thread audioThread = new Thread(dispatcher, "Audio Thread");
             audioThread.start();
 
-        }catch(Exception e)
-        {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
 
 
     public void recordAudio() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference();
+
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
 
@@ -192,6 +225,11 @@ public class MainActivity extends AppCompatActivity {
                             if (!octave.equals("Nope")) {
                                 Log.v("time", String.valueOf(time));
                                 map.put(time, octave);
+
+                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                DatabaseReference ref = database.getReference();
+
+                                ref.child("message").push().setValue("2");
                             }
                         }
 

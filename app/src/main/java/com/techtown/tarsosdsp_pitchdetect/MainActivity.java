@@ -29,6 +29,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,14 +98,14 @@ public class MainActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         List list = (List) document.getData().get("list");
                         for (int i = 0; i < list.size(); i++) {
-                            Log.i("TEST", "data[" + i + "] > " + list.get(i).toString());
+
                             HashMap map = (HashMap) list.get(i);
                             MusicDto musicDto = new MusicDto(
                                     Objects.requireNonNull(map.get("cumul_time")).toString(),
                                     Objects.requireNonNull(map.get("note")).toString(),
                                     Objects.requireNonNull(map.get("time")).toString()
                             );
-                            Log.i("TEST", "[" + i + "] > " + (list.get(i) instanceof HashMap) + " / " + (list.get(i).getClass().getName()) + " / " + list.get(i).toString());
+                            Log.i("TEST", musicDto.getCumul_time() + " / " + musicDto.getNote() + " / " + musicDto.getTime());
                         }
                     } else {
                         //실패

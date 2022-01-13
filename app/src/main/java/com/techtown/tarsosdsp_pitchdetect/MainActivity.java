@@ -15,13 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
+import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,10 +31,10 @@ import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -47,8 +48,9 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
+
 public class MainActivity extends AppCompatActivity {
-    Map<Double, String> map; // {key : octave}
+    Map<Double, String> map; // {key : octav}
     Map<Double, String> musicMap;
 
     AudioDispatcher dispatcher;
@@ -62,10 +64,7 @@ public class MainActivity extends AppCompatActivity {
     Button playButton;
 
     boolean isRecording = false;
-
-    String fileName = "recorded_sound.wav";
-    String audioFileName = "music_wav.wav";
-    String newAudioFileName = "new.wav";
+    String filename = "recorded_sound.wav";
 
     // firebase db 연동
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -75,15 +74,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        fetchAudioUrlFromFirebase();
-
-        // Get a top-level shared/external storage directory for placing files of a particular type.
         File sdCard = Environment.getExternalStorageDirectory();
-        file = new File(sdCard, fileName); // File(File parent, String Child)
+        file = new File(sdCard, filename);
 
-        // PCM(Pulse Code Modulation): 아날로그 신호 -> 양자화, 부호화 단계를 거쳐 2진 부호 형태로 전송하는 변조 방식
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
                 22050,
                 2 * 8,
@@ -92,27 +85,30 @@ public class MainActivity extends AppCompatActivity {
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
-        // Read from database
+        // get music info from database
         database.document("song1/note1").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        //성공
                         DocumentSnapshot document = task.getResult();
                         List list = (List) document.getData().get("list");
                         for (int i = 0; i < list.size(); i++) {
-
                             HashMap map = (HashMap) list.get(i);
                             MusicDto musicDto = new MusicDto(
                                     Objects.requireNonNull(map.get("cumul_time")).toString(),
                                     Objects.requireNonNull(map.get("note")).toString(),
                                     Objects.requireNonNull(map.get("time")).toString()
                             );
-                            Log.i("TEST", musicDto.getCumul_time() + " / " + musicDto.getNote() + " / " + musicDto.getTime());
+                            Log.i("TEST", musicDto.getCumul_time() + "/" + musicDto.getNote() + "/" + musicDto.getTime());
                         }
                     } else {
                         //실패
                     }
                 }
         );
+
+        // mediaplayer setting
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        fetchAudioUrlFromFirebase();
 
         pitchTextView = findViewById(R.id.pitchTextView);
         recordButton = findViewById(R.id.recordButton);
@@ -141,66 +137,59 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
         final FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
         StorageReference storageRef = storage.getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/certune-73ce6.appspot.com/o/%EC%8B%A0%ED%98%B8%EB%93%B1_%EC%9D%B4%EB%AC%B4%EC%A7%84.mp3?alt=media&token=4bbb1db6-22ff-4823-b4fc-af14696504bd");
-        storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                try {
-                    // Download url of file
-                    final String url = uri.toString();
-                    mediaPlayer.setDataSource(url);
-                    // wait for media player to get prepare
-                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
-                        @Override
-                        public void onPrepared(MediaPlayer mp) {
-                            mp.start();
+        storageRef.getDownloadUrl()
+                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        try {
+                            // Download url of file
+                            final String url = uri.toString();
+                            mediaPlayer.setDataSource(url);
+                            // wait for media player to get prepare
+                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                @Override
+                                public void onPrepared(MediaPlayer mp) {
+                                    mp.start();
+                                }
+                            });
+                            mediaPlayer.prepareAsync();
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
-                    });
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("TAG", e.getMessage());
-            }
-        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("TAG", e.getMessage());
+                    }
+                });
+
     }
 
     public void playAudio() {
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
-
         long start = System.currentTimeMillis(); // 시작 시간 측정
         try {
             releaseDispatcher();
 
             // 성공 ) 얘는 dispatcher와 별개로 돌아가는 메소드
-            // mediaPlayer = MediaPlayer.create(this, R.raw.music);
-            // mediaPlayer.start();
-
-            // 실패 ) res/raw 밑에 있는 파일 읽어오기 -> 지지직 소리 해결 X
-            //InputStream fileInputStream = getResources().openRawResource(R.raw.music_wav);
-            //FileInputStream fileInputStream = new FileInputStream(audiofile);
-
-            // 실패) asset 폴더 밑의 파일 읽어오기
-            //AssetManager assetManager = getAssets();
-            //final AssetFileDescriptor fileDescriptor = getResources().openRawResourceFd(R.raw.music_wav);
-            //FileInputStream fileInputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-
+            //mediaPlayer = MediaPlayer.create(this, R.raw.music);
+            //mediaPlayer.start();
 
             FileInputStream fileInputStream = new FileInputStream(file);
             // 마이크가 아닌 파일을 소스로 하는 dispatcher 생성 -> AudioDispatcher 객체 생성 시 UniversalAudioInputStream 사용
             dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
 
-//            RandomAccessFile randomAccessAudioFile = new RandomAccessFile(newAudioFile, "rw");
-//            AudioProcessor recordProcessorAudio = new WriterProcessor(tarsosDSPAudioFormat, randomAccessAudioFile);
-//            dispatcher.addAudioProcessor(recordProcessorAudio);
+            //RandomAccessFile randomAccessAudioFile = new RandomAccessFile(newAudioFile, "rw");
+            //AudioProcessor recordProcessorAudio = new WriterProcessor(tarsosDSPAudioFormat, randomAccessAudioFile);
+            //dispatcher.addAudioProcessor(recordProcessorAudio);
 
             AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
             dispatcher.addAudioProcessor(playerProcessor);
@@ -217,8 +206,7 @@ public class MainActivity extends AppCompatActivity {
                             long end = System.currentTimeMillis();
                             double time = (end - start) / (1000.0);
 
-                            // 의미있는 값일 때만 입력받음
-                            if (!octav.equals("Nope")) {
+                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
                                 musicMap.put(time, octav);
                             }
@@ -238,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     public void recordAudio() {
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.currentTimeMillis(); // 시작 시간 측정
@@ -256,18 +245,17 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void handlePitch(PitchDetectionResult res, AudioEvent e) {
                     final float pitchInHz = res.getPitch();
-                    String octave = ProcessPitch.processPitch(pitchInHz);
+                    String octav = ProcessPitch.processPitch(pitchInHz);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            pitchTextView.setText(octave);
+                            pitchTextView.setText(octav);
                             long end = System.currentTimeMillis();
                             double time = (end - start) / (1000.0);
 
-                            // 의미있는 값일 때만 입력받음
-                            if (!octave.equals("Nope")) {
+                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
-                                map.put(time, octave);
+                                map.put(time, octav);
                             }
                         }
 
@@ -319,20 +307,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addDataToFireStore(Object[] mapkey) {
+        // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
         CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
+
         int idx = 0;
         Map<String, UserMusicDto> userMusicList = new HashMap<>();
-
         for (Object key : mapkey) {
             UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(key), map.get(key));
-            if(idx >=  0 && idx <= 9) {
-                userMusicList.put(String.valueOf("0" + idx), userMusicDto);
+            if (idx >= 0 && idx <= 9) { // additional sorting
+                userMusicList.put("0" + idx, userMusicDto);
             } else {
                 userMusicList.put(String.valueOf(idx), userMusicDto);
             }
-
             idx++;
         }
+
         database.document("user1/song1")
                 .set(userMusicList)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

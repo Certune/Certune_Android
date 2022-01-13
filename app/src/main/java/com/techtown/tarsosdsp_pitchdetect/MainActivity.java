@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -287,15 +288,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopRecording() {
-        Log.v("end", "break");
-
-        // 키로 정렬해서 pitch 값 가져오기
-
+        // 사용자가 부른 정보를 키로 정렬
         Object[] mapkey = map.keySet().toArray();
         Arrays.sort(mapkey);
-//        for (Object key : mapkey) {
-//            Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
-//        }
+        for (Object key : mapkey) {
+            Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
+        }
+
+        // TODO : DB로 값 보내기
+        addDataToFireStore(mapkey);
+
+
+        // TODO: DB에서 값 받아서 비교
 
         releaseDispatcher();
     }
@@ -312,5 +316,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         releaseDispatcher();
+    }
+
+    public void addDataToFireStore(Object[] mapkey) {
+        CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
+        int idx = 0;
+        Map<String, UserMusicDto> userMusicList = new HashMap<>();
+        for (Object key : mapkey) {
+            UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(key), map.get(key));
+            userMusicList.put(String.valueOf(idx), userMusicDto);
+            idx++;
+        }
+        database.document("user1/song1")
+                .set(userMusicList)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("TAG", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("TAG", "failed");
+                    }
+                });
     }
 }

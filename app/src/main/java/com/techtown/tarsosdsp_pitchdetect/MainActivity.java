@@ -322,9 +322,15 @@ public class MainActivity extends AppCompatActivity {
         CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
         int idx = 0;
         Map<String, UserMusicDto> userMusicList = new HashMap<>();
+
         for (Object key : mapkey) {
             UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(key), map.get(key));
-            userMusicList.put(String.valueOf(idx), userMusicDto);
+            if(idx >=  0 && idx <= 9) {
+                userMusicList.put(String.valueOf("0" + idx), userMusicDto);
+            } else {
+                userMusicList.put(String.valueOf(idx), userMusicDto);
+            }
+
             idx++;
         }
         database.document("user1/song1")

@@ -15,10 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
+import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
+
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -81,21 +85,19 @@ public class MainActivity extends AppCompatActivity {
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
-        // db에서 읽어오기
+        // get music info from database
         database.document("song1/note1").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        //성공
                         DocumentSnapshot document = task.getResult();
                         List list = (List) document.getData().get("list");
                         for (int i = 0; i < list.size(); i++) {
-                            Log.i("TEST", "data[" + i + "] > " + list.get(i).toString());
                             HashMap map = (HashMap) list.get(i);
                             MusicDto musicDto = new MusicDto(
                                     Objects.requireNonNull(map.get("cumul_time")).toString(),
                                     Objects.requireNonNull(map.get("note")).toString(),
                                     Objects.requireNonNull(map.get("time")).toString()
                             );
-                            Log.i("TEST", "[" + i + "] > " + (list.get(i) instanceof HashMap) + " / " + (list.get(i).getClass().getName()) + " / " + list.get(i).toString());
+                            Log.i("TEST", musicDto.getCumul_time() + "/" + musicDto.getNote() + "/" + musicDto.getTime());
                         }
                     } else {
                         //실패
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        // mediaplayer 설정
+        // mediaplayer setting
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         fetchAudioUrlFromFirebase();
@@ -135,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
         final FirebaseStorage storage = FirebaseStorage.getInstance();
         // Create a storage reference from our app
@@ -280,6 +283,10 @@ public class MainActivity extends AppCompatActivity {
             Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
         }
 
+        // TODO : DB로 값 보내기
+        addDataToFireStore(mapkey);
+
+
         // TODO: DB에서 값 받아서 비교
 
         releaseDispatcher();
@@ -297,5 +304,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         releaseDispatcher();
+    }
+
+    public void addDataToFireStore(Object[] mapkey) {
+        // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
+        CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
+
+        int idx = 0;
+        Map<String, UserMusicDto> userMusicList = new HashMap<>();
+        for (Object key : mapkey) {
+            UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(key), map.get(key));
+            if (idx >= 0 && idx <= 9) { // additional sorting
+                userMusicList.put("0" + idx, userMusicDto);
+            } else {
+                userMusicList.put(String.valueOf(idx), userMusicDto);
+            }
+            idx++;
+        }
+
+        database.document("user1/song1")
+                .set(userMusicList)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("TAG", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("TAG", "failed");
+                    }
+                });
     }
 }

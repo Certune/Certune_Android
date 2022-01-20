@@ -19,7 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
+import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        File sdCard = Environment.getExternalStorageDirectory();
+        File sdCard = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
         file = new File(sdCard, filename);
 
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
@@ -279,9 +279,11 @@ public class MainActivity extends AppCompatActivity {
         for (Object key : mapkey) {
             Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
         }
+        // TODO : DB로 값 보내기
+        addDataToFireStore(mapkey);
 
-        // TODO: DB에서 값 받아서 비교
-
+        // TODO : DB로 wav file 보내기
+        addWAVToFireStorage();
         releaseDispatcher();
     }
 
@@ -297,5 +299,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         releaseDispatcher();
+    }
+
+    public void addDataToFireStore(Object[] mapkey) {
+        // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
+        CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
+
+        int idx = 0;
+        Map<String, UserMusicDto> userMusicList = new HashMap<>();
+        for (Object key : mapkey) {
+            UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(key), map.get(key));
+            if (idx >= 0 && idx <= 9) { // additional sorting
+                userMusicList.put("0" + idx, userMusicDto);
+            } else {
+                userMusicList.put(String.valueOf(idx), userMusicDto);
+            }
+            idx++;
+        }
+
+        database.document("user1/song1")
+                .set(userMusicList)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("TAG", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("TAG", "failed");
+                    }
+                });
+    }
+
+    public void addWAVToFireStorage(){
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+
+        StorageReference filepath = mStorage.child("Audio").child(filename);
+        Uri uri = Uri.fromFile(file);
+        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.v("wav", "upload success");
+            }
+        });
     }
 }

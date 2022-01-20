@@ -5,12 +5,16 @@ import lombok.Data;
 
 @Data
 public class UserMusicDto {
-    public String cumul_time;
+    public String start_time;
+    public String end_time;
     public String note;
+    public String grade;
 
     @Builder
     public UserMusicDto(String cumul_time, String note){
-        this.cumul_time = cumul_time;
+        this.start_time = start_time;
+        this.end_time = end_time;
         this.note = note;
+        this.grade = grade;
     }
 }

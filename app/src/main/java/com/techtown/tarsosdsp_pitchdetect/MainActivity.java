@@ -22,6 +22,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
+import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
 
 
@@ -30,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -87,18 +89,22 @@ public class MainActivity extends AppCompatActivity {
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         // get music info from database
-        database.document("song1/note1").get().addOnCompleteListener(task -> {
+        database.document("song1/sentence").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        List list = (List) document.getData().get("list");
+                        List list = (List) document.getData().get("sentences");
                         for (int i = 0; i < list.size(); i++) {
                             HashMap map = (HashMap) list.get(i);
                             MusicDto musicDto = new MusicDto(
-                                    Objects.requireNonNull(map.get("cumul_time")).toString(),
-                                    Objects.requireNonNull(map.get("note")).toString(),
-                                    Objects.requireNonNull(map.get("time")).toString()
+                                    Objects.requireNonNull(map.get("start_time")).toString(),
+                                    Objects.requireNonNull(map.get("end_time")).toString(),
+                                    Objects.requireNonNull(map.get("lyrics")).toString(),
+                                    (ArrayList<NoteDto>) map.get("notes")
                             );
-                            Log.i("TEST", musicDto.getCumul_time() + "/" + musicDto.getNote() + "/" + musicDto.getTime());
+
+                            Log.i("TEST", musicDto.getLyrics() + "/" + musicDto.getStart_time() + "/" + musicDto.getEnd_time()
+                                    + "//" + musicDto.getStart_time() + "/" + musicDto.getEnd_time() + "/" + musicDto.getNotes());
+
                         }
                     } else {
                         //실패

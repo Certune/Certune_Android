@@ -20,7 +20,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
+import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
 
 
@@ -29,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        File sdCard = Environment.getExternalStorageDirectory();
+        File sdCard = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
         file = new File(sdCard, filename);
 
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
@@ -86,18 +89,22 @@ public class MainActivity extends AppCompatActivity {
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         // get music info from database
-        database.document("song1/note1").get().addOnCompleteListener(task -> {
+        database.document("song1/sentence").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        List list = (List) document.getData().get("list");
+                        List list = (List) document.getData().get("sentences");
                         for (int i = 0; i < list.size(); i++) {
                             HashMap map = (HashMap) list.get(i);
                             MusicDto musicDto = new MusicDto(
-                                    Objects.requireNonNull(map.get("cumul_time")).toString(),
-                                    Objects.requireNonNull(map.get("note")).toString(),
-                                    Objects.requireNonNull(map.get("time")).toString()
+                                    Objects.requireNonNull(map.get("start_time")).toString(),
+                                    Objects.requireNonNull(map.get("end_time")).toString(),
+                                    Objects.requireNonNull(map.get("lyrics")).toString(),
+                                    (ArrayList<NoteDto>) map.get("notes")
                             );
-                            Log.i("TEST", musicDto.getCumul_time() + "/" + musicDto.getNote() + "/" + musicDto.getTime());
+
+                            Log.i("TEST", musicDto.getLyrics() + "/" + musicDto.getStart_time() + "/" + musicDto.getEnd_time()
+                                    + "//" + musicDto.getStart_time() + "/" + musicDto.getEnd_time() + "/" + musicDto.getNotes());
+
                         }
                     } else {
                         //실패
@@ -282,10 +289,10 @@ public class MainActivity extends AppCompatActivity {
         for (Object key : mapkey) {
             Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
         }
-
+        // TODO : DB로 wav file 보내기
+        addWAVToFireStorage();
         // TODO : DB로 값 보내기
         addDataToFireStore(mapkey);
-
 
         // TODO: DB에서 값 받아서 비교
 
@@ -336,5 +343,18 @@ public class MainActivity extends AppCompatActivity {
                         Log.v("TAG", "failed");
                     }
                 });
+    }
+
+    public void addWAVToFireStorage(){
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+
+        StorageReference filepath = mStorage.child("Audio").child(filename);
+        Uri uri = Uri.fromFile(file);
+        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.v("wav", "upload success");
+            }
+        });
     }
 }

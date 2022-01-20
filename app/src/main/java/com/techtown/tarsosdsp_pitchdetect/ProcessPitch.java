@@ -239,19 +239,19 @@ public class ProcessPitch {
             noteText = "F6";
         }
         else if (pitchInHz >=1174.66 && pitchInHz< 1567.98) {
-            noteText = "F#6/Gb6";
+            noteText = "F#6";
         }
         else if (pitchInHz >=1567.98 && pitchInHz< 1661.22) {
             noteText = "G6";
         }
         else if (pitchInHz >=1661.22 && pitchInHz< 1760.00) {
-            noteText = "G#6/Ab6";
+            noteText = "G#6";
         }
         else if (pitchInHz >=1760.00 && pitchInHz< 1864.66) {
             noteText = "A6";
         }
         else if (pitchInHz >=1864.66 && pitchInHz< 1975.53) {
-            noteText = "A#6/Bb6";
+            noteText = "A#6";
         }
         else if (pitchInHz >=1975.53 && pitchInHz< 2093.00) {
             noteText = "B6";
@@ -260,13 +260,13 @@ public class ProcessPitch {
             noteText = "C7";
         }
         else if (pitchInHz >=2217.46 && pitchInHz< 2349.32) {
-            noteText = "C#7/Db7";
+            noteText = "C#7";
         }
         else if (pitchInHz >=2349.32 && pitchInHz< 2489.02) {
             noteText = "D7";
         }
         else if (pitchInHz >=2489.02 && pitchInHz < 2637.02) {
-            noteText = "D#7/Eb7";
+            noteText = "D#7";
         }
         else if (pitchInHz >=2637.02 && pitchInHz < 2793.83) {
             noteText = "E7";
@@ -275,19 +275,19 @@ public class ProcessPitch {
             noteText = "F7";
         }
         else if (pitchInHz >=2959.96 && pitchInHz < 3135.96) {
-            noteText = "F#7/Gb7";
+            noteText = "F#7";
         }
         else if(pitchInHz >= 3135.96 && pitchInHz < 3322.44) {
             noteText = "G7";
         }
         else if(pitchInHz >= 3322.44 && pitchInHz < 3520.00	) {
-            noteText = "G#7/Ab7";
+            noteText = "G#7";
         }
         else if(pitchInHz >= 3520.00 && pitchInHz < 3729.31) {
             noteText = "A7";
         }
         else if(pitchInHz >= 3729.31 && pitchInHz < 3951.07) {
-            noteText = "A#7/Bb7";
+            noteText = "A#7";
         }
         else if(pitchInHz >= 3951.07 && pitchInHz < 4186.01) {
             noteText = "B7";
@@ -296,13 +296,13 @@ public class ProcessPitch {
             noteText = "C8";
         }
         else if(pitchInHz >= 4434.92 && pitchInHz < 4698.63) {
-            noteText = "C#8/Db8";
+            noteText = "C#8";
         }
         else if(pitchInHz >= 4698.63 && pitchInHz < 4978.03) {
             noteText = "D8";
         }
         else if(pitchInHz >= 4978.03 && pitchInHz < 5274.04) {
-            noteText = "D#8/Eb8";
+            noteText = "D#8";
         }
         else if(pitchInHz >= 5274.04 && pitchInHz < 5587.65) {
             noteText = "E8";
@@ -311,19 +311,19 @@ public class ProcessPitch {
             noteText = "F8";
         }
         else if(pitchInHz >= 5919.91 && pitchInHz < 6271.93) {
-            noteText = "F#8/Gb8";
+            noteText = "F#8";
         }
         else if(pitchInHz >= 6271.93 && pitchInHz < 6644.88) {
             noteText = "G8";
         }
         else if(pitchInHz >= 6644.88 && pitchInHz < 7040.00) {
-            noteText = "G#8/Ab8";
+            noteText = "G#8";
         }
         else if(pitchInHz >= 7040.00 && pitchInHz < 7458.62) {
             noteText = "A8";
         }
         else if(pitchInHz >= 7458.62 && pitchInHz < 7902.13) {
-            noteText = "A#8/Bb8";
+            noteText = "A#8";
         }
         else if(pitchInHz >= 7902.13) {
             noteText = "B8";

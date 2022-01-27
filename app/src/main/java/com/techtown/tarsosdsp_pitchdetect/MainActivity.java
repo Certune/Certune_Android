@@ -56,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
     Map<Double, String> map; // {key : octav}
     Map<Double, String> musicMap;
 
+    // 곡의 소절별 시작 시간을 담은 ArrayList
+    ArrayList<Double> startTimeList = new ArrayList<>();
+    Integer startTimeIndex = 0;
+
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
     MediaPlayer mediaPlayer;
@@ -102,12 +106,15 @@ public class MainActivity extends AppCompatActivity {
                                     (ArrayList<NoteDto>) map.get("notes")
                             );
 
+                            // ArrayList에 소절별 시작 시간을 담기
+                            startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
+
                             Log.i("TEST", musicDto.getLyrics() + "/" + musicDto.getStart_time() + "/" + musicDto.getEnd_time()
                                     + "//" + musicDto.getStart_time() + "/" + musicDto.getEnd_time() + "/" + musicDto.getNotes());
 
                         }
                     } else {
-                        //실패
+                        // 실패
                     }
                 }
         );
@@ -182,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void playAudio() {
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
-        long start = System.currentTimeMillis(); // 시작 시간 측정
+        long start = System.nanoTime(); // 시작 시간 측정
         try {
             releaseDispatcher();
 
@@ -210,8 +217,8 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             pitchTextView.setText(octav);
-                            long end = System.currentTimeMillis();
-                            double time = (end - start) / (1000.0);
+                            long end = System.nanoTime();
+                            double time = (end - start) / (1000000000.0);
 
                             if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
@@ -236,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void recordAudio() {
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
-        long start = System.currentTimeMillis(); // 시작 시간 측정
+        long start = System.nanoTime(); // 시작 시간 측정
 
         Log.v("start", "start time measuring process");
         releaseDispatcher();
@@ -257,11 +264,12 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             pitchTextView.setText(octav);
-                            long end = System.currentTimeMillis();
-                            double time = (end - start) / (1000.0);
+                            long end = System.nanoTime();
+                            double time = (end - start) / (1000000000.0);
 
-                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
+                            if (!octav.equals("Nope")) { // 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
+
                                 map.put(time, octav);
                             }
                         }
@@ -283,6 +291,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopRecording() {
+        // startTimeIndex 초기화
+        startTimeIndex = 0;
+
         // 사용자가 부른 정보를 키로 정렬
         Object[] mapkey = map.keySet().toArray();
         Arrays.sort(mapkey);
@@ -317,19 +328,49 @@ public class MainActivity extends AppCompatActivity {
         // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
         CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
 
+        ArrayList<String> noteList = new ArrayList<>();
+
         int idx = 0;
+        Double startTime = 0.0;
+        Double nextStartTime = 0.0;
+
         Map<String, UserMusicDto> userMusicList = new HashMap<>();
         for (Object key : mapkey) {
-            UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(key), map.get(key));
-            if (idx >= 0 && idx <= 9) { // additional sorting
-                userMusicList.put("0" + idx, userMusicDto);
-            } else {
-                userMusicList.put(String.valueOf(idx), userMusicDto);
+            try  {
+                startTime = startTimeList.get(idx);
+                nextStartTime = startTimeList.get(idx + 1);
+            } catch (IndexOutOfBoundsException e) {
+                // 다음 소절이 존재하지 않는 경우
+                nextStartTime = 1000000000.0;
+            };
+
+            // 소절이 시작한 뒤 입력된 음성만 처리
+            if(startTimeList.get(0) <= Double.parseDouble(key.toString())) {
+                if (nextStartTime > Double.parseDouble(key.toString())) {
+                    // 다음 소절 전까지 noteList에 note 담음
+                    noteList.add(map.get(key));
+
+                } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
+                    UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(startTime), noteList, "null");
+
+                    // userMusicList에 idx, userMusicDto 넣기
+                    if (idx >= 0 && idx <= 9) { // additional sorting
+                        userMusicList.put("0" + idx, userMusicDto);
+                    } else {
+                        userMusicList.put(String.valueOf(idx), userMusicDto);
+                    }
+                    idx++;
+
+                    // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add
+                    noteList = new ArrayList<>();
+                    noteList.add(map.get(key));
+                }
             }
-            idx++;
+
+
         }
 
-        database.document("user1/song1")
+        database.document("user1/song0")
                 .set(userMusicList)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

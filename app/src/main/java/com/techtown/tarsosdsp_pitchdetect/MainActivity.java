@@ -240,8 +240,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
+    String prevOctave;
     public void recordAudio() {
+        prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.nanoTime(); // 시작 시간 측정
 
@@ -269,8 +270,12 @@ public class MainActivity extends AppCompatActivity {
 
                             if (!octav.equals("Nope")) { // 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
+                                if (prevOctave != octav) {
+                                    Log.v("time / octave", String.valueOf(time) + " / " + octav);
+                                    map.put(time, octav);
+                                    prevOctave = octav;
+                                }
 
-                                map.put(time, octav);
                             }
                         }
 

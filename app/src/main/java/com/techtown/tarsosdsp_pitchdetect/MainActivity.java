@@ -347,7 +347,8 @@ public class MainActivity extends AppCompatActivity {
                 nextStartTime = startTimeList.get(idx + 1);
             } catch (IndexOutOfBoundsException e) {
                 // 다음 소절이 존재하지 않는 경우
-                nextStartTime = 1000000000.0;
+                //
+                nextStartTime = 50.0;
             };
 
             // 소절이 시작한 뒤 입력된 음성만 처리

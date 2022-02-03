@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -344,7 +346,8 @@ public class MainActivity extends AppCompatActivity {
         Double startTime = 0.0;
         Double nextStartTime = 0.0;
 
-        Map<String, UserMusicDto> userMusicList = new HashMap<>();
+        ArrayList<UserMusicDto> sentenceList = new ArrayList<>();
+        Map<String, ArrayList<UserMusicDto>> userMusicList = new HashMap<>();
         for (Object key : mapkey) {
             try  {
                 startTime = startTimeList.get(idx);
@@ -363,13 +366,9 @@ public class MainActivity extends AppCompatActivity {
 
                 } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
                     UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(startTime), noteList, "null");
+                    sentenceList.add(userMusicDto);
 
-                    // userMusicList에 idx, userMusicDto 넣기
-                    if (idx >= 0 && idx <= 9) { // additional sorting
-                        userMusicList.put("0" + idx, userMusicDto);
-                    } else {
-                        userMusicList.put(String.valueOf(idx), userMusicDto);
-                    }
+                    userMusicList.put("sentence", sentenceList);
                     idx++;
 
                     // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add

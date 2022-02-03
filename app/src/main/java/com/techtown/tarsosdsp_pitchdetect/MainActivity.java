@@ -60,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Double> startTimeList = new ArrayList<>();
     Integer startTimeIndex = 0;
 
+    // 곡의 소절별 시작 시간을 담은 ArrayList
+    ArrayList<Double> endTimeList = new ArrayList<>();
+    Integer endTimeIndex = 0;
+
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
     MediaPlayer mediaPlayer;
@@ -106,8 +110,9 @@ public class MainActivity extends AppCompatActivity {
                                     (ArrayList<NoteDto>) map.get("notes")
                             );
 
-                            // ArrayList에 소절별 시작 시간을 담기
+                            // ArrayList에 소절별 시작 시간과 끝 시간 담기
                             startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
+                            endTimeList.add(Double.parseDouble(musicDto.getEnd_time()));
 
                             Log.i("TEST", musicDto.getLyrics() + "/" + musicDto.getStart_time() + "/" + musicDto.getEnd_time()
                                     + "//" + musicDto.getStart_time() + "/" + musicDto.getEnd_time() + "/" + musicDto.getNotes());
@@ -330,7 +335,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addDataToFireStore(Object[] mapkey) {
-        Log.v("list", startTimeList.get(0).toString() + startTimeList.get(1) + startTimeList.get(2));
         // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
         CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
 
@@ -344,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
         for (Object key : mapkey) {
             try  {
                 startTime = startTimeList.get(idx);
-                nextStartTime = startTimeList.get(idx + 1);
+                nextStartTime = endTimeList.get(idx);
             } catch (IndexOutOfBoundsException e) {
                 // 다음 소절이 존재하지 않는 경우
                 //

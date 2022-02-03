@@ -8,11 +8,11 @@ import lombok.Data;
 @Data
 public class UserMusicDto {
     public String start_time;
-    public ArrayList<String> note;
+    public ArrayList<NoteDto> note;
     public String score;
 
     @Builder
-    public UserMusicDto(String start_time, ArrayList<String> note, String score){
+    public UserMusicDto(String start_time, ArrayList<NoteDto> note, String score){
         this.start_time = start_time;
         this.note = note;
         this.score = score;

@@ -330,10 +330,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addDataToFireStore(Object[] mapkey) {
+        Log.v("list", startTimeList.get(0).toString() + startTimeList.get(1) + startTimeList.get(2));
         // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
         CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
 
-        ArrayList<String> noteList = new ArrayList<>();
+        ArrayList<NoteDto> noteList = new ArrayList<>();
 
         int idx = 0;
         Double startTime = 0.0;
@@ -353,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
             if(startTimeList.get(0) <= Double.parseDouble(key.toString())) {
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     // 다음 소절 전까지 noteList에 note 담음
-                    noteList.add(map.get(key));
+                    noteList.add(new NoteDto(String.valueOf(key), map.get(key)));
 
                 } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
                     UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(startTime), noteList, "null");
@@ -368,7 +369,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add
                     noteList = new ArrayList<>();
-                    noteList.add(map.get(key));
+                    noteList.add(new NoteDto(String.valueOf(key), map.get(key)));
                 }
             }
 

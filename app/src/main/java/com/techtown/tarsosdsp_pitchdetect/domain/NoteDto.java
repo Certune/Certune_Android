@@ -17,4 +17,10 @@ public class NoteDto {
         this.note = note;
     }
 
+    @Builder
+    public NoteDto(String start_time, String note) {
+        this.start_time = start_time;
+        this.note = note;
+    }
+
 }

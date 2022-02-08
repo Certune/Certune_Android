@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<MusicDto> musicInfoList = new ArrayList<>();
 
     Integer startTimeIndex = 0;
+
+    // 곡의 소절별 시작 시간을 담은 ArrayList
+    ArrayList<Double> endTimeList = new ArrayList<>();
+    Integer endTimeIndex = 0;
 
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
@@ -121,8 +126,9 @@ public class MainActivity extends AppCompatActivity {
                                     String.valueOf(map.get("lyrics")),
                                     noteDtoArrayList
                             );
-                            // ArrayList에 소절별 시작 시간을 담기
+                            // ArrayList에 소절별 시작 시간과 끝 시간 담기
                             startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
+                            endTimeList.add(Double.parseDouble(musicDto.getEnd_time()));
                             // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
                             musicInfoList.add(musicDto);
 
@@ -360,16 +366,18 @@ public class MainActivity extends AppCompatActivity {
         for (Object key : mapkey) {
             try  {
                 startTime = startTimeList.get(idx);
-                nextStartTime = startTimeList.get(idx + 1);
+                nextStartTime = endTimeList.get(idx);
             } catch (IndexOutOfBoundsException e) {
                 // 다음 소절이 존재하지 않는 경우
-                nextStartTime = 1000000000.0;
+                //
+                nextStartTime = 50.0;
             };
 
             // 소절이 시작한 뒤 입력된 음성만 처리
             if(startTimeList.get(0) <= Double.parseDouble(key.toString())) {
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     // 다음 소절 전까지 noteList에 note 담음
+                    noteList.add(new NoteDto(String.valueOf(key), map.get(key)));
                     noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
 
                 } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
@@ -381,9 +389,11 @@ public class MainActivity extends AppCompatActivity {
 
                     // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add
                     noteList = new ArrayList<>();
+                    noteList.add(new NoteDto(String.valueOf(key), map.get(key)));
                     noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
                 }
             }
+
 
         }
 
@@ -392,13 +402,13 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Log.i("TAG", "success");
+                        Log.v("TAG", "success");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i("TAG", "failed");
+                        Log.v("TAG", "failed");
                     }
                 });
     }

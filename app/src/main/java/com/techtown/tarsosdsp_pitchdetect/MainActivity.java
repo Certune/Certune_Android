@@ -377,7 +377,6 @@ public class MainActivity extends AppCompatActivity {
             if(startTimeList.get(0) <= Double.parseDouble(key.toString())) {
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     // 다음 소절 전까지 noteList에 note 담음
-                    noteList.add(new NoteDto(String.valueOf(key), map.get(key)));
                     noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
 
                 } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
@@ -389,7 +388,6 @@ public class MainActivity extends AppCompatActivity {
 
                     // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add
                     noteList = new ArrayList<>();
-                    noteList.add(new NoteDto(String.valueOf(key), map.get(key)));
                     noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
                 }
             }

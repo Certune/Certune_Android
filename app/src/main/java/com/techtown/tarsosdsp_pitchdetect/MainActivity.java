@@ -136,8 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 NoteDto noteDtoTest = musicDto.getNotes().get(0);
                             }
-                        } catch (NullPointerException e) {
-                            Log.v("NULL POINT ERROR", "not enough records for calculating");
+                        } catch (Exception e) {
+                            Log.v("ERROR", "not enough records for calculating");
                         }
                     }
                 }
@@ -470,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
                                 userMusicInfoList.add(musicDto);
                             }
                             calcScore(userMusicInfoList);
-                        } catch (NullPointerException e) {
+                        } catch (Exception e) {
                             Log.v("ERROR", "not enough records for calculating");
                         }
                     }

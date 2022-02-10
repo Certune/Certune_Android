@@ -106,37 +106,39 @@ public class MainActivity extends AppCompatActivity {
         database.document("song1/sentence").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        List list = (List) Objects.requireNonNull(document.getData()).get("sentences");
-                        for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
-                            HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
-                            ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
-                            ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
-                            assert arrayMap != null;
-                            for (HashMap<String, Object> notemap : arrayMap) {
-                                NoteDto noteDto = new NoteDto(
-                                        String.valueOf(notemap.get("start_time")),
-                                        String.valueOf(notemap.get("end_time")),
-                                        String.valueOf(notemap.get("note"))
+                        try {
+                            List list = (List) Objects.requireNonNull(document.getData()).get("sentences");
+                            for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
+                                HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
+                                ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+                                ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
+                                assert arrayMap != null;
+                                for (HashMap<String, Object> notemap : arrayMap) {
+                                    NoteDto noteDto = new NoteDto(
+                                            String.valueOf(notemap.get("start_time")),
+                                            String.valueOf(notemap.get("end_time")),
+                                            String.valueOf(notemap.get("note"))
+                                    );
+                                    noteDtoArrayList.add(noteDto);
+                                }
+
+                                MusicDto musicDto = new MusicDto(
+                                        String.valueOf(map.get("start_time")),
+                                        String.valueOf(map.get("end_time")),
+                                        String.valueOf(map.get("lyrics")),
+                                        noteDtoArrayList
                                 );
-                                noteDtoArrayList.add(noteDto);
+                                // ArrayList에 소절별 시작 시간과 끝 시간 담기
+                                startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
+                                endTimeList.add(Double.parseDouble(musicDto.getEnd_time()));
+                                // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
+                                musicInfoList.add(musicDto);
+
+                                NoteDto noteDtoTest = musicDto.getNotes().get(0);
                             }
-
-                            MusicDto musicDto = new MusicDto(
-                                    String.valueOf(map.get("start_time")),
-                                    String.valueOf(map.get("end_time")),
-                                    String.valueOf(map.get("lyrics")),
-                                    noteDtoArrayList
-                            );
-                            // ArrayList에 소절별 시작 시간과 끝 시간 담기
-                            startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
-                            endTimeList.add(Double.parseDouble(musicDto.getEnd_time()));
-                            // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
-                            musicInfoList.add(musicDto);
-
-                            NoteDto noteDtoTest = musicDto.getNotes().get(0);
+                        } catch (NullPointerException e) {
+                            Log.v("NULL POINT ERROR", "not enough records for calculating");
                         }
-                    } else {
-                        // 실패
                     }
                 }
         );

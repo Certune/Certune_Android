@@ -1,9 +1,6 @@
 package com.techtown.tarsosdsp_pitchdetect.domain;
 
-import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
-
 import java.util.ArrayList;
-import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +21,26 @@ public class MusicDto {
         this.lyrics = lyrics;
         this.notes = notes;
     }
+    @Builder
+    public MusicDto(String start_time,ArrayList<NoteDto> notes){
+        this.start_time=start_time;
+        this.notes=notes;
+    }
 
+
+    public String getStart_time() {
+        return start_time;
+    }
+
+    public String getLyrics() {
+        return lyrics;
+    }
+
+    public String getEnd_time() {
+        return end_time;
+    }
+
+    public ArrayList<NoteDto> getNotes() {
+        return notes;
+    }
 }

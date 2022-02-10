@@ -46,7 +46,8 @@ public class ProcessNoteRange {
             String[] noteRangeList = {"A#4", "B4", "C5"};
             return new ArrayList<>(Arrays.asList(noteRangeList));
         } else {
-            return null;
+            String[] noteRangeList = {"COM", "GONG", "WOW"};
+            return new ArrayList<>(Arrays.asList(noteRangeList));
         }
 
     }

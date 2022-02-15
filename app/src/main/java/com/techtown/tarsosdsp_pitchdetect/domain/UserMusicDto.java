@@ -19,8 +19,7 @@ public class UserMusicDto {
         this.notes = notes;
         this.score = score;
     }
-
-
+    
     public ArrayList<UserNoteDto> getNote() {
         return  notes;
     }

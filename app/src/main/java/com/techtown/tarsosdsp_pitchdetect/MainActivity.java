@@ -1,5 +1,8 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import static com.techtown.tarsosdsp_pitchdetect.ProcessNoteRange.processNoteRange;
+import static com.techtown.tarsosdsp_pitchdetect.ProcessTimeRange.processTimeRange;
+
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -24,7 +27,7 @@ import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
-
+import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -58,7 +60,14 @@ public class MainActivity extends AppCompatActivity {
 
     // 곡의 소절별 시작 시간을 담은 ArrayList
     ArrayList<Double> startTimeList = new ArrayList<>();
+    // 곡의 모든 정보를 담은 ArrayList
+    ArrayList<MusicDto> musicInfoList = new ArrayList<>();
+
     Integer startTimeIndex = 0;
+
+    // 곡의 소절별 시작 시간을 담은 ArrayList
+    ArrayList<Double> endTimeList = new ArrayList<>();
+    Integer endTimeIndex = 0;
 
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
@@ -328,42 +337,40 @@ public class MainActivity extends AppCompatActivity {
         // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
         CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
 
-        ArrayList<String> noteList = new ArrayList<>();
+        ArrayList<UserNoteDto> noteList = new ArrayList<>();
 
         int idx = 0;
         Double startTime = 0.0;
         Double nextStartTime = 0.0;
 
-        Map<String, UserMusicDto> userMusicList = new HashMap<>();
+        ArrayList<UserMusicDto> sentenceList = new ArrayList<>();
+        Map<String, ArrayList<UserMusicDto>> userMusicList = new HashMap<>();
         for (Object key : mapkey) {
             try  {
                 startTime = startTimeList.get(idx);
-                nextStartTime = startTimeList.get(idx + 1);
+                nextStartTime = endTimeList.get(idx);
             } catch (IndexOutOfBoundsException e) {
                 // 다음 소절이 존재하지 않는 경우
-                nextStartTime = 1000000000.0;
+                //
+                nextStartTime = 50.0;
             };
 
             // 소절이 시작한 뒤 입력된 음성만 처리
             if(startTimeList.get(0) <= Double.parseDouble(key.toString())) {
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     // 다음 소절 전까지 noteList에 note 담음
-                    noteList.add(map.get(key));
+                    noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
 
                 } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
                     UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(startTime), noteList, "null");
+                    sentenceList.add(userMusicDto);
 
-                    // userMusicList에 idx, userMusicDto 넣기
-                    if (idx >= 0 && idx <= 9) { // additional sorting
-                        userMusicList.put("0" + idx, userMusicDto);
-                    } else {
-                        userMusicList.put(String.valueOf(idx), userMusicDto);
-                    }
+                    userMusicList.put("sentence", sentenceList);
                     idx++;
 
                     // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add
                     noteList = new ArrayList<>();
-                    noteList.add(map.get(key));
+                    noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
                 }
             }
 
@@ -385,8 +392,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
-    public void addWAVToFireStorage(){
+    public void addWAVToFireStorage() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
 
         StorageReference filepath = mStorage.child("Audio").child(filename);
@@ -398,4 +404,152 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    //userdb에서 시작시간과 note 가져온 리스트
+    public ArrayList<UserMusicDto> getUserMusicInfo(){
+        ArrayList<UserMusicDto> userMusicInfoList = new ArrayList<>();
+        // TODO : song 이름 변수로 넣어줘야 함
+        database.document("user1/song0").get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        List list = (List) document.getData().get("sentence");
+                        for (int i = 0; i < list.size(); i++) {
+                            HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
+                            ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+                            assert arrayMap != null;
+                            ArrayList<UserNoteDto> userMusicDtoArrayList = new ArrayList<>();
+                            for (HashMap<String, Object> notemap : arrayMap){
+                                UserNoteDto userNoteDto = new UserNoteDto(
+                                        String.valueOf(notemap.get("start_time")),
+                                        String.valueOf(notemap.get("note"))
+                                );
+                                userMusicDtoArrayList.add(userNoteDto);
+                            }
+
+                            UserMusicDto musicDto = new UserMusicDto(
+                                    String.valueOf(map.get("start_time")),
+                                    userMusicDtoArrayList,
+                                    null
+                            );
+                            userMusicInfoList.add(musicDto);
+                            Log.i("GET FROM DB", musicDto.getStart_time()+musicDto.getNotes());
+                        }
+                    } else {
+                        // 실패
+                    }
+                }
+        );
+        return userMusicInfoList;
+    }
+
+    //songdb에서 시작시간과 note Arraylist 가져온 리스트
+    public ArrayList<MusicDto> getMusicInfo() {
+
+
+        ArrayList<MusicDto> MusicInfoList = new ArrayList<>();
+
+        database.document("song1/sentence").get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        List list = (List) document.getData().get("sentences");
+                        for (int i = 0; i < list.size(); i++) {
+                            HashMap map = (HashMap) list.get(i);
+
+                            MusicDto musicDto = new MusicDto(
+                                    Objects.requireNonNull(map.get("start_time")).toString(),
+                                    (ArrayList<NoteDto>) map.get("notes")
+                            );
+
+                            //MusicInfoList에 소절별 시작시간과 노트 추가
+                            MusicInfoList.add(musicDto);
+
+                        }
+                    } else {
+
+                    }
+
+                }
+        );
+        return MusicInfoList;
+    }
+
+
+    //박자 계산- 소절 -> note받아와서 idx=0인 note의 시간과 비교
+    public void calRhythm() {
+
+
+        ArrayList<UserMusicDto> userMusicInfoList = getUserMusicInfo(); // 사용자 음악 정보
+        Double sentenceTime; // 한 소절의 지속 시간
+        Double userSentenceTime; // 유저가 부른 소절의 일치 시간
+        int idx = 0;
+
+        int total_rhythm = 0; // 곡 전체 노트 개수
+        int sentence_rhythm; //소절 별 노트 개수
+        int correct_rhythm_sum = 0; // 맞은 노트 개수 전체 합
+        ArrayList<String> timeLenList = null; //시작시간 허용 범위
+
+        for (MusicDto musicinfo : musicInfoList) { // [songDB -> 소절]
+            sentenceTime = Double.parseDouble(musicinfo.getEnd_time()) - Double.parseDouble(musicinfo.getStart_time());
+            Log.v("SENTENCE ALL TIME", String.valueOf(sentenceTime));
+            userSentenceTime = sentenceTime;
+            ArrayList<NoteDto> musicNoteDtos = musicinfo.getNotes(); // 소절의 note 정보
+            ArrayList<Double> startTimeList = new ArrayList<>();
+            ArrayList<Double> endTimeList = new ArrayList<>();
+            ArrayList<String> noteList = new ArrayList<>();
+
+
+            // songDB에 있는 noteDto의 정보를 담기
+            for (NoteDto musicNote : musicNoteDtos) { // [songDB -> NOTE 정보]
+                Log.i("songDB note info", musicNote.getStart_time()+"/"+musicNote.getEnd_time()+"/"+musicNote.getNote());
+
+                startTimeList.add(Double.parseDouble(musicNote.getStart_time()));
+                endTimeList.add(Double.parseDouble(musicNote.getEnd_time()));
+                noteList.add(musicNote.getNote());
+                timeLenList=processTimeRange(musicNote.getStart_time());
+
+            }
+            //전체 노래 리스트에서 노트개수
+            total_rhythm = noteList.size();
+            Log.v("TAG",String.valueOf(total_rhythm));
+
+            for (UserMusicDto userMusicDto : userMusicInfoList) { // [userDB -> 소절]
+                ArrayList<NoteDto> userNotes = userMusicDto.getNotes();
+
+                Double startTime = startTimeList.get(idx);
+                Double endTime = endTimeList.get(idx);
+
+                for (NoteDto userNoteDto : userMusicDto.getNotes()) {
+                    // 소절이 시작한 뒤 입력된 음성만 처리
+                    Double noteStartTime = Double.parseDouble(userMusicDto.getStart_time());
+                    ArrayList<String> noteLenList = processNoteRange(MusicDto.getNote());
+
+                    sentence_rhythm = noteList.size();//한 소절의 노트 개수
+                    //박자 스코어 계산: 노트 별 시작시간이 같은지 비교
+                    if ((startTimeList.get(idx) <= noteStartTime && endTimeList.get(idx) >= noteStartTime)) {
+                        if (timeLenList.contains(noteStartTime)) { // 시작 시간 내에 있고 일정 범위에 포함되는 동안 소절 내 노트별 시작시간이 같으면
+                            continue;
+                        } else {
+                            sentence_rhythm--;
+
+                        }
+
+                    }
+                    correct_rhythm_sum += sentence_rhythm;
+
+                }
+
+            }
+            idx++;
+
+            int score_rhythm = correct_rhythm_sum / total_rhythm * 100;
+            Log.v("SCORE_RHYTHM CHECK", String.valueOf(score_rhythm));
+
+        }
+    }
 }
+
+
+
+
+
+

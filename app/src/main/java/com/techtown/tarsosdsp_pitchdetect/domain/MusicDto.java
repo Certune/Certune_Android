@@ -3,12 +3,13 @@ package com.techtown.tarsosdsp_pitchdetect.domain;
 import java.util.ArrayList;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter @Setter
+@Builder
 public class MusicDto {
 
-    private ArrayList<String> sentences;
     private String start_time;
     private String end_time;
     private String lyrics;

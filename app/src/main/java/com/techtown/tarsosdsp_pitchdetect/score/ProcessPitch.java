@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.score;
 
 public class ProcessPitch {
     // pitch -> key

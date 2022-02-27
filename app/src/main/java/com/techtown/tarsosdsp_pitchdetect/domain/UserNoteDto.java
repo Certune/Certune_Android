@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-@Builder
 public class UserNoteDto {
 
     private String start_time;

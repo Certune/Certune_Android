@@ -1,6 +1,7 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
 import static com.techtown.tarsosdsp_pitchdetect.ProcessNoteRange.processNoteRange;
+import static com.techtown.tarsosdsp_pitchdetect.ProcessTimeRange.processTimeRange;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -20,7 +21,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.auth.User;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,7 +54,6 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
-
 
 public class MainActivity extends AppCompatActivity {
     Map<Double, String> map; // {key : octav}
@@ -106,37 +106,39 @@ public class MainActivity extends AppCompatActivity {
         database.document("song1/sentence").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        List list = (List) Objects.requireNonNull(document.getData()).get("sentences");
-                        for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
-                            HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
-                            ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
-                            ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
-                            assert arrayMap != null;
-                            for (HashMap<String, Object> notemap : arrayMap){
-                                NoteDto noteDto = new NoteDto(
-                                        String.valueOf(notemap.get("start_time")),
-                                        String.valueOf(notemap.get("end_time")),
-                                        String.valueOf(notemap.get("note"))
+                        try {
+                            List list = (List) Objects.requireNonNull(document.getData()).get("sentences");
+                            for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
+                                HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
+                                ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+                                ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
+                                assert arrayMap != null;
+                                for (HashMap<String, Object> notemap : arrayMap) {
+                                    NoteDto noteDto = new NoteDto(
+                                            String.valueOf(notemap.get("start_time")),
+                                            String.valueOf(notemap.get("end_time")),
+                                            String.valueOf(notemap.get("note"))
+                                    );
+                                    noteDtoArrayList.add(noteDto);
+                                }
+
+                                MusicDto musicDto = new MusicDto(
+                                        String.valueOf(map.get("start_time")),
+                                        String.valueOf(map.get("end_time")),
+                                        String.valueOf(map.get("lyrics")),
+                                        noteDtoArrayList
                                 );
-                                noteDtoArrayList.add(noteDto);
+                                // ArrayList에 소절별 시작 시간과 끝 시간 담기
+                                startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
+                                endTimeList.add(Double.parseDouble(musicDto.getEnd_time()));
+                                // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
+                                musicInfoList.add(musicDto);
+
+                                NoteDto noteDtoTest = musicDto.getNotes().get(0);
                             }
-
-                            MusicDto musicDto = new MusicDto(
-                                    String.valueOf(map.get("start_time")),
-                                    String.valueOf(map.get("end_time")),
-                                    String.valueOf(map.get("lyrics")),
-                                    noteDtoArrayList
-                            );
-                            // ArrayList에 소절별 시작 시간과 끝 시간 담기
-                            startTimeList.add(Double.parseDouble(musicDto.getStart_time()));
-                            endTimeList.add(Double.parseDouble(musicDto.getEnd_time()));
-                            // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
-                            musicInfoList.add(musicDto);
-
-                            NoteDto noteDtoTest = musicDto.getNotes().get(0);
+                        } catch (Exception e) {
+                            Log.v("ERROR", "not enough records for calculating");
                         }
-                    } else {
-                        // 실패
                     }
                 }
         );
@@ -263,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String prevOctave;
+
     public void recordAudio() {
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
@@ -330,10 +333,8 @@ public class MainActivity extends AppCompatActivity {
         // TODO : DB로 wav file 보내기
         addWAVToFireStorage();
 
-        // DB로 값 보내기
+        // DB로 값 보내기 + 점수 산출
         addDataToFireStore(mapkey);
-
-        // TODO: DB에서 값 받아서 비교 -> 점수산출
 
         releaseDispatcher();
     }
@@ -367,18 +368,19 @@ public class MainActivity extends AppCompatActivity {
 
         boolean flag = false;
         for (Object key : mapkey) {
-            try  {
+            try {
                 startTime = startTimeList.get(idx);
                 nextStartTime = endTimeList.get(idx);
             } catch (IndexOutOfBoundsException e) {
                 // 다음 소절이 존재하지 않는 경우
                 //
                 nextStartTime = 50.0;
-            };
+            }
+            ;
 
 
             // 소절이 시작한 뒤 입력된 음성만 처리
-            if(startTimeList.get(0) <= Double.parseDouble(key.toString())) {
+            if (startTimeList.get(0) <= Double.parseDouble(key.toString())) {
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     flag = false;
                     // 다음 소절 전까지 noteList에 note 담음
@@ -401,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        if(flag == false) {
+        if (!flag) {
             UserMusicDto userMusicDto = new UserMusicDto(String.valueOf(startTime), noteList, "null");
             sentenceList.add(userMusicDto);
 
@@ -425,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public void addWAVToFireStorage(){
+    public void addWAVToFireStorage() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
 
         StorageReference filepath = mStorage.child("Audio").child(filename);
@@ -438,13 +440,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getUserMusicInfo(){
+    public void getUserMusicInfo() {
         ArrayList<UserMusicDto> userMusicInfoList = new ArrayList<>();
         // TODO : song 이름 변수로 넣어줘야 함
         database.document("user1/song0").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        try{
+                        try {
                             List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
                             for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
                                 // start_time, score, note arraylist 있는 해시맵
@@ -453,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
                                 ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
                                 assert arrayMap != null;
                                 ArrayList<UserNoteDto> userMusicDtoArrayList = new ArrayList<>();
-                                for (HashMap<String, Object> notemap : arrayMap){
+                                for (HashMap<String, Object> notemap : arrayMap) {
                                     UserNoteDto userNoteDto = new UserNoteDto(
                                             String.valueOf(notemap.get("start_time")),
                                             String.valueOf(notemap.get("note"))
@@ -466,10 +468,10 @@ public class MainActivity extends AppCompatActivity {
                                         null
                                 );
                                 userMusicInfoList.add(musicDto);
-                                Log.i("GET FROM DB", musicDto.getStart_time()+musicDto.getNotes());
                             }
-                            calcScore(userMusicInfoList);
-                        } catch (NullPointerException e) {
+                            // calcScore(userMusicInfoList);
+                            calcRhythm(userMusicInfoList);
+                        } catch (Exception e) {
                             Log.v("ERROR", "not enough records for calculating");
                         }
                     }
@@ -477,85 +479,182 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public void calcScore(ArrayList<UserMusicDto> userMusicInfoList){
-        // 나중에 지욱
-        ArrayList<String> scoreList = new ArrayList<>();
+    public void calcRhythm(ArrayList<UserMusicDto> userMusicInfoList) {
 
-        Map<String, ArrayList<UserMusicDto>> userMusicList = new HashMap<>();
-        Double sentenceTime = null; // 한 소절의 지속 시간
-        Double userSentenceTime = null; // 유저가 부른 소절의 일치 시간
         int sentenceIdx = 0;
         int noteIdx = 0;
 
-        ArrayList<Double> startTimeList = new ArrayList<>();
-        ArrayList<Double> endTimeList = new ArrayList<>();
-        ArrayList<String> noteList = new ArrayList<>();
+        // [song DB 기본 설정]
+        ArrayList<Double> startTimeList = new ArrayList<>();    // 소절의 시작 시간
+        ArrayList<Double> endTimeList = new ArrayList<>();      // 소절의 종료 시간
+        ArrayList<ArrayList<NoteDto>> noteList = new ArrayList<>(); // 소절의 note 정보
+        ArrayList<Integer> noteNumList = new ArrayList<>(); // 소절 당 노트 개수
+
+        // [userDB & 점수 산출 기본 설정]
+        int songTotalNote = 0;  // 노래 전체 노트 개수
+        int userSentenceNote = 0;  // 일치한 소절 노트 개수
+        int songSentenceNote = 0;   // 노래 소절별 노트 개수
+
+        // [songDB] : 소절별 기본 정보 가져오기
+        for (MusicDto musicinfo : musicInfoList) { // [songDB -> 소절]
+            ArrayList<NoteDto> musicNoteDtos = musicinfo.getNotes(); // 소절의 note 정보
+
+            startTimeList.add(Double.parseDouble(musicinfo.getStart_time()));
+            endTimeList.add(Double.parseDouble(musicinfo.getEnd_time()));
+            noteList.add(musicNoteDtos);
+            noteNumList.add(musicNoteDtos.size());
+
+            songTotalNote += musicNoteDtos.size();
+        }
+
+        // [userDB] 소절
+        for (UserMusicDto userMusicDto : userMusicInfoList) {
+            ArrayList<UserNoteDto> userNotes = userMusicDto.getNotes(); // 사용자의 소절 note 정보
+            songSentenceNote = noteNumList.get(sentenceIdx); // 소절별 note 개수
+            userSentenceNote = 0;
+            Log.v("USER SENTENCE NOTE", String.valueOf(songSentenceNote));
+
+            Double sentenceStartTime = startTimeList.get(sentenceIdx); // [song] 소절 시작 시간
+            Double sentenceEndTime = endTimeList.get(sentenceIdx); // [song] 소절 종료 시간
+            ArrayList<NoteDto> sentenceNoteList = noteList.get(sentenceIdx);
+
+            Double userNoteStartTime = sentenceStartTime; // note가 시작하는 시간(지속 update)
+            Double noteEndTime = Double.parseDouble(sentenceNoteList.get(noteIdx).getEnd_time()); // songDB에 있는 note array
+
+            // [userDB] 노트
+            boolean isFirst = false;
+            for (UserNoteDto userNoteDto : userNotes) {
+                userNoteStartTime = Double.parseDouble(userNoteDto.getStart_time());
+                // 소절 범위 내에 있고
+                if (sentenceStartTime <= userNoteStartTime && sentenceEndTime >= userNoteStartTime) {
+                    if (isFirst){
+                        continue;
+                    }
+                    if (noteEndTime <= userNoteStartTime){
+                        noteIdx++;
+                        noteEndTime = Double.parseDouble(sentenceNoteList.get(noteIdx).getEnd_time());
+                        isFirst = false;
+                    }
+                    ArrayList<String> timeRangeList = processTimeRange(sentenceNoteList.get(noteIdx).getStart_time());
+                    //Log.v("허용시간범위",timeRangeList.toString());
+                    if (timeRangeList.contains(userNoteDto.getStart_time())) {// 시작 시간 내에 있고 일정 범위에 포함되지 않으면
+                        userSentenceNote++;
+                        isFirst = true;
+                    }
+                }
+            }
+            Log.v("USER TOTAL NOTE", String.valueOf(userSentenceNote));
+
+            sentenceIdx++;
+            noteIdx = 0;
+
+            //  songSentenceNote = noteNumList.get(sentenceIdx); // 소절별 전체 note 개수
+            Double sentenceScore = (double) ((userSentenceNote / songSentenceNote) * 100);
+            DecimalFormat df = new DecimalFormat("0.00");
+            String formatScore = df.format(sentenceScore);
+            userMusicDto.setScore(formatScore);
+            Log.v("sentenceScore", String.valueOf(sentenceScore));
+        }
+
+        Map<String, ArrayList<UserMusicDto>> userMusicList = new HashMap<>();
+        userMusicList.put("sentence", userMusicInfoList);
+
+        database.document("user1/song456")
+                .set(userMusicList)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("박자 점수 TAG", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("박자 점수 TAG", "failed");
+                    }
+                });
+    }
+
+    public void calcScore(ArrayList<UserMusicDto> userMusicInfoList) {
+
+        int sentenceIdx = 0;
+        int noteIdx = 0;
+
+        ArrayList<Double> startTimeList = new ArrayList<>(); // 소절의 시작 시간
+        ArrayList<Double> endTimeList = new ArrayList<>(); // 소절의 종료 시간
+        ArrayList<ArrayList<NoteDto>> noteList = new ArrayList<>(); // 소절의 전체 지속 시간
+        ArrayList<Double> sentenceTimeList = new ArrayList<>(); // 소절의 전체 시간
 
         // songDB에서 소절별 NOTE 정보 받아오기
         for (MusicDto musicinfo : musicInfoList) { // [songDB -> 소절]
-            sentenceTime = Double.parseDouble(musicinfo.getEnd_time()) - Double.parseDouble(musicinfo.getStart_time());
-            Log.v("SENTENCE ALL TIME", String.valueOf(sentenceTime));
-            userSentenceTime = sentenceTime;
+            Double sentenceTime = Double.parseDouble(musicinfo.getEnd_time()) - Double.parseDouble(musicinfo.getStart_time());
             ArrayList<NoteDto> musicNoteDtos = musicinfo.getNotes(); // 소절의 note 정보
 
-            // songDB에 있는 noteDto의 정보를 담기
-            for (NoteDto musicNote : musicNoteDtos) { // [songDB -> NOTE 정보]
-                Log.i("songDB note info", musicNote.getStart_time() + "/" + musicNote.getEnd_time() + "/" + musicNote.getNote());
-                startTimeList.add(Double.parseDouble(musicNote.getStart_time()));
-                endTimeList.add(Double.parseDouble(musicNote.getEnd_time()));
-                noteList.add(musicNote.getNote());
-            }
+            startTimeList.add(Double.parseDouble(musicinfo.getStart_time()));
+            endTimeList.add(Double.parseDouble(musicinfo.getEnd_time()));
+            sentenceTimeList.add(sentenceTime);
+
+            noteList.add(musicNoteDtos);
         }
 
-        for (UserMusicDto userMusicDto : userMusicInfoList){ // [userDB -> 소절]
-            Log.i("WHY", "THIS IS NOT WORKING");
+        for (UserMusicDto userMusicDto : userMusicInfoList) { // [userDB -> 소절]
             ArrayList<UserNoteDto> userNotes = userMusicDto.getNotes();
 
-            Double sentenceStartTime = startTimeList.get(sentenceIdx);
-            Double sentenceEndTime = endTimeList.get(sentenceIdx);
+            Double sentenceStartTime = startTimeList.get(sentenceIdx); // [song] 소절 시작 시간
+            Double sentenceEndTime = endTimeList.get(sentenceIdx); // [song] 소절 종료 시간
+            Double sentenceTime = sentenceTimeList.get(sentenceIdx); // [song] 소절 지속 시간
+            ArrayList<NoteDto> sentenceNoteList = noteList.get(sentenceIdx);
 
-            Double noteStartTime = sentenceStartTime;
+            Double userNoteStartTime = sentenceStartTime; // note가 시작하는 시간(지속 update)
+            Double userSentenceTime = sentenceTime; // 사용자가 제대로 부른 시간
+            Double noteEndTime = Double.parseDouble(sentenceNoteList.get(noteIdx).getEnd_time()); // songDB에 있는 note array
+
             Boolean flag = false;
 
-            for (UserNoteDto userNoteDto : userMusicDto.getNotes()) {
-                if (flag){
-                    userSentenceTime -= Double.parseDouble(userNoteDto.getStart_time())-noteStartTime;
+            for (UserNoteDto userNoteDto : userNotes) {
+                if (flag) {
+                    userSentenceTime -= (Double.parseDouble(userNoteDto.getStart_time()) - userNoteStartTime);
                     flag = false;
                 }
-                // 소절이 시작한 뒤 입력된 음성만 처리
-                ArrayList<String> noteLenList = processNoteRange(userNoteDto.getNote());
-                if ((startTimeList.get(sentenceIdx) <= noteStartTime && endTimeList.get(sentenceIdx) >= noteStartTime)
-                        & noteLenList.contains(userNoteDto.getNote())) { // 시작 시간 내에 있고 일정 범위에 포함되는 경우
-                    continue;
+                userNoteStartTime = Double.parseDouble(userNoteDto.getStart_time());
+                // 소절 범위 내에 있고
+                if (sentenceStartTime <= userNoteStartTime && sentenceEndTime >= userNoteStartTime) {
+                    if (noteEndTime <= userNoteStartTime) {// 만약 기준 note의 시간이 지났다면 index update
+                        noteIdx++;
+                        noteEndTime = Double.parseDouble(sentenceNoteList.get(noteIdx).getEnd_time());
+                    }
+                    ArrayList<String> noteRangeList = processNoteRange(sentenceNoteList.get(noteIdx).getNote());
+                    if (!noteRangeList.contains(userNoteDto.getNote())) // 시작 시간 내에 있고 일정 범위에 포함되지 않으면
+                        flag = true;
                 }
-                flag = true;
-                noteStartTime = Double.parseDouble(userNoteDto.getStart_time());
             }
-            if (flag){ // 소절이 끝났을 떄 처리
-                userSentenceTime -= sentenceEndTime-noteStartTime;
+            if (flag) { // 소절이 끝났을 떄 처리
+                userSentenceTime -= (sentenceEndTime - userNoteStartTime);
             }
             sentenceIdx++;
-
-            Double score = (userSentenceTime/sentenceTime)*100;
-            Log.v("SCORE CHECK", String.valueOf(score));
-            userMusicDto.setScore(String.valueOf(score));
+            noteIdx = 0;
+            Double score = (userSentenceTime / sentenceTime) * 100;
+            DecimalFormat df = new DecimalFormat("0.00");
+            String formatScore = df.format(score);
+            userMusicDto.setScore(formatScore);
         }
 
+        Map<String, ArrayList<UserMusicDto>> userMusicList = new HashMap<>();
+        userMusicList.put("sentence", userMusicInfoList);
 
-//         소절 점수 db에 올리기(수정 필요)
-//        database.document("user1/song123")
-//                .set(userMusicInfoList)
-//                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void unused) {
-//                        Log.v("TAG", "success");
-//                    }
-//                })
-//                .addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//                        Log.v("TAG", "failed");
-//                    }
-//                });
+        database.document("user1/song0")
+                .set(userMusicList)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("TAG", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("TAG", "failed");
+                    }
+                });
     }
 }

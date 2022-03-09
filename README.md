@@ -83,7 +83,7 @@ https://youtu.be/lDTMiVGP58Y
    4. 녹음된 내용을 듣고 다시 연습
 
 ## 🎵 프로젝트 아키텍쳐
-![image](https://user-images.githubusercontent.com/68282057/155167390-45f3cbf2-660e-4323-a6eb-a44945366dd1.png)
+![프로젝트 아키텍쳐](https://user-images.githubusercontent.com/68282057/157468005-21a1601e-8030-46ff-8752-e46a8c257343.PNG)
 
 
 ## 🎵 To-Do List

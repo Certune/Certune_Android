@@ -8,14 +8,16 @@ import lombok.Setter;
 
 @Getter @Setter
 public class UserMusicDto {
-    public String start_time;
+    public String startTime;
     public ArrayList<UserNoteDto> notes;
-    public String score;
+    public String noteScore;
+    public String rhythmScore;
 
     @Builder
-    public UserMusicDto(String start_time, ArrayList<UserNoteDto> notes, String score) {
-        this.start_time = start_time;
+    public UserMusicDto(String startTime, ArrayList<UserNoteDto> notes, String noteScore, String rhythmScore) {
+        this.startTime = startTime;
         this.notes = notes;
-        this.score = score;
+        this.noteScore = noteScore;
+        this.rhythmScore = rhythmScore;
     }
 }

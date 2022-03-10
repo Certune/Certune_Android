@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-@Builder
 public class UserNoteDto {
 
     private String start_time;
@@ -16,8 +15,8 @@ public class UserNoteDto {
         this.start_time = start_time;
         this.note = note;
     }
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> faaed0dd8ca1e32bd1fc20af72b34bca492196c6
+
+
+

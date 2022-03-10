@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-@Builder
 public class UserMusicDto {
     public String start_time;
     public ArrayList<UserNoteDto> notes;

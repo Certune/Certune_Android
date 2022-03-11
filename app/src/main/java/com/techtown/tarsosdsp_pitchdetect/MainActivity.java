@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -60,8 +62,14 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
-
 public class MainActivity extends AppCompatActivity {
+    // 로그인된 유저의 이름, 이메일, uid 정보
+    String userName;
+    String userEmail;
+    String uid;
+
+    private TextView displayName;
+
     Map<Double, String> map; // {key : octav}
     Map<Double, String> musicMap;
 
@@ -96,6 +104,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        displayName  = (TextView) findViewById(R.id.displayName);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // TODO: userEmail -> userName 으로 변경
+            displayName.setText(userEmail);
+            // Name, email address, and profile photo Url
+            userName = user.getDisplayName(); // 현재 null
+            userEmail = user.getEmail();
+
+            // Check if user's email is verified
+            boolean emailVerified = user.isEmailVerified();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getIdToken() instead.
+            uid = user.getUid();
+        }
 
         File sdCard = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
         file = new File(sdCard, filename);
@@ -488,7 +515,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 userMusicInfoList.add(musicDto);
                             }
-                            calcUserScore(userMusicInfoList, "강민지","신호등");
+                            // TODO : userName으로 변경해야 함
+                            calcUserScore(userMusicInfoList, userEmail,"신호등");
                         } catch (Exception e) {
                             Log.v("USERMUSICINFO ERROR", String.valueOf(e));
                             Log.v("USERMUSICINIFO ERROR", "not enough records for calculating");
@@ -630,5 +658,4 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
-
 }

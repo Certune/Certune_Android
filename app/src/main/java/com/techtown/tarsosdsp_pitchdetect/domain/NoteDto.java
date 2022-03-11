@@ -4,24 +4,17 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
-@Builder
+@Getter
 public class NoteDto {
 
-    private String start_time;
-    private String end_time;
+    private String startTime;
+    private String endTime;
     private String note;
 
     @Builder
-    public NoteDto(String start_time, String end_time, String note){
-        this.start_time = start_time;
-        this.end_time = end_time;
-        this.note = note;
-    }
-
-    @Builder
-    public NoteDto(String start_time, String note) {
-        this.start_time = start_time;
+    public NoteDto(String startTime, String endTime, String note){
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.note = note;
     }
 

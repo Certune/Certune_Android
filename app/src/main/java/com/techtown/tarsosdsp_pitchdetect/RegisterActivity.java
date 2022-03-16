@@ -4,9 +4,11 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -43,11 +45,16 @@ public class RegisterActivity extends AppCompatActivity {
         inputPassword = (EditText) findViewById(R.id.edittext_password);
         inputName = (EditText) findViewById(R.id.edittext_name);
 
+        inputEmail.setOnFocusChangeListener(editTextListener);
+        inputPassword.setOnFocusChangeListener(editTextListener);
+        inputName.setOnFocusChangeListener(editTextListener);
+
         userSex = "";
         femaleRadioBtn = (RadioButton) findViewById(R.id.radioBtn_female);
         maleRadioBtn = (RadioButton) findViewById(R.id.radioBtn_male);
         sexRadioGroup = (RadioGroup) findViewById(R.id.radioBtnGroup);
         sexRadioGroup.setOnCheckedChangeListener(sexRadioGroupButtonChangeListener);
+        sexRadioGroup.setOnFocusChangeListener(onFocusChangeListener);
 
         registerBtn = (Button) findViewById(R.id.registerBtn);
 
@@ -65,6 +72,17 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
     }
+
+    View.OnFocusChangeListener editTextListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if(!hasFocus){
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        }
+    };
+
     RadioGroup.OnCheckedChangeListener sexRadioGroupButtonChangeListener = new RadioGroup.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(RadioGroup radioGroup, @IdRes int i) {
@@ -72,6 +90,16 @@ public class RegisterActivity extends AppCompatActivity {
                 userSex = "female";
             } else if(i == R.id.radioBtn_male) {
                 userSex = "male";
+            }
+        }
+    };
+
+    View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus){
+                RadioButton radioButton = (RadioButton) v;
+                radioButton.setChecked(true);
             }
         }
     };

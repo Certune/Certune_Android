@@ -3,13 +3,14 @@ package com.techtown.tarsosdsp_pitchdetect;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,6 +35,7 @@ public class LogInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
 
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         // [START initialize_auth]
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -41,12 +43,21 @@ public class LogInActivity extends AppCompatActivity {
 
         inputEmail = (EditText) findViewById(R.id.edittext_email);
         inputPassword = (EditText) findViewById(R.id.edittext_password);
+
+        inputEmail.setOnFocusChangeListener(editTextListener);
+        inputPassword.setOnFocusChangeListener(editTextListener);
+
         loginBtn = (Button) findViewById(R.id.loginBtn);
         registerBtn = (Button) findViewById(R.id.registerBtn);
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                View focusedView = getCurrentFocus();
+                if (focusedView == null)
+                    focusedView = new View(null);
+                imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
+
                 if (!inputEmail.getText().toString().equals("") && !inputPassword.getText().toString().equals("")) {
                     // 이메일과 비밀번호가 공백이 아닌 경우
                     signIn(inputEmail.getText().toString(), inputPassword.getText().toString());
@@ -65,7 +76,18 @@ public class LogInActivity extends AppCompatActivity {
                 finish();
             }
         });
+
     }
+
+    View.OnFocusChangeListener editTextListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if(!hasFocus){
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
+        }
+    };
 
     private void signIn(String email, String password) {
         // [START sign_in_with_email]
@@ -92,9 +114,5 @@ public class LogInActivity extends AppCompatActivity {
                 });
         // [END sign_in_with_email]
     }
-
-
-
-
 
 }

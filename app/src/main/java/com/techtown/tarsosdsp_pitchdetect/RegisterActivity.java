@@ -92,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                        Map<String, Object> user = new HashMap<>();
+                        Map<String, String> user = new HashMap<>();
                         user.put("name", name);
                         user.put("sex", sex);
 

@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity {
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         // get music info from database
-        database.document("song1/sentence").get().addOnCompleteListener(task -> {
+        // TODO : SongName 전역변수 생성
+        database.document("songList/"+"신호등").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         try {
@@ -412,8 +413,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addDataToFireStore(Object[] mapkey) {
-        // TODO : 사용자 회원가입 시 COLLECTION 생성 / 해당 COLLECTION에 모든 정보 저장
-        CollectionReference userNote = database.collection("user1"); // 이건 회원가입 때 만들어야 함
+        CollectionReference userNote = database.collection(userName); // 이건 회원가입 때 만들어야 함
 
         ArrayList<UserNoteDto> noteList = new ArrayList<>();
 
@@ -477,7 +477,7 @@ public class MainActivity extends AppCompatActivity {
             userMusicList.put("sentence", sentenceList);
         }
 
-        database.document("user1/song0")
+        database.collection("User").document(userName).collection("userSongList").document("신호등")
                 .set(userMusicList)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -510,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
     public void getUserMusicInfo() {
         ArrayList<UserMusicDto> userMusicInfoList = new ArrayList<>();
         // TODO : song 이름 변수로 넣어줘야 함
-        database.document("user1/song0").get().addOnCompleteListener(task -> {
+        database.document(userName + "/" + "song0").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         try {
@@ -537,8 +537,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 userMusicInfoList.add(musicDto);
                             }
-                            // TODO : userName으로 변경해야 함
-                            calcUserScore(userMusicInfoList, userEmail,"신호등");
+                            calcUserScore(userMusicInfoList,"신호등");
                         } catch (Exception e) {
                             Log.v("USERMUSICINFO ERROR", String.valueOf(e));
                             Log.v("USERMUSICINIFO ERROR", "not enough records for calculating");
@@ -548,8 +547,8 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    // TODO : 전역 변수로 userName, songName 설정해야 함
-    public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList, String userName, String songName){
+    // TODO : 전역 변수로 songName 설정해야 함
+    public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList, String songName){
 
         int userTotalNoteNum = 0;
         double userTotalSentenceTime = 0;
@@ -634,7 +633,7 @@ public class MainActivity extends AppCompatActivity {
                 .rhythmScore(df.format(totalRhythmScore))
                 .build();
 
-        uploadUserScore(userName, songName, userSongInfoDto);
+        uploadUserScore(songName, userSongInfoDto);
 
     }
 
@@ -661,11 +660,11 @@ public class MainActivity extends AppCompatActivity {
         return songSentenceInfoList;
     }
 
-    private void uploadUserScore(String userName, String songName, UserSongInfoDto userSongInfoDto) {
+    private void uploadUserScore(String songName, UserSongInfoDto userSongInfoDto) {
         Map<String, UserSongInfoDto> userMusicList = new HashMap<>();
         userMusicList.put("sentence", userSongInfoDto);
 
-        database.document(userName+"/"+songName)
+        database.collection("User").document(userName).collection("userSongList").document("신호등")
                 .set(userMusicList)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    >
 
     <TextView
         android:id="@+id/idTextView"
@@ -57,7 +60,8 @@
         android:layout_marginBottom="184dp"
         android:text="로그인"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:focusableInTouchMode="true"/>
 
     <Button
         android:id="@+id/registerBtn"
@@ -67,7 +71,8 @@
         android:layout_marginBottom="184dp"
         android:text="회원가입"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/loginBtn" />
+        app:layout_constraintStart_toEndOf="@+id/loginBtn"
+        android:focusableInTouchMode="true"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

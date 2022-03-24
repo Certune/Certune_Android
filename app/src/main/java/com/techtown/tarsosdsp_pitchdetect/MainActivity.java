@@ -1,5 +1,6 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import static android.content.ContentValues.TAG;
 import static com.techtown.tarsosdsp_pitchdetect.score.CalcStartTimeRange.calcStartTimeRange;
 import static com.techtown.tarsosdsp_pitchdetect.score.ProcessNoteRange.processNoteRange;
 import static com.techtown.tarsosdsp_pitchdetect.score.ProcessTimeRange.processTimeRange;
@@ -17,11 +18,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -66,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     // 로그인된 유저의 이름, 이메일, uid 정보
     String userName;
     String userEmail;
+    String userSex;
     String uid;
 
     private TextView displayName;
@@ -98,15 +103,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        displayName  = (TextView) findViewById(R.id.displayName);
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // TODO: userEmail -> userName 으로 변경
-            displayName.setText(userEmail);
             // Name, email address, and profile photo Url
-            userName = user.getDisplayName(); // 현재 null
             userEmail = user.getEmail();
+
+            DocumentReference docRef = database.collection("User").document(userEmail);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            userName = (String) document.getData().get("name");
+                            userSex = (String) document.getData().get("sex");
+
+                            displayName  = (TextView) findViewById(R.id.displayName);
+                            displayName.setText(userName);
+                        } else {
+                            Log.d(TAG, "사용자 정보가 존재하지 않습니다.");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+
 
             // Check if user's email is verified
             boolean emailVerified = user.isEmailVerified();

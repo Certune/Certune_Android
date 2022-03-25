@@ -65,13 +65,16 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
+import lombok.SneakyThrows;
 
 public class MainActivity extends AppCompatActivity {
     // 로그인된 유저의 이름, 이메일, uid 정보
-    String userName;
+    String userName = "user@naver.com";
     String userEmail;
     String userSex;
     String uid;
+
+    String songUrl;
 
     private TextView displayName;
 
@@ -152,19 +155,19 @@ public class MainActivity extends AppCompatActivity {
 
         // get music info from database
         // TODO : SongName 전역변수 생성
-        database.document("songList/"+"신호등").get().addOnCompleteListener(task -> {
+        database.collection("Song").document("신호등").get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         try {
-                            List list = (List) Objects.requireNonNull(document.getData()).get("sentences");
+                            List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
                             startTimeList = new ArrayList<>();
                             endTimeList = new ArrayList<>();
                             musicTotalInfoList = new ArrayList<>();
                             for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
                                 HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
                                 ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+
                                 ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
-                                assert arrayMap != null;
                                 for (HashMap<String, Object> notemap : arrayMap) {
                                     NoteDto noteDto = new NoteDto(
                                             String.valueOf(notemap.get("start_time")),
@@ -195,11 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
-        // mediaplayer setting
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        fetchAudioUrlFromFirebase();
-
         pitchTextView = findViewById(R.id.pitchTextView);
         recordButton = findViewById(R.id.recordButton);
         playButton = findViewById(R.id.playButton);
@@ -229,37 +227,20 @@ public class MainActivity extends AppCompatActivity {
 
     // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
-        final FirebaseStorage storage = FirebaseStorage.getInstance();
-        // Create a storage reference from our app
-        StorageReference storageRef = storage.getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/certune-73ce6.appspot.com/o/%EC%8B%A0%ED%98%B8%EB%93%B1_%EC%9D%B4%EB%AC%B4%EC%A7%84.mp3?alt=media&token=4bbb1db6-22ff-4823-b4fc-af14696504bd");
-        storageRef.getDownloadUrl()
-                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        try {
-                            // Download url of file
-                            final String url = uri.toString();
-                            mediaPlayer.setDataSource(url);
-                            // wait for media player to get prepare
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    mp.start();
-                                }
-                            });
-                            mediaPlayer.prepareAsync();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("음악 백그라운드 재생 실패", e.getMessage());
-                    }
-                });
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        StorageReference filepath = mStorage.child("songs").child("Traffic_Light.mp3");
+        Log.v("FILEPATH", filepath.toString());
+        Log.v("download url", filepath.getDownloadUrl().toString());
+        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                try {
+                    mediaPlayer.setDataSource(uri.toString());
+                } catch (Exception e){
+                    Log.v("FETCH MUSIC", e.getMessage());
+                }
+            }
+        });
 
     }
 
@@ -313,8 +294,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String prevOctave;
-
     public void recordAudio() {
+        mediaPlayer = new MediaPlayer();
+        fetchAudioUrlFromFirebase();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mp.start();
+            }
+        });
+
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.nanoTime(); // 시작 시간 측정
@@ -385,6 +375,11 @@ public class MainActivity extends AppCompatActivity {
                 dispatcher.stop();
             dispatcher = null;
         }
+
+        if (mediaPlayer != null){
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     @Override
@@ -396,6 +391,9 @@ public class MainActivity extends AppCompatActivity {
     public void addDataToFireStore(Object[] mapkey) {
 
         ArrayList<UserMusicDto> userMusicInfoList = checkUserDataIsInRange(mapkey);
+        for (UserMusicDto userMusicDto : userMusicInfoList) {
+            Log.v("범위 확인 완료", userMusicDto.getStartTime());
+        }
         // TODO : songName 반영
         calcUserScore(userMusicInfoList, "신호등");
     }
@@ -421,7 +419,9 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<UserNoteDto> noteList = new ArrayList<>();
         ArrayList<UserMusicDto> sentenceList = new ArrayList<>();
 
+        Log.v("START TIME LIST", String.valueOf(startTimeList));
         boolean flag = false;
+        boolean isStart = false;
         for (Object key : mapkey) {
             try {
                 startTime = startTimeList.get(idx);
@@ -432,6 +432,7 @@ public class MainActivity extends AppCompatActivity {
             }
             // 소절이 시작한 뒤 입력된 음성만 처리
             if (startTimeList.get(0) <= Double.parseDouble(key.toString())) {
+                isStart = true;
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     flag = false;
                     // 다음 소절 전까지 noteList에 note 담음
@@ -458,7 +459,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (!flag) {
+        if (!flag && isStart) {
             UserMusicDto userMusicDto = UserMusicDto.builder()
                     .startTime(String.valueOf(startTime))
                     .notes(noteList)
@@ -479,6 +480,7 @@ public class MainActivity extends AppCompatActivity {
 
         SongTotalNoteTimeDto songTotalNoteTimeDto = new SongTotalNoteTimeDto();
         List<SongSentenceDto> songSentenceInfoList = getSongSentenceInfo(songTotalNoteTimeDto);
+        ArrayList<Integer> weakSentenceIdxList = new ArrayList<>();
 
         int sentenceIdx = 0;
         DecimalFormat df = new DecimalFormat("0.00");
@@ -530,8 +532,6 @@ public class MainActivity extends AppCompatActivity {
             if (isWrongNote) {
                 userSentenceTime -= (sentenceEndTime - userNoteStartTime);
             }
-            sentenceIdx++;
-
             userTotalSentenceTime += userSentenceTime;
             userTotalNoteNum += userCorrectNoteNum;
 
@@ -544,6 +544,12 @@ public class MainActivity extends AppCompatActivity {
             userMusicDto.setNoteScore(df.format(sentenceNoteScore));
             userMusicDto.setRhythmScore(df.format(sentenceRhythmScore));
             userMusicDto.setTotalScore(df.format((sentenceNoteScore + sentenceRhythmScore) / 2));
+
+            if (sentenceNoteScore <= 70 || sentenceRhythmScore <= 70) {
+                userMusicDto.setIsPoor(true);
+                weakSentenceIdxList.add(sentenceIdx);
+            }
+            sentenceIdx++;
         }
 
         double totalNoteScore = ((double) userTotalSentenceTime / songTotalNoteTimeDto.getSongTotalSentenceTime()) * 100;
@@ -558,8 +564,9 @@ public class MainActivity extends AppCompatActivity {
                 .rhythmScore(df.format(totalRhythmScore))
                 .build();
 
+        Log.v("SCORE", totalNoteScore + "/" + totalRhythmScore + "/" + totalScore);
         uploadUserScore(songName, userSongInfoDto);
-
+        uploadWeakSentenceList(songName, weakSentenceIdxList);
     }
 
     private List<SongSentenceDto> getSongSentenceInfo(SongTotalNoteTimeDto songTotalNoteTimeDto) {
@@ -601,6 +608,26 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.v("음정 점수 산출 실패", "failed");
+                    }
+                });
+    }
+
+    private void uploadWeakSentenceList(String songName, ArrayList<Integer> weakSentenceIdxList) {
+        Map<String, ArrayList<Integer>> userWeakSentenceMap = new HashMap<>();
+        userWeakSentenceMap.put("weakSentence", weakSentenceIdxList);
+
+        database.collection("User").document(userName).collection("userWeakSentenceList").document("신호등")
+                .set(userWeakSentenceMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("취약 소절 산출 성공", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("취약 소절 산출 실패", "failed");
                     }
                 });
     }

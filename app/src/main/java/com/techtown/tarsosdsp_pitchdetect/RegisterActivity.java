@@ -8,12 +8,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
+    private ImageButton backBtn;
     private EditText inputEmail;
     private EditText inputPassword;
     private EditText inputName;
@@ -49,6 +52,17 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         firebaseAuth = FirebaseAuth.getInstance();
+
+        backBtn = (ImageButton) findViewById(R.id.backBtn);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegisterActivity.this, LogInActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         inputEmail = (EditText) findViewById(R.id.edittext_email);
         inputPassword = (EditText) findViewById(R.id.edittext_password);
@@ -71,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!inputEmail.getText().toString().equals("") && !inputPassword.getText().toString().equals("") && !inputName.getText().toString().equals("") && !userSex.equals("")) {
-                    // 이메일과 비밀번호가 공백이 아닌 경우
+                    // 이메일과 비밀번호, 이름, 성별 입력칸이 공백이 아닌 경우
                     createUser(inputEmail.getText().toString(), inputPassword.getText().toString(), inputName.getText().toString(), userSex);
                 } else {
                     // 이메일과 비밀번호가 공백인 경우

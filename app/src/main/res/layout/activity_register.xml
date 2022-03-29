@@ -54,14 +54,12 @@
 
     <RadioGroup
         android:id="@+id/radioBtnGroup"
-        android:layout_width="285dp"
-        android:layout_height="74dp"
+        android:layout_width="298dp"
+        android:layout_height="77dp"
         android:layout_marginStart="60dp"
         android:layout_marginTop="14dp"
-        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sexTextView">
-
 
         <RadioButton
             android:id="@+id/radioBtn_female"

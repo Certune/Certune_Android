@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!inputEmail.getText().toString().equals("") && !inputPassword.getText().toString().equals("") && !inputName.getText().toString().equals("") && !userSex.equals("")) {
-                    // 이메일과 비밀번호가 공백이 아닌 경우
+                    // 이메일과 비밀번호, 이름, 성별 입력칸이 공백이 아닌 경우
                     createUser(inputEmail.getText().toString(), inputPassword.getText().toString(), inputName.getText().toString(), userSex);
                 } else {
                     // 이메일과 비밀번호가 공백인 경우

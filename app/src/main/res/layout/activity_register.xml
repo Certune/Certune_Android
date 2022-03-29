@@ -6,13 +6,98 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageButton
+        android:id="@+id/backBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="37dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/outline_arrow_back_ios_new_20" />
+
+
+    <EditText
+        android:id="@+id/edittext_name"
+        android:layout_width="286dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="8dp"
+        android:hint="name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
+
+    <TextView
+        android:id="@+id/sexTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:text="성별"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edittext_name" />
+
+    <EditText
+        android:id="@+id/edittext_email"
+        android:layout_width="286dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="12dp"
+        android:hint="E-mail"
+        android:minHeight="48dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/idTextView" />
+
+    <RadioGroup
+        android:id="@+id/radioBtnGroup"
+        android:layout_width="298dp"
+        android:layout_height="77dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="14dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sexTextView">
+
+        <RadioButton
+            android:id="@+id/radioBtn_female"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="Female" />
+
+        <RadioButton
+            android:id="@+id/radioBtn_male"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:text="Male" />
+
+    </RadioGroup>
+
     <TextView
         android:id="@+id/pwTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="196dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="16dp"
         android:text="PW"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edittext_email" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="84dp"
+        android:text="회원가입"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,104 +105,50 @@
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="260dp"
-        android:text="Name"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="20dp"
+        android:text="이름"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/idTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="132dp"
-        android:text="ID"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/sexTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="324dp"
-        android:text="SEX"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/edittext_email"
-        android:layout_width="286dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="124dp"
-        android:layout_marginEnd="30dp"
-        android:hint="E-mail"
-        android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/idTextView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/edittext_password" />
 
     <EditText
         android:id="@+id/edittext_password"
         android:layout_width="286dp"
         android:layout_height="48dp"
-        android:layout_marginStart="21dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="8dp"
         android:hint="Password"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/pwTextView"
-        app:layout_constraintTop_toBottomOf="@+id/edittext_email" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pwTextView" />
 
-    <EditText
-        android:id="@+id/edittext_name"
-        android:layout_width="286dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="30dp"
-        android:hint="name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/nameTextView"
-        app:layout_constraintTop_toBottomOf="@+id/edittext_password" />
-
-    <RadioGroup
-        android:id="@+id/radioBtnGroup"
+    <TextView
+        android:id="@+id/idTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintStart_toEndOf="@+id/sexTextView"
-        app:layout_constraintTop_toBottomOf="@+id/edittext_name">
-
-        <RadioButton
-            android:id="@+id/radioBtn_female"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Female" />
-
-        <RadioButton
-            android:id="@+id/radioBtn_male"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Male" />
-
-    </RadioGroup>
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="144dp"
+        android:text="ID"
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/registerBtn"
-        android:layout_width="200dp"
-        android:layout_height="48dp"
-        android:layout_marginBottom="116dp"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="52dp"
+        android:background="#8cdbd2"
         android:text="회원가입"
+        android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

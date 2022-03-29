@@ -6,19 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
-@Builder
+@Getter
 public class MusicDto {
 
-    private String start_time;
-    private String end_time;
+    private String startTime;
+    private String endTime;
     private String lyrics;
     private ArrayList<NoteDto> notes;
 
     @Builder
-    public MusicDto(String start_time, String end_time, String lyrics, ArrayList<NoteDto> notes) {
-        this.start_time = start_time;
-        this.end_time = end_time;
+    public MusicDto(String startTime, String endTime, String lyrics, ArrayList<NoteDto> notes) {
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.lyrics = lyrics;
         this.notes = notes;
     }

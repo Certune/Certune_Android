@@ -17,11 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LogInActivity"
-            android:exported="true">
+            android:name=".SongListActivity"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,8 +26,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LogInActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

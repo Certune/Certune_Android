@@ -1,15 +1,9 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
-import static com.techtown.tarsosdsp_pitchdetect.score.CalcStartTimeRange.calcStartTimeRange;
-import static com.techtown.tarsosdsp_pitchdetect.score.ProcessNoteRange.processNoteRange;
-import static com.techtown.tarsosdsp_pitchdetect.score.ProcessTimeRange.processTimeRange;
+import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,637 +12,94 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Source;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.SongSentenceDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.SongTotalNoteTimeDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.TestMusicDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserSongInfoDto;
-import com.techtown.tarsosdsp_pitchdetect.score.ProcessPitch;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.ByteOrder;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import be.tarsos.dsp.AudioDispatcher;
-import be.tarsos.dsp.AudioEvent;
-import be.tarsos.dsp.AudioProcessor;
-import be.tarsos.dsp.io.TarsosDSPAudioFormat;
-import be.tarsos.dsp.io.UniversalAudioInputStream;
-import be.tarsos.dsp.io.android.AndroidAudioPlayer;
-import be.tarsos.dsp.io.android.AudioDispatcherFactory;
-import be.tarsos.dsp.pitch.PitchDetectionHandler;
-import be.tarsos.dsp.pitch.PitchDetectionResult;
-import be.tarsos.dsp.pitch.PitchProcessor;
-import be.tarsos.dsp.writer.WriterProcessor;
 
 public class OctaveTestActivity extends AppCompatActivity {
 
-    private TextView displayName;
-
-    private String userName;
     private String userEmail;
     private String userSex;
-    private String uid;
     private String octaveHighLow;
 
     private Button highTestBtn;
     private Button lowTestBtn;
+    private TextView textview_userOctave;
 
     private Boolean isHighDone = false;
     private Boolean isLowDone = false;
-
-    Map<Double, String> map;
-    Map<Double, String> musicMap;
-
-    ArrayList<Double> startTimeList;
-    ArrayList<Double> endTimeList;
-    ArrayList<TestMusicDto> musicTotalInfoList;
-
-    AudioDispatcher dispatcher;
-    TarsosDSPAudioFormat tarsosDSPAudioFormat;
-    MediaPlayer mediaPlayer;
-
-    File file;
-
-    TextView pitchTextView;
-    Button recordButton;
-    Button playButton;
-
-    boolean isRecording = false;
-    String filename = "user_octave_test";
 
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_useroctavetest);
+        setContentView(R.layout.activity_octave_test);
+        Intent subIntent = getIntent();
+        userEmail = subIntent.getStringExtra("userEmail");
 
-        displayName = (TextView) findViewById(R.id.displayName);
         highTestBtn = (Button) findViewById(R.id.button_highTest);
         lowTestBtn = (Button) findViewById(R.id.button_lowTest);
+        textview_userOctave = (TextView) findViewById(R.id.textview_userOctave);
 
-        highTestBtn.setOnClickListener(new View.OnClickListener(){
+        highTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 octaveHighLow = "high";
                 isHighDone = true;
                 Intent intent = new Intent(getApplicationContext(), OctaveTestSingingActivity.class);
+                intent.putExtra("userEmail", userEmail);
+                intent.putExtra("userSex", userSex);
+                intent.putExtra("octaveHighLow", octaveHighLow);
                 startActivity(intent);
             }
         });
 
-        lowTestBtn.setOnClickListener(new View.OnClickListener(){
+        lowTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 octaveHighLow = "low";
                 isLowDone = true;
                 Intent intent = new Intent(getApplicationContext(), OctaveTestSingingActivity.class);
+                intent.putExtra("userEmail", userEmail);
+                intent.putExtra("userSex", userSex);
+                intent.putExtra("octaveHighLow", octaveHighLow);
                 startActivity(intent);
             }
         });
+        getUserInfo();
 
+        if (isHighDone && isLowDone) {
+            // TODO : 사용자 음역대 TEXTVIEW에 반영
+            textview_userOctave.setText("사용자 음역대");
+        }
+    }
+
+    private void getUserInfo() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // TODO: userEmail -> userName 으로 변경
-            displayName.setText(userEmail);
-            userName = user.getDisplayName(); // 현재 null
-            userEmail = user.getEmail();
-            boolean emailVerified = user.isEmailVerified();
-            uid = user.getUid();
-            userSex = getUserSex(userEmail);
-        }
-
-        File sdCard = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-        file = new File(sdCard, filename);
-
-        tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
-                22050,
-                2 * 8,
-                1,
-                2 * 1,
-                22050,
-                ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
-
-        getOctaveMusicData(userSex);
-
-        // Mediaplayer setting
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        fetchAudioUrlFromFirebase(userSex);
-
-        pitchTextView = findViewById(R.id.pitchTextView);
-        recordButton = findViewById(R.id.recordButton);
-        playButton = findViewById(R.id.playButton);
-
-        recordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isRecording) {
-                    recordAudio();
-                    isRecording = true;
-                    recordButton.setText("중지");
-                } else {
-                    stopRecording();
-                    isRecording = false;
-                    recordButton.setText("녹음");
-                }
-            }
-        });
-
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playAudio();
-            }
-        });
-    }
-
-    private String getUserSex(String userEmail){
-        Task<DocumentSnapshot> querySnapshot = database.collection("User").document(userEmail).get(Source.valueOf("sex"));
-        Log.v("USER SEX", querySnapshot.toString());
-        return querySnapshot.toString();
-    }
-
-    private void getOctaveMusicData(String userSex) {
-        Task<DocumentSnapshot> querySnapshot = database.collection("OctaveTest").document(userSex)
-                .collection("highLowTest").document(octaveHighLow).get();
-        querySnapshot
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        HashMap<String, Object> testMap = (HashMap<String, Object>) Objects.requireNonNull(documentSnapshot.getData()).get("tests");
-                        ArrayList<HashMap<String, Object>> octaveVersion = (ArrayList<HashMap<String, Object>>) testMap.get(octaveHighLow);
-                        double noteTime = (double) testMap.get("note_time");
-
-                        startTimeList = new ArrayList<>();
-                        musicTotalInfoList = new ArrayList<>();
-
-                        for (int i=0; i<octaveVersion.size(); i++) {
-                            HashMap<String, Object> noteListMap = octaveVersion.get(i);
-                            double octaveStartTime = (double) noteListMap.get("start_time");
-                            ArrayList<String> noteList = (ArrayList<String>) noteListMap.get("notes");
-
-                            ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
-                            for (int j = 0; j < noteList.size(); j++) {
-                                NoteDto noteDto = NoteDto.builder()
-                                        .startTime(String.valueOf(octaveStartTime + noteTime * i))
-                                        .note(noteList.get(i))
-                                        .endTime(String.valueOf(octaveStartTime + noteTime * (i + 1)))
-                                        .build();
-                                noteDtoArrayList.add(noteDto);
-                            }
-
-                            TestMusicDto testMusicDto = TestMusicDto.builder()
-                                    .startTime(String.valueOf(octaveStartTime))
-                                    .endTime(String.valueOf(octaveStartTime + noteTime * 5))
-                                    .notes(noteDtoArrayList)
-                                    .build();
-
-                            startTimeList.add(octaveStartTime);
-                            endTimeList.add(octaveStartTime + noteTime * 5);
-                            musicTotalInfoList.add(testMusicDto);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.v("ERROR", "not enough records for calculating");
-                    }
-                });
-    }
-
-    // stream music directly from firebase
-    private void fetchAudioUrlFromFirebase(String userSex) {
-        final FirebaseStorage storage = FirebaseStorage.getInstance();
-        String url = "gs://certune-73ce6.appspot.com/"+userSex+"Pitch/"+userSex+ octaveHighLow +".mp3";
-        StorageReference storageRef = storage.getReferenceFromUrl(url);
-
-        storageRef.getDownloadUrl()
-                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        try {
-                            final String url = uri.toString();
-                            mediaPlayer.setDataSource(url);
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    mp.start();
-                                }
-                            });
-                            mediaPlayer.prepareAsync();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("음악 백그라운드 재생 실패", e.getMessage());
-                    }
-                });
-    }
-
-    public void playAudio() {
-        musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
-        long start = System.nanoTime(); // 시작 시간 측정
-        try {
-            releaseDispatcher();
-
-            FileInputStream fileInputStream = new FileInputStream(file);
-            // 마이크가 아닌 파일을 소스로 하는 dispatcher 생성 -> AudioDispatcher 객체 생성 시 UniversalAudioInputStream 사용
-            dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
-
-            AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
-            dispatcher.addAudioProcessor(playerProcessor);
-
-            PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
+            DocumentReference docRef = database.collection("User").document(userEmail);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
-                public void handlePitch(PitchDetectionResult res, AudioEvent e) {
-                    final float pitchInHz = res.getPitch();
-                    String octav = ProcessPitch.processPitch(pitchInHz);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pitchTextView.setText(octav);
-                            long end = System.nanoTime();
-                            double time = (end - start) / (1000000000.0);
-
-                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
-                                Log.v("time", String.valueOf(time));
-                                musicMap.put(time, octav);
-                            }
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            userSex = (String) document.getData().get("sex");
+                            Log.v("유저 성별", userSex);
+                        } else {
+                            Log.d(TAG, "사용자 정보가 존재하지 않습니다.");
                         }
-                    });
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
                 }
-            };
-
-            AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
-            dispatcher.addAudioProcessor(pitchProcessor);
-
-            Thread audioThread = new Thread(dispatcher, "Audio Thread");
-            audioThread.start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            });
         }
     }
 
-    String prevOctave;
-
-    public void recordAudio() {
-        prevOctave = "";
-        map = new HashMap<>(); // 녹음될 때마다 map 초기화
-        long start = System.nanoTime(); // 시작 시간 측정
-
-        Log.v("start", "start time measuring process");
-        releaseDispatcher();
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
-
-        try {
-            Log.v("start2", "try문");
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-            AudioProcessor recordProcessor = new WriterProcessor(tarsosDSPAudioFormat, randomAccessFile);
-            dispatcher.addAudioProcessor(recordProcessor);
-
-            PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
-                @Override
-                public void handlePitch(PitchDetectionResult res, AudioEvent e) {
-                    final float pitchInHz = res.getPitch();
-                    String octav = ProcessPitch.processPitch(pitchInHz);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            pitchTextView.setText(octav);
-                            long end = System.nanoTime();
-                            double time = (end - start) / (1000000000.0);
-
-                            if (!octav.equals("Nope")) { // 의미있는 값일 때만 입력받음
-                                Log.v("time", String.valueOf(time));
-                                if (!prevOctave.equals(octav)) {
-                                    Log.v("time / octave", String.valueOf(time) + " / " + octav);
-                                    map.put(time, octav);
-                                    prevOctave = octav;
-                                }
-                            }
-                        }
-                    });
-                }
-            };
-
-            AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
-            dispatcher.addAudioProcessor(pitchProcessor);
-
-            Thread audioThread = new Thread(dispatcher, "Audio Thread");
-            audioThread.start();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void stopRecording() {
-
-        // 사용자가 부른 정보를 키로 정렬
-        Object[] mapkey = map.keySet().toArray();
-        Arrays.sort(mapkey);
-        for (Object key : mapkey) {
-            Log.v("result", String.valueOf(key) + "/ value: " + map.get(key));
-        }
-        // TODO : DB로 wav file 보내기
-        addWAVToFireStorage();
-
-        addDataToFireStore(mapkey);
-
-        releaseDispatcher();
-    }
-
-    public void releaseDispatcher() {
-        if (dispatcher != null) {
-            if (!dispatcher.isStopped())
-                dispatcher.stop();
-            dispatcher = null;
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        releaseDispatcher();
-    }
-
-    public void addDataToFireStore(Object[] mapkey) {
-
-        ArrayList<UserMusicDto> userMusicInfoList = checkUserDataIsInRange(mapkey);
-        // TODO : songName 반영
-        calcUserScore(userMusicInfoList);
-    }
-
-    public void addWAVToFireStorage() {
-        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        // User/{userName}/octaveTest/{octaveHighMidLow}
-        StorageReference filepath = mStorage.child("User").child(userName).child("octaveTest").child(octaveHighLow);
-
-        Uri uri = Uri.fromFile(file);
-        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.v("wav", "upload success");
-            }
-        });
-    }
-
-    public ArrayList<UserMusicDto> checkUserDataIsInRange(Object[] mapkey) {
-        int idx = 0;
-        Double startTime = 0.0;
-        Double nextStartTime;
-
-        ArrayList<UserNoteDto> noteList = new ArrayList<>();
-        ArrayList<UserMusicDto> sentenceList = new ArrayList<>();
-
-        boolean flag = false;
-        for (Object key : mapkey) {
-            try {
-                startTime = startTimeList.get(idx);
-                nextStartTime = endTimeList.get(idx);
-            } catch (IndexOutOfBoundsException e) {
-                // 다음 소절이 존재하지 않는 경우
-                nextStartTime = 50.0;
-            }
-            // 소절이 시작한 뒤 입력된 음성만 처리
-            if (startTimeList.get(0) <= Double.parseDouble(key.toString())) {
-                if (nextStartTime > Double.parseDouble(key.toString())) {
-                    flag = false;
-                    // 다음 소절 전까지 noteList에 note 담음
-                    noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
-
-                } else { // 다음 소절로 넘어갔을 때 이전 소절에 대한 처리
-                    flag = true;
-                    UserMusicDto userMusicDto = UserMusicDto.builder()
-                            .startTime(String.valueOf(startTime))
-                            .notes(noteList)
-                            .noteScore("null")
-                            .rhythmScore("null")
-                            .totalScore("null")
-                            .build();
-                    sentenceList.add(userMusicDto);
-
-                    idx++;
-
-                    // 한 소절에 대한 처리가 끝난 후 noteList 초기화 및 직전에 들어온 값 add
-                    noteList = new ArrayList<>();
-                    noteList.add(new UserNoteDto(String.valueOf(key), map.get(key)));
-                }
-
-            }
-        }
-
-        if (!flag) {
-            UserMusicDto userMusicDto = UserMusicDto.builder()
-                    .startTime(String.valueOf(startTime))
-                    .notes(noteList)
-                    .noteScore("null")
-                    .rhythmScore("null")
-                    .totalScore("null")
-                    .build();
-            sentenceList.add(userMusicDto);
-        }
-        return sentenceList;
-    }
-
-    public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList){
-
-        int userTotalNoteNum = 0;
-        double userTotalSentenceTime = 0;
-
-        double bestOctaveScore = 0;
-        int bestOctaveIdx = 0;
-
-        SongTotalNoteTimeDto songTotalNoteTimeDto = new SongTotalNoteTimeDto();
-        List<SongSentenceDto> songSentenceInfoList = getSongSentenceInfo(songTotalNoteTimeDto);
-
-        int sentenceIdx = 0;
-        DecimalFormat df = new DecimalFormat("0.00");
-        for (UserMusicDto userMusicDto : userMusicInfoList) {
-            int noteIdx = 0;
-            int userCorrectNoteNum = 0;
-
-            SongSentenceDto songSentenceDto = songSentenceInfoList.get(sentenceIdx);
-            ArrayList<NoteDto> sentenceNoteDtoList = songSentenceDto.getSentenceNoteDtoList();
-
-            boolean isWrongNote = false;
-            boolean isFirstNote = false;
-
-            ArrayList<UserNoteDto> userNotes = userMusicDto.getNotes();
-            Double userNoteStartTime = 0.0;
-            Double userSentenceTime = songSentenceDto.getSentenceDurationTime();
-            Double sentenceStartTime = songSentenceDto.getSentenceStartTime();
-            Double sentenceEndTime = songSentenceDto.getSentenceEndTime();
-            Double songNoteEndTime = Double.parseDouble(sentenceNoteDtoList.get(noteIdx).getEndTime());
-
-            for (UserNoteDto userNoteDto : userNotes) {
-
-                if (isWrongNote) {
-                    userSentenceTime -= (Double.parseDouble(userNoteDto.getStartTime()) - userNoteStartTime);
-                    isWrongNote = false;
-                }
-
-                userNoteStartTime = Double.parseDouble(userNoteDto.getStartTime());
-
-                if (sentenceStartTime <= userNoteStartTime && sentenceEndTime >= userNoteStartTime) {
-                    ArrayList<Double> timeRangeList = processTimeRange(sentenceNoteDtoList.get(noteIdx).getStartTime());
-                    if (songNoteEndTime <= userNoteStartTime){
-                        noteIdx++;
-                        songNoteEndTime = Double.parseDouble(sentenceNoteDtoList.get(noteIdx).getEndTime());
-
-                        timeRangeList = processTimeRange(sentenceNoteDtoList.get(noteIdx).getStartTime());
-                        isFirstNote = false;
-                    }
-                    if (!isFirstNote && calcStartTimeRange(timeRangeList, userNoteDto.getStartTime())) {
-                        userCorrectNoteNum++;
-                        isFirstNote = true;
-                    }
-
-                    ArrayList<String> noteRangeList = processNoteRange(sentenceNoteDtoList.get(noteIdx).getNote());
-                    if (!noteRangeList.contains(userNoteDto.getNote()))
-                        isWrongNote = true;
-                }
-            }
-            if (isWrongNote) {
-                userSentenceTime -= (sentenceEndTime - userNoteStartTime);
-            }
-            sentenceIdx++;
-
-            userTotalSentenceTime += userSentenceTime;
-            userTotalNoteNum += userCorrectNoteNum;
-
-            Double sentenceDurationTime = songSentenceDto.getSentenceDurationTime();
-            int songSentenceNoteNum = songSentenceDto.getSentenceNoteNum();
-
-            Double sentenceNoteScore = (userSentenceTime / sentenceDurationTime) * 100;
-            Double sentenceRhythmScore = ((double) userCorrectNoteNum / songSentenceNoteNum) * 100;
-            Double sentenceTotalScore = (sentenceNoteScore + sentenceRhythmScore) / 2;
-
-            userMusicDto.setNoteScore(df.format(sentenceNoteScore));
-            userMusicDto.setRhythmScore(df.format(sentenceRhythmScore));
-            userMusicDto.setTotalScore(df.format(sentenceTotalScore));
-
-            if (bestOctaveScore < sentenceTotalScore){
-                bestOctaveScore = sentenceTotalScore;
-                bestOctaveIdx = sentenceIdx - 1;
-            }
-        }
-
-        double totalNoteScore = ((double) userTotalSentenceTime / songTotalNoteTimeDto.getSongTotalSentenceTime()) * 100;
-        double totalRhythmScore = ((double) userTotalNoteNum / songTotalNoteTimeDto.getSongTotalNoteNum()) * 100;
-        double totalScore = ( totalNoteScore + totalRhythmScore ) / 2;
-
-        UserSongInfoDto userSongInfoDto = UserSongInfoDto
-                .builder()
-                .songInfo(userMusicInfoList)
-                .totalScore(df.format(totalScore))
-                .noteScore(df.format(totalNoteScore))
-                .rhythmScore(df.format(totalRhythmScore))
-                .build();
-
-        uploadUserScore(userSongInfoDto);
-        uploadBestOctaveIdx(bestOctaveIdx);
-
-    }
-
-    private List<SongSentenceDto> getSongSentenceInfo(SongTotalNoteTimeDto songTotalNoteTimeDto) {
-        List<SongSentenceDto> songSentenceInfoList = new ArrayList<>();
-        for (TestMusicDto musicinfo : musicTotalInfoList) {
-
-            double sentenceTime = Double.parseDouble(musicinfo.getEndTime()) - Double.parseDouble(musicinfo.getStartTime());
-            ArrayList<NoteDto> musicNoteDtos = musicinfo.getNotes(); // 소절의 note 정보
-
-            songTotalNoteTimeDto.addSongTotalSentenceTime(sentenceTime);
-            songTotalNoteTimeDto.addSongTotalNoteNum(musicNoteDtos.size());
-
-            SongSentenceDto songSentenceDto = SongSentenceDto.builder()
-                    .sentenceStartTime(Double.parseDouble(musicinfo.getStartTime()))
-                    .sentenceEndTime(Double.parseDouble(musicinfo.getEndTime()))
-                    .sentenceNoteDtoList(musicNoteDtos)
-                    .sentenceDurationTime(sentenceTime)
-                    .sentenceNoteNum(musicNoteDtos.size())
-                    .build();
-
-            songSentenceInfoList.add(songSentenceDto);
-        }
-        return songSentenceInfoList;
-    }
-
-
-    private void uploadUserScore(UserSongInfoDto userSongInfoDto) {
-
-        Map<String, UserSongInfoDto> userMusicList = new HashMap<>();
-        userMusicList.put("octaves", userSongInfoDto);
-
-        database.collection("User").document(userName).collection("userOctaveList").document(octaveHighLow)
-                .set(userMusicList)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.v("음정 점수 산출", "success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.v("음정 점수 산출", "failed");
-                    }
-                });
-    }
-
-    public void uploadBestOctaveIdx(int bestOctaveIdx){
-
-        String userOctave;
-        if (octaveHighLow.equals("high"))
-            userOctave = "maxUserPitch";
-        else
-            userOctave = "minUserPitch";
-        
-        database.collection("User").document(userName)
-                .update(userOctave, bestOctaveIdx)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Log.v("음정 점수 산출", "success");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.v("음정 점수 산출", "failed");
-                    }
-                });
-    }
 }

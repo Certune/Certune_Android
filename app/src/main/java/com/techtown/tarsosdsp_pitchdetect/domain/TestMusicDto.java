@@ -8,12 +8,12 @@ import lombok.Getter;
 @Getter
 public class TestMusicDto {
 
-    private String startTime;
-    private String endTime;
+    private Double startTime;
+    private Double endTime;
     private ArrayList<NoteDto> notes;
 
     @Builder
-    public TestMusicDto(String startTime, String endTime, ArrayList<NoteDto> notes) {
+    public TestMusicDto(Double startTime, Double endTime, ArrayList<NoteDto> notes) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.notes = notes;

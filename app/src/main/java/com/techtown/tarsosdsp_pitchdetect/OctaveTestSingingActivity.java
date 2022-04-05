@@ -27,8 +27,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.SongSentenceDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.SongTotalNoteTimeDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.TestMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
@@ -44,7 +42,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -98,13 +95,15 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
         userSex = intent.getStringExtra("userSex");
         octaveHighLow = intent.getStringExtra("octaveHighLow");
 
+        Log.v("USEREMAIL", userEmail);
+        Log.v("USERSEX", userSex);
+        Log.v("OctaveHighLow", octaveHighLow);
+
         File sdCard = Environment.getExternalStorageDirectory();
         file = new File(sdCard, filename);
 
-        /*
-        filePath = file.getAbsolutePath();
-        Log.e("MainActivity", "저장 파일 경로 :" + filePath); // 저장 파일 경로 : /storage/emulated/0/recorded.mp4
-        */
+        fetchAudioUrlFromFirebase();
+        getOctaveMusicData();
 
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
                 22050,
@@ -265,13 +264,11 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
     public void addDataToFireStore(Object[] mapkey) {
 
         ArrayList<UserMusicDto> userMusicInfoList = checkUserDataIsInRange(mapkey);
-        // TODO : songName 반영
         calcUserScore(userMusicInfoList);
     }
 
     public void addWAVToFireStorage() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        // User/{userName}/octaveTest/{octaveHighMidLow}
         StorageReference filepath = mStorage.child("User").child(userEmail).child("octaveTest").child(octaveHighLow);
 
         Uri uri = Uri.fromFile(file);
@@ -344,88 +341,79 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
     public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList) {
 
         int userTotalNoteNum = 0;
-        double userTotalSentenceTime = 0;
+        int userTotalRhythmNum = 0;
+        int octaveTotalNoteNum = 0;
 
-        double bestOctaveScore = 0;
         int bestOctaveIdx = 0;
-
-        SongTotalNoteTimeDto songTotalNoteTimeDto = new SongTotalNoteTimeDto();
-        List<SongSentenceDto> songSentenceInfoList = getSongSentenceInfo(songTotalNoteTimeDto);
+        double bestOctaveScore = 0;
 
         int sentenceIdx = 0;
         DecimalFormat df = new DecimalFormat("0.00");
+
         for (UserMusicDto userMusicDto : userMusicInfoList) {
             int noteIdx = 0;
             int userCorrectNoteNum = 0;
+            int userCorrectRhythmNum = 0;
 
-            SongSentenceDto songSentenceDto = songSentenceInfoList.get(sentenceIdx);
-            ArrayList<NoteDto> sentenceNoteDtoList = songSentenceDto.getSentenceNoteDtoList();
+            TestMusicDto testMusicDto = musicTotalInfoList.get(sentenceIdx);
+            ArrayList<NoteDto> testNoteDtoList = testMusicDto.getNotes();
+            Double octaveStartTime = testMusicDto.getStartTime();
+            Double octaveEndTime = testMusicDto.getEndTime();
+            Double testNoteEndTime = Double.parseDouble(testNoteDtoList.get(noteIdx).getEndTime());
 
             boolean isWrongNote = false;
             boolean isFirstNote = false;
 
-            ArrayList<UserNoteDto> userNotes = userMusicDto.getNotes();
+            ArrayList<UserNoteDto> userNoteDtoList = userMusicDto.getNotes();
             Double userNoteStartTime = 0.0;
-            Double userSentenceTime = songSentenceDto.getSentenceDurationTime();
-            Double sentenceStartTime = songSentenceDto.getSentenceStartTime();
-            Double sentenceEndTime = songSentenceDto.getSentenceEndTime();
-            Double songNoteEndTime = Double.parseDouble(sentenceNoteDtoList.get(noteIdx).getEndTime());
 
-            for (UserNoteDto userNoteDto : userNotes) {
-
-                if (isWrongNote) {
-                    userSentenceTime -= (Double.parseDouble(userNoteDto.getStartTime()) - userNoteStartTime);
-                    isWrongNote = false;
-                }
-
+            for (UserNoteDto userNoteDto : userNoteDtoList) {
                 userNoteStartTime = Double.parseDouble(userNoteDto.getStartTime());
-
-                if (sentenceStartTime <= userNoteStartTime && sentenceEndTime >= userNoteStartTime) {
-                    ArrayList<Double> timeRangeList = processTimeRange(sentenceNoteDtoList.get(noteIdx).getStartTime());
-                    if (songNoteEndTime <= userNoteStartTime) {
+                // 1. 옥타브 범위 내에 있을 때
+                if (octaveStartTime <= userNoteStartTime && octaveEndTime >= userNoteStartTime) {
+                    // 2. note의 허용 시간 계산
+                    ArrayList<Double> timeRangeList = processTimeRange(userNoteDto.getStartTime());
+                    if (testNoteEndTime <= userNoteStartTime) {
                         noteIdx++;
-                        songNoteEndTime = Double.parseDouble(sentenceNoteDtoList.get(noteIdx).getEndTime());
-
-                        timeRangeList = processTimeRange(sentenceNoteDtoList.get(noteIdx).getStartTime());
+                        testNoteEndTime = Double.parseDouble(testNoteDtoList.get(noteIdx).getEndTime());
+                        timeRangeList = processTimeRange(testNoteDtoList.get(noteIdx).getStartTime());
                         isFirstNote = false;
                     }
                     if (!isFirstNote && calcStartTimeRange(timeRangeList, userNoteDto.getStartTime())) {
-                        userCorrectNoteNum++;
+                        userCorrectRhythmNum++;
                         isFirstNote = true;
                     }
-
-                    ArrayList<String> noteRangeList = processNoteRange(sentenceNoteDtoList.get(noteIdx).getNote());
+                    ArrayList<String> noteRangeList = processNoteRange(testNoteDtoList.get(noteIdx).getNote());
                     if (!noteRangeList.contains(userNoteDto.getNote()))
                         isWrongNote = true;
                 }
-            }
-            if (isWrongNote) {
-                userSentenceTime -= (sentenceEndTime - userNoteStartTime);
+
+                if (!isWrongNote)
+                    userCorrectNoteNum++;
             }
             sentenceIdx++;
 
-            userTotalSentenceTime += userSentenceTime;
             userTotalNoteNum += userCorrectNoteNum;
+            userTotalRhythmNum += userCorrectRhythmNum;
+            int octaveNoteNum = testNoteDtoList.size();
+            octaveTotalNoteNum += octaveNoteNum;
 
-            Double sentenceDurationTime = songSentenceDto.getSentenceDurationTime();
-            int songSentenceNoteNum = songSentenceDto.getSentenceNoteNum();
+            Double octaveNoteScore = ((double) userCorrectNoteNum / octaveNoteNum) * 100;
+            Double octaveRhythmScore = ((double) userCorrectRhythmNum / octaveNoteNum) * 100;
+            Double octaveTotalScore = (octaveNoteScore + octaveRhythmScore) / 2;
 
-            Double sentenceNoteScore = (userSentenceTime / sentenceDurationTime) * 100;
-            Double sentenceRhythmScore = ((double) userCorrectNoteNum / songSentenceNoteNum) * 100;
-            Double sentenceTotalScore = (sentenceNoteScore + sentenceRhythmScore) / 2;
+            userMusicDto.setNoteScore(df.format(octaveNoteScore));
+            userMusicDto.setRhythmScore(df.format(octaveRhythmScore));
+            userMusicDto.setTotalScore(df.format(octaveTotalScore));
 
-            userMusicDto.setNoteScore(df.format(sentenceNoteScore));
-            userMusicDto.setRhythmScore(df.format(sentenceRhythmScore));
-            userMusicDto.setTotalScore(df.format(sentenceTotalScore));
-
-            if (bestOctaveScore < sentenceTotalScore) {
-                bestOctaveScore = sentenceTotalScore;
+            if (bestOctaveScore <= octaveTotalScore) {
+                bestOctaveScore = octaveTotalScore;
                 bestOctaveIdx = sentenceIdx - 1;
             }
         }
 
-        double totalNoteScore = ((double) userTotalSentenceTime / songTotalNoteTimeDto.getSongTotalSentenceTime()) * 100;
-        double totalRhythmScore = ((double) userTotalNoteNum / songTotalNoteTimeDto.getSongTotalNoteNum()) * 100;
+        double totalNoteScore = ((double) userTotalNoteNum / octaveTotalNoteNum) * 100;
+        double totalRhythmScore = ((double) userTotalRhythmNum / octaveTotalNoteNum) * 100;
         double totalScore = (totalNoteScore + totalRhythmScore) / 2;
 
         UserSongInfoDto userSongInfoDto = UserSongInfoDto
@@ -440,30 +428,6 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
         uploadBestOctaveIdx(bestOctaveIdx);
 
     }
-
-    private List<SongSentenceDto> getSongSentenceInfo(SongTotalNoteTimeDto songTotalNoteTimeDto) {
-        List<SongSentenceDto> songSentenceInfoList = new ArrayList<>();
-        for (TestMusicDto musicinfo : musicTotalInfoList) {
-
-            double sentenceTime = Double.parseDouble(musicinfo.getEndTime()) - Double.parseDouble(musicinfo.getStartTime());
-            ArrayList<NoteDto> musicNoteDtos = musicinfo.getNotes(); // 소절의 note 정보
-
-            songTotalNoteTimeDto.addSongTotalSentenceTime(sentenceTime);
-            songTotalNoteTimeDto.addSongTotalNoteNum(musicNoteDtos.size());
-
-            SongSentenceDto songSentenceDto = SongSentenceDto.builder()
-                    .sentenceStartTime(Double.parseDouble(musicinfo.getStartTime()))
-                    .sentenceEndTime(Double.parseDouble(musicinfo.getEndTime()))
-                    .sentenceNoteDtoList(musicNoteDtos)
-                    .sentenceDurationTime(sentenceTime)
-                    .sentenceNoteNum(musicNoteDtos.size())
-                    .build();
-
-            songSentenceInfoList.add(songSentenceDto);
-        }
-        return songSentenceInfoList;
-    }
-
 
     private void uploadUserScore(UserSongInfoDto userSongInfoDto) {
 
@@ -512,7 +476,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
     private void getOctaveMusicData() {
         Task<DocumentSnapshot> querySnapshot = database.collection("OctaveTest").document(userSex)
-                .collection("highLowTest").document("high").get();
+                .collection("highLowTest").document(octaveHighLow).get();
         querySnapshot
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -529,28 +493,26 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                             HashMap<String, Object> noteListMap = octaveVersion.get(i);
                             double octaveStartTime = Double.parseDouble(String.valueOf(noteListMap.get("start_time")));
                             ArrayList<String> noteList = (ArrayList<String>) noteListMap.get("notes");
+                            double octaveEndTime = octaveStartTime + noteTime * noteList.size();
 
                             ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
                             for (int j = 0; j < noteList.size(); j++) {
                                 NoteDto noteDto = NoteDto.builder()
-                                        .startTime(String.valueOf(octaveStartTime + noteTime * i))
-                                        .note(noteList.get(i))
-                                        .endTime(String.valueOf(octaveStartTime + noteTime * (i + 1)))
+                                        .startTime(String.valueOf(octaveStartTime + noteTime * j))
+                                        .note(noteList.get(j))
+                                        .endTime(String.valueOf(octaveStartTime + noteTime * (j + 1)))
                                         .build();
                                 noteDtoArrayList.add(noteDto);
                             }
 
                             TestMusicDto testMusicDto = TestMusicDto.builder()
-                                    .startTime(String.valueOf(octaveStartTime))
-                                    .endTime(String.valueOf(octaveStartTime + noteTime * 5))
+                                    .startTime(octaveStartTime)
+                                    .endTime(octaveEndTime)
                                     .notes(noteDtoArrayList)
                                     .build();
 
-                            Log.v("옥타브 시작 시간", String.valueOf(octaveStartTime));
-                            Log.v("옥타브 노트 시간", String.valueOf(noteTime));
-                            Log.v("옥타브 종료 시간", String.valueOf(octaveStartTime + noteTime * 5));
                             startTimeList.add(octaveStartTime);
-                            endTimeList.add(octaveStartTime + noteTime * 5);
+                            endTimeList.add(octaveEndTime);
                             musicTotalInfoList.add(testMusicDto);
                         }
                     }

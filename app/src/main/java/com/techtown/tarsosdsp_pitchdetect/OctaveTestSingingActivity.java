@@ -34,7 +34,6 @@ import com.techtown.tarsosdsp_pitchdetect.domain.UserSongInfoDto;
 import com.techtown.tarsosdsp_pitchdetect.score.ProcessPitch;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
@@ -49,8 +48,6 @@ import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.TarsosDSPAudioFormat;
-import be.tarsos.dsp.io.UniversalAudioInputStream;
-import be.tarsos.dsp.io.android.AndroidAudioPlayer;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
@@ -65,10 +62,10 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
     TextView pitchTextView;
     Button recordButton;
-    Button playButton;
+    Button stopButton;
 
     Map<Double, String> map;
-    Map<Double, String> musicMap;
+    String musicUrl;
 
     ArrayList<Double> startTimeList;
     ArrayList<Double> endTimeList;
@@ -102,8 +99,8 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
         File sdCard = Environment.getExternalStorageDirectory();
         file = new File(sdCard, filename);
 
-        fetchAudioUrlFromFirebase();
         getOctaveMusicData();
+        fetchAudioUrlFromFirebase();
 
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
                 22050,
@@ -115,7 +112,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
         pitchTextView = findViewById(R.id.pitchTextView);
         recordButton = findViewById(R.id.recordButton);
-        playButton = findViewById(R.id.playButton);
+        stopButton = findViewById(R.id.stopButton);
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,75 +120,38 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 if (!isRecording) {
                     recordAudio();
                     isRecording = true;
-                    recordButton.setText("중지");
-                } else {
-                    stopRecording();
-                    isRecording = false;
-                    recordButton.setText("녹음");
                 }
             }
         });
 
-        playButton.setOnClickListener(new View.OnClickListener() {
+        stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playAudio();
+                if (isRecording) {
+                    stopRecording();
+                    isRecording = false;
+                }
+                Intent intent = new Intent(getApplicationContext(), OctaveTestEndActivity.class);
+                intent.putExtra("userEmail", userEmail);
+                intent.putExtra("userSex", userSex);
+                intent.putExtra("octaveHighLow", octaveHighLow);
+                startActivity(intent);
+                finish();
             }
         });
-    }
-
-    public void playAudio() {
-        musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
-        long start = System.nanoTime(); // 시작 시간 측정
-        try {
-            releaseDispatcher();
-
-            FileInputStream fileInputStream = new FileInputStream(file);
-            dispatcher = new AudioDispatcher(new UniversalAudioInputStream(fileInputStream, tarsosDSPAudioFormat), 1024, 0);
-
-            AudioProcessor playerProcessor = new AndroidAudioPlayer(tarsosDSPAudioFormat, 2048, 0);
-            dispatcher.addAudioProcessor(playerProcessor);
-
-            PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
-                @Override
-                public void handlePitch(PitchDetectionResult res, AudioEvent e) {
-                    final float pitchInHz = res.getPitch();
-                    String octav = ProcessPitch.processPitch(pitchInHz);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            long end = System.nanoTime();
-                            double time = (end - start) / (1000000000.0);
-
-                            if (!octav.equals("Nope")) {// 의미있는 값일 때만 입력받음
-                                Log.v("time", String.valueOf(time));
-                                musicMap.put(time, octav);
-                            }
-                        }
-                    });
-                }
-            };
-
-            AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
-            dispatcher.addAudioProcessor(pitchProcessor);
-
-            Thread audioThread = new Thread(dispatcher, "Audio Thread");
-            audioThread.start();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     String prevOctave;
 
     public void recordAudio() {
 
+        releaseDispatcher();
+        createMediaPlayer();
+
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
         long start = System.nanoTime(); // 시작 시간 측정
 
-        releaseDispatcher();
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
         try {
@@ -234,6 +194,23 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
         }
     }
 
+    private void createMediaPlayer() {
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(musicUrl);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    mp.start();
+                }
+            });
+            mediaPlayer.prepareAsync();
+        } catch (Exception e) {
+            Log.e("MEDIAPLAYER", e.getMessage());
+        }
+    }
+
     public void stopRecording() {
         Object[] mapkey = map.keySet().toArray();
         Arrays.sort(mapkey);
@@ -252,6 +229,11 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
             if (!dispatcher.isStopped())
                 dispatcher.stop();
             dispatcher = null;
+        }
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
+            mediaPlayer.reset();
         }
     }
 
@@ -297,8 +279,9 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 // 다음 소절이 존재하지 않는 경우
                 nextStartTime = 50.0;
             }
+            double dKey = Double.parseDouble(key.toString());
             // 소절이 시작한 뒤 입력된 음성만 처리
-            if (startTimeList.get(0) <= Double.parseDouble(key.toString())) {
+            if (startTimeList.get(0) <= dKey && endTimeList.get(endTimeList.size() - 1) >= dKey) {
                 if (nextStartTime > Double.parseDouble(key.toString())) {
                     flag = false;
                     // 다음 소절 전까지 noteList에 note 담음
@@ -535,22 +518,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        try {
-                            final String downloadUrl = uri.toString();
-                            mediaPlayer = new MediaPlayer();
-                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            mediaPlayer.setDataSource(downloadUrl);
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    mp.start();
-                                }
-                            });
-                            mediaPlayer.prepareAsync();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
+                        musicUrl = uri.toString();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

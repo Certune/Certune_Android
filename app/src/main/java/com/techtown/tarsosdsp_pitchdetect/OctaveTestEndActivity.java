@@ -11,7 +11,6 @@ import android.widget.TextView;
 public class OctaveTestEndActivity extends AppCompatActivity {
 
     private String userEmail;
-    private String userSex;
     private String octaveHighLow;
 
     private TextView endText;
@@ -23,7 +22,6 @@ public class OctaveTestEndActivity extends AppCompatActivity {
         setContentView(R.layout.activity_octave_test_end);
         Intent intent =  getIntent();
         userEmail = intent.getStringExtra("userEmail");
-        userSex = intent.getStringExtra("userSex");
         octaveHighLow = intent.getStringExtra("octaveHighLow");
         setResult(RESULT_OK, intent);
 
@@ -33,7 +31,8 @@ public class OctaveTestEndActivity extends AppCompatActivity {
         resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(OctaveTestEndActivity.this, OctaveTestActivity.class);
+                Intent intent = new Intent(getApplicationContext(), OctaveTestActivity.class);
+                intent.putExtra("userEmail", userEmail);
                 startActivity(intent);
             }
         });

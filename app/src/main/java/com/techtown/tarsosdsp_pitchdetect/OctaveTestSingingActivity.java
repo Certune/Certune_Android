@@ -66,6 +66,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
     Map<Double, String> map;
     String musicUrl;
+    long musicStartTime;
 
     ArrayList<Double> startTimeList;
     ArrayList<Double> endTimeList;
@@ -150,7 +151,6 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
-        long start = System.nanoTime(); // 시작 시간 측정
 
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
@@ -168,7 +168,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             long end = System.nanoTime();
-                            double time = (end - start) / (1000000000.0);
+                            double time = (end - musicStartTime) / (1000000000.0);
 
                             if (!octav.equals("Nope")) { // 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
@@ -203,6 +203,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     mp.start();
+                    musicStartTime = System.nanoTime(); // 시작 시간 측정
                 }
             });
             mediaPlayer.prepareAsync();
@@ -222,6 +223,15 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
         addDataToFireStore(mapkey);
 
         releaseDispatcher();
+        stopMediaPlayer();
+    }
+
+    private void stopMediaPlayer() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
+            mediaPlayer.reset();
+        }
     }
 
     public void releaseDispatcher() {
@@ -229,11 +239,6 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
             if (!dispatcher.isStopped())
                 dispatcher.stop();
             dispatcher = null;
-        }
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying())
-                mediaPlayer.stop();
-            mediaPlayer.reset();
         }
     }
 
@@ -323,9 +328,10 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
     public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList) {
 
-        int userTotalNoteNum = 0;
-        int userTotalRhythmNum = 0;
-        int octaveTotalNoteNum = 0;
+        int userTotalCorrectNoteNum = 0;
+        int userTotalCorrectRhythmNum = 0;
+        int userTotalTestNoteNum = 0;
+        int userOctaveNoteNum;
 
         int bestOctaveIdx = 0;
         double bestOctaveScore = 0;
@@ -376,13 +382,13 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
             }
             sentenceIdx++;
 
-            userTotalNoteNum += userCorrectNoteNum;
-            userTotalRhythmNum += userCorrectRhythmNum;
-            int octaveNoteNum = testNoteDtoList.size();
-            octaveTotalNoteNum += octaveNoteNum;
+            userTotalCorrectNoteNum += userCorrectNoteNum;
+            userTotalCorrectRhythmNum += userCorrectRhythmNum;
+            userOctaveNoteNum = userNoteDtoList.size();
+            userTotalTestNoteNum += userOctaveNoteNum;
 
-            Double octaveNoteScore = ((double) userCorrectNoteNum / octaveNoteNum) * 100;
-            Double octaveRhythmScore = ((double) userCorrectRhythmNum / octaveNoteNum) * 100;
+            Double octaveNoteScore = ((double) userCorrectNoteNum / userOctaveNoteNum) * 100;
+            Double octaveRhythmScore = ((double) userCorrectRhythmNum / userOctaveNoteNum) * 100;
             Double octaveTotalScore = (octaveNoteScore + octaveRhythmScore) / 2;
 
             userMusicDto.setNoteScore(df.format(octaveNoteScore));
@@ -395,8 +401,8 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
             }
         }
 
-        double totalNoteScore = ((double) userTotalNoteNum / octaveTotalNoteNum) * 100;
-        double totalRhythmScore = ((double) userTotalRhythmNum / octaveTotalNoteNum) * 100;
+        double totalNoteScore = ((double) userTotalCorrectNoteNum / userTotalTestNoteNum) * 100;
+        double totalRhythmScore = ((double) userTotalCorrectRhythmNum / userTotalTestNoteNum) * 100;
         double totalScore = (totalNoteScore + totalRhythmScore) / 2;
 
         UserSongInfoDto userSongInfoDto = UserSongInfoDto

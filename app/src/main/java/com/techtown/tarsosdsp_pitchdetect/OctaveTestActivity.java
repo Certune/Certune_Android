@@ -26,6 +26,10 @@ public class OctaveTestActivity extends AppCompatActivity {
     private String userSex;
     private String octaveHighLow;
 
+    private String userVocalRange;
+    private String maxUserPitch;
+    private String minUserPitch;
+
     private Button highTestBtn;
     private Button lowTestBtn;
     private TextView textview_userOctave;
@@ -38,13 +42,25 @@ public class OctaveTestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            isHighDone = savedInstanceState.getBoolean("isHighDone");
+            isLowDone = savedInstanceState.getBoolean("isLowDone");
+            Log.v("saved", "인스턴스 호출 완료");
+        }
+
         setContentView(R.layout.activity_octave_test);
         Intent subIntent = getIntent();
         userEmail = subIntent.getStringExtra("userEmail");
 
         highTestBtn = (Button) findViewById(R.id.button_highTest);
         lowTestBtn = (Button) findViewById(R.id.button_lowTest);
-        textview_userOctave = (TextView) findViewById(R.id.textview_userOctave);
+        textview_userOctave = (TextView) findViewById(R.id.textView_octaveRange);
+
+        Log.v("oncreate", "Oncreate 시작");
+        Log.v("HIGH", String.valueOf(isHighDone));
+        Log.v("LOW", String.valueOf(isLowDone));
+        getUserInfo();
 
         highTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,12 +87,47 @@ public class OctaveTestActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        getUserInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.v("onStart", "onStart 시작");
+        Log.v("HIGH", String.valueOf(isHighDone));
+        Log.v("LOW", String.valueOf(isLowDone));
 
         if (isHighDone && isLowDone) {
-            // TODO : 사용자 음역대 TEXTVIEW에 반영
-            textview_userOctave.setText("사용자 음역대");
+            getUserVocalRange();
+            Log.v("실행 완", userVocalRange);
+            textview_userOctave.setText(userVocalRange);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.v("onResume", "onResume 시작");
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        isHighDone = savedInstanceState.getBoolean("isHighDone");
+        isLowDone = savedInstanceState.getBoolean("isLowDone");
+        Log.v("restore", "restore 시작");
+        Log.v("HIGH", String.valueOf(isHighDone));
+        Log.v("LOW", String.valueOf(isLowDone));
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        Log.v("onSave", "onsaved 시작");
+        Log.v("HIGH", String.valueOf(isHighDone));
+        Log.v("LOW", String.valueOf(isLowDone));
+        outState.putBoolean("isHighDone", isHighDone);
+        outState.putBoolean("isLowDone", isLowDone);
+        super.onSaveInstanceState(outState);
     }
 
     private void getUserInfo() {
@@ -102,4 +153,27 @@ public class OctaveTestActivity extends AppCompatActivity {
         }
     }
 
+    private void getUserVocalRange() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            DocumentReference docRef = database.collection("User").document(userEmail);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            maxUserPitch = String.valueOf(document.getData().get("maxUserPitch"));
+                            minUserPitch = String.valueOf(document.getData().get("minUserPitch"));
+                            userVocalRange = "최저 음역대 : " + minUserPitch + "\n" + "최고 음역대 : " + maxUserPitch;
+                        } else {
+                            Log.d(TAG, "사용자 정보가 존재하지 않습니다.");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+        }
+    }
 }

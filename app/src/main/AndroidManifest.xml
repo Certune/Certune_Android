@@ -30,12 +30,17 @@
             android:exported="false" />
         <activity
             android:name=".LogInActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
+        <activity
+            android:name=".OctaveTestActivity"
+            android:exported="true" />
+        <activity
+            android:name=".OctaveTestSingingActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>

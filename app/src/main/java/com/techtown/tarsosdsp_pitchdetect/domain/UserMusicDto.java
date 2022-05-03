@@ -9,16 +9,20 @@ import lombok.Setter;
 @Getter @Setter
 public class UserMusicDto {
     public String startTime;
-    public ArrayList<UserNoteDto> notes;
     public String noteScore;
     public String rhythmScore;
+    public String totalScore;
+    public Boolean isPoor;
+    public ArrayList<UserNoteDto> notes;
 
     @Builder
-    public UserMusicDto(String startTime, ArrayList<UserNoteDto> notes, String noteScore, String rhythmScore) {
+    public UserMusicDto(String startTime, String noteScore, String rhythmScore, String totalScore, Boolean isPoor, ArrayList<UserNoteDto> notes) {
         this.startTime = startTime;
-        this.notes = notes;
         this.noteScore = noteScore;
         this.rhythmScore = rhythmScore;
+        this.totalScore = totalScore;
+        this.isPoor = isPoor;
+        this.notes = notes;
     }
     
     public ArrayList<UserNoteDto> getNote() {

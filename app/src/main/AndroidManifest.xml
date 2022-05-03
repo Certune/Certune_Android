@@ -17,10 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
+            android:name=".OctaveTestEndActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LogInActivity"
+            android:name=".SingingActivity"
             android:exported="true" />
         <activity
             android:name=".OctaveTestActivity"
@@ -29,7 +32,7 @@
             android:name=".OctaveTestSingingActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".LogInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

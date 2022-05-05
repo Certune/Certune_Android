@@ -32,6 +32,7 @@ public class OctaveTestActivity extends AppCompatActivity {
 
     private Button highTestBtn;
     private Button lowTestBtn;
+    private Button finishTestBtn;
     private TextView textview_userOctave;
 
     private Boolean isHighDone = false;
@@ -55,6 +56,7 @@ public class OctaveTestActivity extends AppCompatActivity {
 
         highTestBtn = (Button) findViewById(R.id.button_highTest);
         lowTestBtn = (Button) findViewById(R.id.button_lowTest);
+        finishTestBtn = (Button) findViewById(R.id.button_finishTest);
         textview_userOctave = (TextView) findViewById(R.id.textView_octaveRange);
 
         Log.v("oncreate", "Oncreate 시작");
@@ -84,6 +86,17 @@ public class OctaveTestActivity extends AppCompatActivity {
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("userSex", userSex);
                 intent.putExtra("octaveHighLow", octaveHighLow);
+                startActivity(intent);
+            }
+        });
+
+        finishTestBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO : lowTest, highTest 끝났는지 확인 필요
+                Intent intent = new Intent(getApplicationContext(), SongListActivity.class);
+                intent.putExtra("userEmail", userEmail);
+                intent.putExtra("userSex", userSex);
                 startActivity(intent);
             }
         });

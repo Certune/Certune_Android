@@ -5,7 +5,7 @@ import static com.techtown.tarsosdsp_pitchdetect.score.CalcStartTimeRange.calcSt
 import static com.techtown.tarsosdsp_pitchdetect.score.ProcessNoteRange.processNoteRange;
 import static com.techtown.tarsosdsp_pitchdetect.score.ProcessTimeRange.processTimeRange;
 
-import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -25,12 +25,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
@@ -41,7 +39,6 @@ import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserSongInfoDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.SongSentenceDto;
 import com.techtown.tarsosdsp_pitchdetect.score.ProcessPitch;
-
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,6 +73,10 @@ public class SingingActivity extends AppCompatActivity {
     String userSex;
     String uid;
 
+    String songName;
+    String singerName;
+    Boolean isShifting;
+
     String songUrl;
 
     private TextView displayName;
@@ -108,6 +109,12 @@ public class SingingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent subIntent = getIntent();
+        userEmail = subIntent.getStringExtra("userEmail");
+        songName = subIntent.getStringExtra("songName");
+        singerName = subIntent.getStringExtra("singerName");
+        isShifting = subIntent.getBooleanExtra("isShifting", false);
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             // Name, email address, and profile photo Url
@@ -123,7 +130,7 @@ public class SingingActivity extends AppCompatActivity {
                             userName = (String) document.getData().get("name");
                             userSex = (String) document.getData().get("sex");
 
-                            displayName  = (TextView) findViewById(R.id.displayName);
+                            displayName = (TextView) findViewById(R.id.displayName);
                             displayName.setText(userName);
                         } else {
                             Log.d(TAG, "사용자 정보가 존재하지 않습니다.");
@@ -156,8 +163,7 @@ public class SingingActivity extends AppCompatActivity {
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         // get music info from database
-        // TODO : SongName 전역변수 생성
-        database.collection("Song").document("신호등").get().addOnCompleteListener(task -> {
+        database.collection("Song").document(songName).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         try {
@@ -254,7 +260,7 @@ public class SingingActivity extends AppCompatActivity {
                             Log.e("FETCH MUSIC", e.toString());
                         }
                     }
-              });
+                });
     }
 
     public void playAudio() {
@@ -307,6 +313,7 @@ public class SingingActivity extends AppCompatActivity {
     }
 
     String prevOctave;
+
     public void recordAudio() {
         fetchAudioUrlFromFirebase();
         prevOctave = "";
@@ -380,7 +387,7 @@ public class SingingActivity extends AppCompatActivity {
             dispatcher = null;
         }
 
-        if (mediaPlayer != null){
+        if (mediaPlayer != null) {
             mediaPlayer.reset();
             mediaPlayer.release();
             mediaPlayer = null;
@@ -478,7 +485,7 @@ public class SingingActivity extends AppCompatActivity {
     }
 
     // TODO : 전역 변수로 songName 설정해야 함
-    public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList, String songName){
+    public void calcUserScore(ArrayList<UserMusicDto> userMusicInfoList, String songName) {
 
         int userTotalNoteNum = 0;
         double userTotalSentenceTime = 0;
@@ -517,7 +524,7 @@ public class SingingActivity extends AppCompatActivity {
 
                 if (sentenceStartTime <= userNoteStartTime && sentenceEndTime >= userNoteStartTime) {
                     ArrayList<Double> timeRangeList = processTimeRange(sentenceNoteDtoList.get(noteIdx).getStartTime());
-                    if (songNoteEndTime <= userNoteStartTime){
+                    if (songNoteEndTime <= userNoteStartTime) {
                         noteIdx++;
                         songNoteEndTime = Double.parseDouble(sentenceNoteDtoList.get(noteIdx).getEndTime());
 
@@ -559,7 +566,7 @@ public class SingingActivity extends AppCompatActivity {
 
         double totalNoteScore = ((double) userTotalSentenceTime / songTotalNoteTimeDto.getSongTotalSentenceTime()) * 100;
         double totalRhythmScore = ((double) userTotalNoteNum / songTotalNoteTimeDto.getSongTotalNoteNum()) * 100;
-        double totalScore = ( totalNoteScore + totalRhythmScore ) / 2;
+        double totalScore = (totalNoteScore + totalRhythmScore) / 2;
 
         UserSongInfoDto userSongInfoDto = UserSongInfoDto
                 .builder()

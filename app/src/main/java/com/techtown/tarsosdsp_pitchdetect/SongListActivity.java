@@ -5,9 +5,12 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -21,8 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongListActivity extends AppCompatActivity {
-    ListView list;
-    List<String> itemList = new ArrayList<>();
+    private ListView list;
+    private ArrayAdapter adapter;
+    private List<String> itemList = new ArrayList<>();
+    String userEmail;
 
     // firebase db 연동
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -31,6 +36,9 @@ public class SongListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_song_list);
+
+        Intent subIntent = getIntent();
+        userEmail = subIntent.getStringExtra("userEmail");
 
         // Song 컬렉션 내에 위치한 모든 곡 이름 가져오기
         database.collection("Song")
@@ -52,19 +60,28 @@ public class SongListActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                list = (ListView) findViewById(R.id.listView);
-                ArrayAdapter adapter = new ArrayAdapter(SongListActivity.this, android.R.layout.simple_list_item_1, itemList);
+                list = (ListView) findViewById(R.id.songListArea);
+                adapter = new ArrayAdapter(SongListActivity.this, android.R.layout.simple_list_item_1, itemList);
                 list.setAdapter(adapter);
+
+                // 클릭 이벤트
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String songName = (String) parent.getItemAtPosition(position);
+                        Intent intent = new Intent(getApplicationContext(), SingingStandbyActivity.class);
+                        intent.putExtra("userEmail", userEmail);
+                        intent.putExtra("songName", songName);
+                        startActivity(intent);
+                    }
+                });
             }
-        },4000);
+        }, 4000);
 
     }
 
     @Override
     protected void onStart() {
-
-
-
         super.onStart();
     }
 }

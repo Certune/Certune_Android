@@ -17,20 +17,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
+            android:name=".SingingStandbyActivity"
+            android:exported="true" />
+        <activity
             android:name=".SongListActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="true">
         </activity>
         <activity
             android:name=".OctaveTestEndActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".RegisterActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".SingingActivity"
             android:exported="true" />
@@ -39,10 +37,15 @@
             android:exported="true" />
         <activity
             android:name=".OctaveTestSingingActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".LogInActivity"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

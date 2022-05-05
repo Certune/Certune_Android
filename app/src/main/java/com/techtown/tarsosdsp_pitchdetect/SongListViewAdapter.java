@@ -5,16 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.techtown.tarsosdsp_pitchdetect.CustomSongList;
+import com.techtown.tarsosdsp_pitchdetect.domain.CustomSongListDto;
 
 import java.util.ArrayList;
 
 public class SongListViewAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    private ArrayList<CustomSongList> listViewItemList = new ArrayList<CustomSongList>() ;
+    private ArrayList<CustomSongListDto> listViewItemList = new ArrayList<CustomSongListDto>() ;
 
     // SongListViewAdapter 생성자
     public SongListViewAdapter() {
@@ -54,7 +53,7 @@ public class SongListViewAdapter extends BaseAdapter {
         convertView.setTag(holder);
 
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
-        CustomSongList listViewItem = listViewItemList.get(position);
+        CustomSongListDto listViewItem = listViewItemList.get(position);
 
         // 아이템 내 각 위젯에 데이터 반영
         holder.listIndex.setText(listViewItem.getIndexText());
@@ -72,13 +71,13 @@ public class SongListViewAdapter extends BaseAdapter {
 
     // 지정한 위치(position)에 있는 데이터 리턴 : 필수 구현
     @Override
-    public Object getItem(int position) {
+    public CustomSongListDto getItem(int position) {
         return listViewItemList.get(position);
     }
 
     // 아이템 데이터 추가를 위한 함수
-    public void addItem(CustomSongList dto) {
-        CustomSongList item = new CustomSongList();
+    public void addItem(CustomSongListDto dto) {
+        CustomSongListDto item = new CustomSongListDto();
 
         item.setIndexText(dto.getIndexText());
         item.setSongText(dto.getSongText());

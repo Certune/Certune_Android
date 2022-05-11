@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.techtown.tarsosdsp_pitchdetect.domain.CustomSongListDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class SongListActivity extends AppCompatActivity {
             public void run() {
                 adapter = new SongListViewAdapter();
                 setData();
-                list = (ListView) findViewById(R.id.listView);
+                list = (ListView) findViewById(R.id.songListArea);
                 list.setAdapter(adapter);
             }
         },3000);
@@ -68,7 +69,7 @@ public class SongListActivity extends AppCompatActivity {
     private void setData() {
 
         for (int i = 0; i < songList.size(); i++) {
-            CustomSongList dto = new CustomSongList();
+            CustomSongListDto dto = new CustomSongListDto();
             dto.setIndexText(Integer.toString(i + 1));
             dto.setSongText(songList.get(i));
             dto.setSingerText(singerList.get(i));

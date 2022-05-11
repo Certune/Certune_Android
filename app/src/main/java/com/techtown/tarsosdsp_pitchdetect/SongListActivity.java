@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,8 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongListActivity extends AppCompatActivity {
-    ListView list;
-    List<String> itemList = new ArrayList<>();
+    private ListView list;
+    private SongListViewAdapter adapter;
+    List<String> songList = new ArrayList<>();
+    List<String> singerList = new ArrayList<>();
 
     // firebase db 연동
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -40,7 +43,8 @@ public class SongListActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                itemList.add(document.getId().toString());
+                                songList.add(document.getId().toString());
+                                singerList.add(document.getData().get("singer").toString());
                                 Log.d(TAG, document.getId() + " => " + document.getData().get("singer"));
                             }
                         } else {
@@ -52,19 +56,24 @@ public class SongListActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                adapter = new SongListViewAdapter();
+                setData();
                 list = (ListView) findViewById(R.id.listView);
-                ArrayAdapter adapter = new ArrayAdapter(SongListActivity.this, android.R.layout.simple_list_item_1, itemList);
                 list.setAdapter(adapter);
             }
-        },4000);
+        },3000);
 
     }
 
-    @Override
-    protected void onStart() {
+    private void setData() {
 
+        for (int i = 0; i < songList.size(); i++) {
+            CustomSongList dto = new CustomSongList();
+            dto.setIndexText(Integer.toString(i + 1));
+            dto.setSongText(songList.get(i));
+            dto.setSingerText(singerList.get(i));
 
-
-        super.onStart();
+            adapter.addItem(dto);
+        }
     }
 }

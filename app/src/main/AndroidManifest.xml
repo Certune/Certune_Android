@@ -18,7 +18,7 @@
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
             android:name=".SongListActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,9 +30,7 @@
             android:exported="false" />
         <activity
             android:name=".LogInActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true" />

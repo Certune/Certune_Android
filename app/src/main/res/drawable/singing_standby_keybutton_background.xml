@@ -10,5 +10,5 @@
     <!-- 선 크기 및 색 지정 -->
     <stroke
         android:width="1dp"
-        android:color="@color/black" />
+        android:color="#B4DFDB" />
 </shape>

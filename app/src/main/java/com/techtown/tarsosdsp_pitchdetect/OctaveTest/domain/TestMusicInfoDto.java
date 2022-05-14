@@ -1,4 +1,6 @@
-package com.techtown.tarsosdsp_pitchdetect.domain;
+package com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain;
+
+import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
 
 import java.util.ArrayList;
 
@@ -6,14 +8,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class TestMusicDto {
+public class TestMusicInfoDto {
 
     private Double startTime;
     private Double endTime;
     private ArrayList<NoteDto> notes;
 
     @Builder
-    public TestMusicDto(Double startTime, Double endTime, ArrayList<NoteDto> notes) {
+    public TestMusicInfoDto(Double startTime, Double endTime, ArrayList<NoteDto> notes) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.notes = notes;

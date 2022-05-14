@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect.score;
+package com.techtown.tarsosdsp_pitchdetect.score.logics;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect.domain;
+package com.techtown.tarsosdsp_pitchdetect.score.domain;
 
 import lombok.Builder;
 import lombok.Getter;

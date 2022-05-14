@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
 import static android.content.ContentValues.TAG;
 
@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.techtown.tarsosdsp_pitchdetect.R;
 
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +96,8 @@ public class SingingStandbyActivity extends AppCompatActivity {
                 intent.putExtra("songName", songName);
                 intent.putExtra("singerName", singerName);
                 intent.putExtra("isShifting", isShifting);
+                intent.putExtra("songLowKey", songLowKey);
+                intent.putExtra("songHighKey", songHighKey);
                 startActivity(intent);
             }
         });

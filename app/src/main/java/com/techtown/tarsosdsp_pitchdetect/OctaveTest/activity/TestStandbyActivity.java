@@ -53,7 +53,7 @@ public class TestStandbyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_octave_test);
+        setContentView(R.layout.activity_octave_test_standby);
         Intent subIntent = getIntent();
         userEmail = subIntent.getStringExtra("userEmail");
 

@@ -17,6 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
+            android:name=".score.activity.SingingResult"
+            android:exported="false" />
+        <activity
             android:name=".SingingStandbyActivity"
             android:exported="true" />
         <activity
@@ -45,9 +48,7 @@
             android:exported="true" />
         <activity
             android:name=".LogInActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>

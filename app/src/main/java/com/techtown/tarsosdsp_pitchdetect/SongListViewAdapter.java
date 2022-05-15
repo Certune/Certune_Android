@@ -1,19 +1,36 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.techtown.tarsosdsp_pitchdetect.domain.CustomSongListDto;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SongListViewAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
-    private ArrayList<CustomSongListDto> listViewItemList = new ArrayList<CustomSongListDto>() ;
+    private ArrayList<CustomSongListDto> listViewItemList = new ArrayList<CustomSongListDto>();
+
+    // firebase db 연동
+    private static FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+    List<String> songList = new ArrayList<>();
+    List<String> singerList = new ArrayList<>();
 
     // SongListViewAdapter 생성자
     public SongListViewAdapter() {
@@ -23,7 +40,7 @@ public class SongListViewAdapter extends BaseAdapter {
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
     @Override
     public int getCount() {
-        return listViewItemList.size() ;
+        return listViewItemList.size();
     }
 
     // 지정한 위치(position)에 있는 데이터와 관계된 아이템(row)의 ID를 리턴. : 필수 구현
@@ -38,7 +55,6 @@ public class SongListViewAdapter extends BaseAdapter {
         CustomViewHolder holder;
 
         final int pos = position;
-        final Context context = parent.getContext();
 
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null)
@@ -69,6 +85,26 @@ public class SongListViewAdapter extends BaseAdapter {
         TextView singerName;
     }
 
+    public void getData() {
+        // Song 컬렉션 내에 위치한 모든 곡 이름 가져오기
+        database.collection("Song")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                songList.add(document.getId());
+                                singerList.add(document.getData().get("singer").toString());
+                            }
+                            Log.v("log for checking", "1.setting finish");
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
     // 지정한 위치(position)에 있는 데이터 리턴 : 필수 구현
     @Override
     public CustomSongListDto getItem(int position) {
@@ -76,13 +112,17 @@ public class SongListViewAdapter extends BaseAdapter {
     }
 
     // 아이템 데이터 추가를 위한 함수
-    public void addItem(CustomSongListDto dto) {
-        CustomSongListDto item = new CustomSongListDto();
+    public void addItem() {
+        for (int i = 0; i < songList.size(); i++) {
+            CustomSongListDto item = new CustomSongListDto();
 
-        item.setIndexText(dto.getIndexText());
-        item.setSongText(dto.getSongText());
-        item.setSingerText(dto.getSingerText());
+            item.setIndexText(Integer.toString(i + 1));
+            item.setSongText(songList.get(i));
+            item.setSingerText(singerList.get(i));
 
-        listViewItemList.add(item);
+            listViewItemList.add(item);
+        }
+
+        Log.v("log for checking", "2.adding item");
     }
 }

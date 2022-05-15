@@ -1,6 +1,6 @@
 package com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain;
 
-import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 
 import java.util.ArrayList;
 

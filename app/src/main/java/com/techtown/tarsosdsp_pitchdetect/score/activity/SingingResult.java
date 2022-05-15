@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.techtown.tarsosdsp_pitchdetect.R;
+
 public class SingingResult extends AppCompatActivity {
 
     @Override

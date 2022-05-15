@@ -17,12 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
-                android:name=".ScrollTestActivity"
-                android:exported="true">
+            android:name=".score.activity.SingingResult"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity
-            android:name=".Singing.activity.SingingTableActivity"
-            android:exported="false" />
         <activity
             android:name=".Singing.activity.SingingStandbyActivity"
             android:exported="true" />
@@ -47,10 +48,7 @@
         <activity
             android:name=".Login.LogInActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
     </application>
 

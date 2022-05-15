@@ -3,8 +3,35 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android/platforms/android-31/data/res/layout/simple_list_item_1.xml" value="0.15694444444444444" />
         <entry key="..\:/Github/Android-practice/tarsosDSP_PitchDetect/app/src/main/res/layout/activity_main.xml" value="0.4" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.13402777777777777" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/basic_shadow.xml" value="0.1" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.13402777777777777" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/rounded_rectangle.xml" value="0.1" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/shadow.xml" value="0.15051546391752577" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_activity_songname_background.xml" value="0.21458333333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_keybutton_background.xml" value="0.16770833333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_lyric_background.xml" value="0.1701388888888889" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_singerName_background.xml" value="0.16770833333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_singername_background.xml" value="0.21458333333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_songName_background.xml" value="0.16770833333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_songname_background.xml" value="0.21458333333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/test_standby_test_complete_background.xml" value="0.14965277777777777" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/test_standby_test_incomplete_background.xml" value="0.14965277777777777" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_log_in.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_main.xml" value="0.23802083333333332" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test.xml" value="0.2" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_end.xml" value="0.176" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_singing.xml" value="0.264" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_register.xml" value="0.2326388888888889" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_scroll_test.xml" value="0.1" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_standby.xml" value="0.176" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_table.xml" value="0.13422131147540983" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_song_list.xml" value="0.2489754098360656" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_practice.xml" value="0.2489754098360656" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2489754098360656" />
+        <entry key="app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.178125" />
         <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_main.xml" value="0.2203125" />
         <entry key="app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.178125" />
         <entry key="app/src/main/res/drawable/singing_standby_keybutton_background.xml" value="0.2984375" />
@@ -17,7 +44,6 @@
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.3126618054457129" />
         <entry key="app/src/main/res/layout/activity_singing_standby.xml" value="0.3098958333333333" />
         <entry key="app/src/main/res/layout/activity_song_list.xml" value="0.26222826086956524" />
-        <entry key="app/src/main/res/layout/custom_listview.xml" value="0.40913252683940676" />
       </map>
     </option>
   </component>

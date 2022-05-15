@@ -6,17 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ListView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingStandbyActivity;
-import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class SongListActivity extends AppCompatActivity {
     private ListView list;
     private SongListViewAdapter adapter;
@@ -36,7 +25,7 @@ public class SongListActivity extends AppCompatActivity {
                 list = (ListView) findViewById(R.id.songListArea);
                 list.setAdapter(adapter);
             }
-        },2500);
+        }, 2500);
     }
 
 }

@@ -27,7 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.R;
-import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestMusicInfoDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
@@ -69,7 +69,6 @@ public class TestSingingActivity extends AppCompatActivity {
 
     Map<Double, String> map;
     String musicUrl;
-    long musicStartTime;
 
     ArrayList<Double> startTimeList;
     ArrayList<Double> endTimeList;
@@ -150,8 +149,8 @@ public class TestSingingActivity extends AppCompatActivity {
     public void recordAudio() {
 
         releaseDispatcher();
-        createMediaPlayer();
-
+        mediaPlayer.start();
+        long start = System.nanoTime();
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
 
@@ -171,7 +170,7 @@ public class TestSingingActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             long end = System.nanoTime();
-                            double time = (end - musicStartTime) / (1000000000.0);
+                            double time = (end - start) / (1000000000.0);
 
                             if (!octav.equals("Nope")) { // 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
@@ -205,8 +204,7 @@ public class TestSingingActivity extends AppCompatActivity {
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    mp.start();
-                    musicStartTime = System.nanoTime(); // 시작 시간 측정
+                    recordButton.setEnabled(true);
                 }
             });
             mediaPlayer.prepareAsync();
@@ -418,7 +416,6 @@ public class TestSingingActivity extends AppCompatActivity {
 
         uploadUserScore(testUserResultDto);
         findBestOctaveNote(bestOctaveIdx);
-
     }
 
     private void uploadUserScore(TestUserResultDto testUserResultDto) {
@@ -555,6 +552,7 @@ public class TestSingingActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Uri uri) {
                         musicUrl = uri.toString();
+                        createMediaPlayer();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

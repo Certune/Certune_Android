@@ -2,7 +2,6 @@ package com.techtown.tarsosdsp_pitchdetect;
 
 import static android.content.ContentValues.TAG;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.techtown.tarsosdsp_pitchdetect.domain.CustomSongListDto;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
 
 import java.util.ArrayList;
 import java.util.List;

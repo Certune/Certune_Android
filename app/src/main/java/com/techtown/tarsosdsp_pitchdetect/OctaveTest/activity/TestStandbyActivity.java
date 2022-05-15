@@ -68,7 +68,7 @@ public class TestStandbyActivity extends AppCompatActivity {
         highTestBtn = (Button) findViewById(R.id.button_highTest);
         lowTestBtn = (Button) findViewById(R.id.button_lowTest);
         highTestCompleteBtn = (Button) findViewById(R.id.button_highTestComplete);
-        lowTestCompleteBtn = (Button) findViewById(R.id.button_lowTestComplete);
+        lowTestCompleteBtn = (Button) findViewById(R.id.button_highTestComplete);
         finishTestBtn = (Button) findViewById(R.id.button_finishTest);
         textview_userOctave = (TextView) findViewById(R.id.textview_userOctave);
         textView_userOctaveDescription = (TextView) findViewById(R.id.textview_userOctaveDesc);

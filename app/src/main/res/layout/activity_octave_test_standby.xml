@@ -92,7 +92,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button_lowTestComplete"
+        android:id="@+id/button_highTestComplete"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/test_standby_test_incomplete_background"
@@ -105,7 +105,7 @@
         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
     <Button
-        android:id="@+id/button_highTestComplete"
+        android:id="@+id/button_lowTestComplete"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:background="@drawable/test_standby_test_incomplete_background"

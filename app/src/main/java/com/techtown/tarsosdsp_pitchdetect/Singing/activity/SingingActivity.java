@@ -1,9 +1,9 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
 import static android.content.ContentValues.TAG;
-import static com.techtown.tarsosdsp_pitchdetect.score.CalcStartTimeRange.calcStartTimeRange;
-import static com.techtown.tarsosdsp_pitchdetect.score.ProcessNoteRange.processNoteRange;
-import static com.techtown.tarsosdsp_pitchdetect.score.ProcessTimeRange.processTimeRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.CalcStartTimeRange.calcStartTimeRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessNoteRange.processNoteRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessTimeRange.processTimeRange;
 
 import android.content.Intent;
 import android.media.AudioManager;
@@ -31,14 +31,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserResultDto;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserUploadDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.SongTotalNoteTimeDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserSongInfoDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.SongSentenceDto;
-import com.techtown.tarsosdsp_pitchdetect.score.ProcessPitch;
+import com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessPitch;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +66,6 @@ import be.tarsos.dsp.pitch.PitchDetectionHandler;
 import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
-import lombok.SneakyThrows;
 
 public class SingingActivity extends AppCompatActivity {
     // 로그인된 유저의 이름, 이메일, uid 정보
@@ -78,6 +79,7 @@ public class SingingActivity extends AppCompatActivity {
     Boolean isShifting;
 
     String songUrl;
+    private long startTime;
 
     private TextView displayName;
 
@@ -99,7 +101,7 @@ public class SingingActivity extends AppCompatActivity {
     Button playButton;
 
     boolean isRecording = false;
-    String filename = "recorded_sound.wav";
+    String filename = "singingResult.wav";
 
     // firebase db 연동
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -236,7 +238,7 @@ public class SingingActivity extends AppCompatActivity {
     // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        StorageReference filepath = mStorage.child("songs").child("Traffic_Light.mp3");
+        StorageReference filepath = mStorage.child("songs").child(songName).child(songName+".mp3");
         Log.v("FILEPATH", filepath.toString());
 
         filepath.getDownloadUrl()
@@ -253,6 +255,7 @@ public class SingingActivity extends AppCompatActivity {
                                 public void onPrepared(MediaPlayer mp) {
                                     Log.v("준비완", "간다");
                                     mp.start();
+                                    startTime = System.nanoTime();
                                 }
                             });
                             mediaPlayer.prepare();
@@ -316,9 +319,9 @@ public class SingingActivity extends AppCompatActivity {
 
     public void recordAudio() {
         fetchAudioUrlFromFirebase();
+        startTime = System.nanoTime();
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
-        long start = System.nanoTime(); // 시작 시간 측정
 
         Log.v("start", "start time measuring process");
         releaseDispatcher();
@@ -340,7 +343,7 @@ public class SingingActivity extends AppCompatActivity {
                         public void run() {
                             pitchTextView.setText(octav);
                             long end = System.nanoTime();
-                            double time = (end - start) / (1000000000.0);
+                            double time = (end - startTime) / (1000000000.0);
 
                             if (!octav.equals("Nope")) { // 의미있는 값일 때만 입력받음
                                 Log.v("time", String.valueOf(time));
@@ -412,7 +415,7 @@ public class SingingActivity extends AppCompatActivity {
 
     public void addWAVToFireStorage() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        StorageReference filepath = mStorage.child("Audio").child(filename);
+        StorageReference filepath = mStorage.child("User").child(userEmail).child("songs").child(songName).child(filename);
 
         Uri uri = Uri.fromFile(file);
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -568,17 +571,16 @@ public class SingingActivity extends AppCompatActivity {
         double totalRhythmScore = ((double) userTotalNoteNum / songTotalNoteTimeDto.getSongTotalNoteNum()) * 100;
         double totalScore = (totalNoteScore + totalRhythmScore) / 2;
 
-        UserSongInfoDto userSongInfoDto = UserSongInfoDto
+        SingingUserResultDto singingUserResultDto = SingingUserResultDto
                 .builder()
                 .songInfo(userMusicInfoList)
-                .totalScore(df.format(totalScore))
                 .noteScore(df.format(totalNoteScore))
                 .rhythmScore(df.format(totalRhythmScore))
                 .build();
 
         Log.v("SCORE", totalNoteScore + "/" + totalRhythmScore + "/" + totalScore);
-        uploadUserScore(songName, userSongInfoDto);
-        uploadWeakSentenceList(songName, weakSentenceIdxList);
+        uploadUserScore(singingUserResultDto, df.format(totalScore));
+        uploadWeakSentenceList(weakSentenceIdxList);
     }
 
     private List<SongSentenceDto> getSongSentenceInfo(SongTotalNoteTimeDto songTotalNoteTimeDto) {
@@ -604,12 +606,15 @@ public class SingingActivity extends AppCompatActivity {
         return songSentenceInfoList;
     }
 
-    private void uploadUserScore(String songName, UserSongInfoDto userSongInfoDto) {
-        Map<String, UserSongInfoDto> userMusicList = new HashMap<>();
-        userMusicList.put("sentence", userSongInfoDto);
+    private void uploadUserScore(SingingUserResultDto singingUserResultDto, String totalScore) {
+        SingingUserUploadDto singingUserUploadDto = SingingUserUploadDto.builder()
+                .result(singingUserResultDto)
+                .singerName(singerName)
+                .totalScore(totalScore)
+                .build();
 
         database.collection("User").document(userEmail).collection("userSongList").document("신호등")
-                .set(userMusicList)
+                .set(singingUserUploadDto)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -624,7 +629,7 @@ public class SingingActivity extends AppCompatActivity {
                 });
     }
 
-    private void uploadWeakSentenceList(String songName, ArrayList<Integer> weakSentenceIdxList) {
+    private void uploadWeakSentenceList(ArrayList<Integer> weakSentenceIdxList) {
         Map<String, ArrayList<Integer>> userWeakSentenceMap = new HashMap<>();
         userWeakSentenceMap.put("weakSentence", weakSentenceIdxList);
 

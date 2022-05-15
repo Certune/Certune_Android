@@ -3,7 +3,7 @@
     android:padding="10dp"
     android:shape="rectangle">
     <!-- 배경 색 설정  -->
-    <solid android:color="@color/black" />
+    <solid android:color="#B4DFDB" />
     <!-- 선 크기 및 색 지정 -->
     <stroke
         android:width="0dp"

@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.Login;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.techtown.tarsosdsp_pitchdetect.OctaveTest.activity.TestStandbyActivity;
+import com.techtown.tarsosdsp_pitchdetect.R;
 
 public class LogInActivity extends AppCompatActivity {
 
@@ -100,7 +102,7 @@ public class LogInActivity extends AppCompatActivity {
                             Log.d("log-in", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             // updateUI(user);
-                            Intent intent = new Intent(LogInActivity.this, OctaveTestActivity.class);
+                            Intent intent = new Intent(LogInActivity.this, TestStandbyActivity.class);
                             intent.putExtra("userEmail", email);
                             startActivity(intent);
                             finish();

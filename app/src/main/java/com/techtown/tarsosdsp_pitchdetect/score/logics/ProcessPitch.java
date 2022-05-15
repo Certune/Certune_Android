@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect.score;
+package com.techtown.tarsosdsp_pitchdetect.score.logics;
 
 public class ProcessPitch {
     public static String processPitch(float pitchInHz){

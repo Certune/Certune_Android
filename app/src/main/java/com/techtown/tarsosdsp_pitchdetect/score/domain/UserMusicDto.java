@@ -1,4 +1,6 @@
-package com.techtown.tarsosdsp_pitchdetect.domain;
+package com.techtown.tarsosdsp_pitchdetect.score.domain;
+
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
 
 import java.util.ArrayList;
 

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OctaveTest.activity.TestStandbyActivity">
+
+
+    <Button
+        android:id="@+id/button_finishTest"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="84dp"
+        android:background="#B4DFDB"
+        android:text="확인"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textview_userOctave"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="66dp"
+        android:layout_marginEnd="55dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:background="@drawable/rounded_rectangle"
+        android:text="음역대"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/button_finishTest"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_lowTest"
+        app:layout_constraintVertical_bias="0.535" />
+
+    <TextView
+        android:id="@+id/textview_userOctaveDesc"
+        android:layout_width="102dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="8dp"
+        android:text="당신의 음역대"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/textview_userOctave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.168"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_lowTest"
+        app:layout_constraintVertical_bias="0.978" />
+
+    <TextView
+        android:id="@+id/textView_octaveTest01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="92dp"
+        android:text="음역대 설정"
+        android:textSize="32sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_lowTest"
+        android:layout_width="300dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/basic_shadow"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="20dp"
+        android:text="저음 테스트"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_highTest" />
+
+    <Button
+        android:id="@+id/button_highTest"
+        android:layout_width="300dp"
+        android:layout_height="70dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="204dp"
+        android:background="@drawable/basic_shadow"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="20dp"
+        android:text="고음 테스트"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_lowTestComplete"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/test_standby_test_incomplete_background"
+        app:layout_constraintBottom_toBottomOf="@+id/button_highTest"
+        app:layout_constraintEnd_toEndOf="@+id/button_highTest"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="@+id/button_highTest"
+        app:layout_constraintTop_toTopOf="@+id/button_highTest"
+        app:layout_constraintVertical_bias="0.4"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <Button
+        android:id="@+id/button_highTestComplete"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:background="@drawable/test_standby_test_incomplete_background"
+        app:layout_constraintBottom_toBottomOf="@+id/button_lowTest"
+        app:layout_constraintEnd_toEndOf="@+id/button_lowTest"
+        app:layout_constraintHorizontal_bias="0.95"
+        app:layout_constraintStart_toStartOf="@+id/button_lowTest"
+        app:layout_constraintTop_toTopOf="@+id/button_lowTest"
+        app:layout_constraintVertical_bias="0.4"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/textView_octaveTest02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="9dp"
+        android:text="최고, 최저음을 통해 나의 음역대를 찾아봐요"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_octaveTest01" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

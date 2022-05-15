@@ -1,8 +1,10 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.OctaveTest.activity;
 
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,8 +21,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
 
-public class OctaveTestActivity extends AppCompatActivity {
+public class TestStandbyActivity extends AppCompatActivity {
 
     private String userEmail;
     private String userSex;
@@ -32,44 +36,53 @@ public class OctaveTestActivity extends AppCompatActivity {
 
     private Button highTestBtn;
     private Button lowTestBtn;
+    private Button highTestCompleteBtn;
+    private Button lowTestCompleteBtn;
     private Button finishTestBtn;
+    private TextView textView_userOctaveDescription;
     private TextView textview_userOctave;
 
-    private Boolean isHighDone = false;
-    private Boolean isLowDone = false;
+    private Boolean isHighDone;
+    private Boolean isLowDone;
 
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+    private SharedPreferences mPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            isHighDone = savedInstanceState.getBoolean("isHighDone");
-            isLowDone = savedInstanceState.getBoolean("isLowDone");
-            Log.v("saved", "인스턴스 호출 완료");
-        }
-
-        setContentView(R.layout.activity_octave_test);
+        setContentView(R.layout.activity_octave_test_standby);
         Intent subIntent = getIntent();
         userEmail = subIntent.getStringExtra("userEmail");
 
+        // 설정
+        String SharedPrefFile = "com.example.android." + userEmail + ".SharedPreferences";
+        mPreferences = getSharedPreferences(SharedPrefFile, MODE_PRIVATE);
+
+        isHighDone = mPreferences.getBoolean("isHighDone", false);
+        isLowDone = mPreferences.getBoolean("isLowDone", false);
+
+        // 요소 할당
         highTestBtn = (Button) findViewById(R.id.button_highTest);
         lowTestBtn = (Button) findViewById(R.id.button_lowTest);
+        highTestCompleteBtn = (Button) findViewById(R.id.button_highTestComplete);
+        lowTestCompleteBtn = (Button) findViewById(R.id.button_lowTestComplete);
         finishTestBtn = (Button) findViewById(R.id.button_finishTest);
-        textview_userOctave = (TextView) findViewById(R.id.textView_octaveRange);
+        textview_userOctave = (TextView) findViewById(R.id.textview_userOctave);
+        textView_userOctaveDescription = (TextView) findViewById(R.id.textview_userOctaveDesc);
+        textview_userOctave.setVisibility(View.INVISIBLE);
+        textView_userOctaveDescription.setVisibility(View.INVISIBLE);
 
-        Log.v("oncreate", "Oncreate 시작");
-        Log.v("HIGH", String.valueOf(isHighDone));
-        Log.v("LOW", String.valueOf(isLowDone));
         getUserInfo();
+        checkIsTestComplete();
 
         highTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 octaveHighLow = "high";
-                isHighDone = true;
-                Intent intent = new Intent(getApplicationContext(), OctaveTestSingingActivity.class);
+                Intent intent = new Intent(getApplicationContext(), TestSingingActivity.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("userSex", userSex);
                 intent.putExtra("octaveHighLow", octaveHighLow);
@@ -81,8 +94,7 @@ public class OctaveTestActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 octaveHighLow = "low";
-                isLowDone = true;
-                Intent intent = new Intent(getApplicationContext(), OctaveTestSingingActivity.class);
+                Intent intent = new Intent(getApplicationContext(), TestSingingActivity.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("userSex", userSex);
                 intent.putExtra("octaveHighLow", octaveHighLow);
@@ -90,10 +102,10 @@ public class OctaveTestActivity extends AppCompatActivity {
             }
         });
 
+        finishTestBtn.setEnabled(isLowDone && isHighDone);
         finishTestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO : lowTest, highTest 끝났는지 확인 필요
                 Intent intent = new Intent(getApplicationContext(), SongListActivity.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("userSex", userSex);
@@ -102,45 +114,19 @@ public class OctaveTestActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    private void checkIsTestComplete() {
+        Drawable drawable = getResources().getDrawable(R.drawable.test_standby_test_complete_background);
+        if (isHighDone)
+            highTestCompleteBtn.setBackground(drawable);
+        if (isLowDone)
+            lowTestCompleteBtn.setBackground(drawable);
 
-        Log.v("onStart", "onStart 시작");
-        Log.v("HIGH", String.valueOf(isHighDone));
-        Log.v("LOW", String.valueOf(isLowDone));
-
-        if (isHighDone && isLowDone) {
+        if (isLowDone && isHighDone) {
+            textview_userOctave.setVisibility(View.VISIBLE);
+            textView_userOctaveDescription.setVisibility(View.VISIBLE);
             getUserVocalRange();
-            Log.v("실행 완", userVocalRange);
-            textview_userOctave.setText(userVocalRange);
         }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.v("onResume", "onResume 시작");
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        isHighDone = savedInstanceState.getBoolean("isHighDone");
-        isLowDone = savedInstanceState.getBoolean("isLowDone");
-        Log.v("restore", "restore 시작");
-        Log.v("HIGH", String.valueOf(isHighDone));
-        Log.v("LOW", String.valueOf(isLowDone));
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        Log.v("onSave", "onsaved 시작");
-        Log.v("HIGH", String.valueOf(isHighDone));
-        Log.v("LOW", String.valueOf(isLowDone));
-        outState.putBoolean("isHighDone", isHighDone);
-        outState.putBoolean("isLowDone", isLowDone);
-        super.onSaveInstanceState(outState);
     }
 
     private void getUserInfo() {
@@ -154,7 +140,6 @@ public class OctaveTestActivity extends AppCompatActivity {
                         DocumentSnapshot document = task.getResult();
                         if (document.exists()) {
                             userSex = (String) document.getData().get("sex");
-                            Log.v("유저 성별", userSex);
                         } else {
                             Log.d(TAG, "사용자 정보가 존재하지 않습니다.");
                         }
@@ -178,7 +163,8 @@ public class OctaveTestActivity extends AppCompatActivity {
                         if (document.exists()) {
                             maxUserPitch = String.valueOf(document.getData().get("maxUserPitch"));
                             minUserPitch = String.valueOf(document.getData().get("minUserPitch"));
-                            userVocalRange = "최저 음역대 : " + minUserPitch + "\n" + "최고 음역대 : " + maxUserPitch;
+                            userVocalRange = minUserPitch + " ~ " + maxUserPitch;
+                            textview_userOctave.setText(userVocalRange);
                         } else {
                             Log.d(TAG, "사용자 정보가 존재하지 않습니다.");
                         }

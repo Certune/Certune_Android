@@ -1,8 +1,8 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.OctaveTest.activity;
 
-import static com.techtown.tarsosdsp_pitchdetect.score.CalcStartTimeRange.calcStartTimeRange;
-import static com.techtown.tarsosdsp_pitchdetect.score.ProcessNoteRange.processNoteRange;
-import static com.techtown.tarsosdsp_pitchdetect.score.ProcessTimeRange.processTimeRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.CalcStartTimeRange.calcStartTimeRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessNoteRange.processNoteRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessTimeRange.processTimeRange;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,12 +26,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.TestMusicDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.UserSongInfoDto;
-import com.techtown.tarsosdsp_pitchdetect.score.ProcessPitch;
+import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestMusicInfoDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
+import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestUserResultDto;
+import com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessPitch;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -54,7 +54,10 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
-public class OctaveTestSingingActivity extends AppCompatActivity {
+public class TestSingingActivity extends AppCompatActivity {
+
+    final int highestNoteIdx = 4;
+    final int lowestNoteIdx = 0;
 
     private String userEmail;
     private String userSex;
@@ -70,7 +73,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
     ArrayList<Double> startTimeList;
     ArrayList<Double> endTimeList;
-    ArrayList<TestMusicDto> musicTotalInfoList;
+    ArrayList<TestMusicInfoDto> musicTotalInfoList;
 
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
@@ -132,7 +135,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                     stopRecording();
                     isRecording = false;
                 }
-                Intent intent = new Intent(getApplicationContext(), OctaveTestEndActivity.class);
+                Intent intent = new Intent(getApplicationContext(), TestEndActivity.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("userSex", userSex);
                 intent.putExtra("octaveHighLow", octaveHighLow);
@@ -256,7 +259,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
 
     public void addWAVToFireStorage() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        StorageReference filepath = mStorage.child("User").child(userEmail).child("octaveTest").child(octaveHighLow);
+        StorageReference filepath = mStorage.child("User").child(userEmail).child("octaveTest").child(octaveHighLow+"result");
 
         Uri uri = Uri.fromFile(file);
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -344,7 +347,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
             int userCorrectNoteNum = 0;
             int userCorrectRhythmNum = 0;
 
-            TestMusicDto testMusicDto = musicTotalInfoList.get(sentenceIdx);
+            TestMusicInfoDto testMusicDto = musicTotalInfoList.get(sentenceIdx);
             ArrayList<NoteDto> testNoteDtoList = testMusicDto.getNotes();
             Double octaveStartTime = testMusicDto.getStartTime();
             Double octaveEndTime = testMusicDto.getEndTime();
@@ -405,7 +408,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
         double totalRhythmScore = ((double) userTotalCorrectRhythmNum / userTotalTestNoteNum) * 100;
         double totalScore = (totalNoteScore + totalRhythmScore) / 2;
 
-        UserSongInfoDto userSongInfoDto = UserSongInfoDto
+        TestUserResultDto testUserResultDto = TestUserResultDto
                 .builder()
                 .songInfo(userMusicInfoList)
                 .totalScore(df.format(totalScore))
@@ -413,15 +416,15 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 .rhythmScore(df.format(totalRhythmScore))
                 .build();
 
-        uploadUserScore(userSongInfoDto);
-        uploadBestOctaveIdx(bestOctaveIdx);
+        uploadUserScore(testUserResultDto);
+        findBestOctaveNote(bestOctaveIdx);
 
     }
 
-    private void uploadUserScore(UserSongInfoDto userSongInfoDto) {
+    private void uploadUserScore(TestUserResultDto testUserResultDto) {
 
-        Map<String, UserSongInfoDto> userMusicList = new HashMap<>();
-        userMusicList.put("octaves", userSongInfoDto);
+        Map<String, TestUserResultDto> userMusicList = new HashMap<>();
+        userMusicList.put("octaves", testUserResultDto);
 
         database.collection("User").document(userEmail).collection("userOctaveList").document(octaveHighLow)
                 .set(userMusicList)
@@ -439,7 +442,35 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 });
     }
 
-    public void uploadBestOctaveIdx(int bestOctaveIdx) {
+    private void findBestOctaveNote(int bestOctaveIdx) {
+        Log.v("BEST OCTAVE IDX", String.valueOf(bestOctaveIdx));
+        database.collection("OctaveTest").document(userSex)
+                .collection("highLowTest").document(octaveHighLow)
+                .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                DocumentSnapshot document = task.getResult();
+                try {
+                    ArrayList<HashMap<String, Object>> octaves = (ArrayList<HashMap<String, Object>>) document.get("octaves");
+                    HashMap<String, Object> notemap = octaves.get(bestOctaveIdx);
+                    ArrayList<String> notes = (ArrayList<String>) notemap.get("notes");
+                    String bestOctaveNote;
+                    if (octaveHighLow.equals("high"))
+                        bestOctaveNote = notes.get(highestNoteIdx);
+                    else
+                        bestOctaveNote = notes.get(lowestNoteIdx);
+                    Log.v("베스트노트", bestOctaveNote);
+                    uploadBestOctaveIdx(bestOctaveNote);
+                } catch (Exception e) {
+                    Log.e("Best Octave Note", "해당 노트를 찾을 수 없습니다.");
+                }
+            }
+            else {
+                Log.e("Best Octave Note", "OctaveTest document를 찾을 수 없습니다.");
+            }
+        });
+    }
+
+    public void uploadBestOctaveIdx(String bestOctaveNote) {
 
         String userOctave;
         if (octaveHighLow.equals("high"))
@@ -448,7 +479,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
             userOctave = "minUserPitch";
 
         database.collection("User").document(userEmail)
-                .update(userOctave, bestOctaveIdx)
+                .update(userOctave, bestOctaveNote)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -470,16 +501,15 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        HashMap<String, Object> testMap = (HashMap<String, Object>) Objects.requireNonNull(documentSnapshot.getData()).get("tests");
-                        ArrayList<HashMap<String, Object>> octaveVersion = (ArrayList<HashMap<String, Object>>) testMap.get("octaves");
-                        double noteTime = (double) testMap.get("note_time");
+                        double noteTime = (double) documentSnapshot.get("note_time");
+                        ArrayList<HashMap<String, Object>> octaves = (ArrayList<HashMap<String, Object>>) documentSnapshot.get("octaves");
 
                         startTimeList = new ArrayList<>();
                         endTimeList = new ArrayList<>();
                         musicTotalInfoList = new ArrayList<>();
 
-                        for (int i = 0; i < octaveVersion.size(); i++) {
-                            HashMap<String, Object> noteListMap = octaveVersion.get(i);
+                        for (int i= 0; i < octaves.size(); i++) {
+                            HashMap<String, Object> noteListMap = octaves.get(i);
                             double octaveStartTime = Double.parseDouble(String.valueOf(noteListMap.get("start_time")));
                             ArrayList<String> noteList = (ArrayList<String>) noteListMap.get("notes");
                             double octaveEndTime = octaveStartTime + noteTime * noteList.size();
@@ -494,7 +524,7 @@ public class OctaveTestSingingActivity extends AppCompatActivity {
                                 noteDtoArrayList.add(noteDto);
                             }
 
-                            TestMusicDto testMusicDto = TestMusicDto.builder()
+                            TestMusicInfoDto testMusicDto = TestMusicInfoDto.builder()
                                     .startTime(octaveStartTime)
                                     .endTime(octaveEndTime)
                                     .notes(noteDtoArrayList)

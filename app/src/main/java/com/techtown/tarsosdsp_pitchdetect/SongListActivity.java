@@ -18,7 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingStandbyActivity;
-import com.techtown.tarsosdsp_pitchdetect.domain.CustomSongListDto;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
 
 import java.util.ArrayList;
 import java.util.List;

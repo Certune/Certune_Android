@@ -17,12 +17,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.techtown.tarsosdsp_pitchdetect.domain.CustomSongListDto;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SongListViewAdapter extends BaseAdapter {
+
+
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<CustomSongListDto> listViewItemList = new ArrayList<CustomSongListDto>();
 

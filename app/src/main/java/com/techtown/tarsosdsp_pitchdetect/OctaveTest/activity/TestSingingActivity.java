@@ -27,7 +27,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.R;
-import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestMusicInfoDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;

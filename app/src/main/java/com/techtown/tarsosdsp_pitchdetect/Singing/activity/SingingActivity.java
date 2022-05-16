@@ -34,12 +34,12 @@ import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserResultDto;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserUploadDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.MusicDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.SongTotalNoteTimeDto;
+import com.techtown.tarsosdsp_pitchdetect.global.MusicDto;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.global.SongTotalNoteTimeDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
-import com.techtown.tarsosdsp_pitchdetect.domain.SongSentenceDto;
+import com.techtown.tarsosdsp_pitchdetect.global.SongSentenceDto;
 import com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessPitch;
 
 import java.io.File;

@@ -3,12 +3,16 @@ package com.techtown.tarsosdsp_pitchdetect;
 import static android.content.ContentValues.TAG;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -17,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingStandbyActivity;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
 
 import java.util.ArrayList;
@@ -26,7 +31,6 @@ public class SongListViewAdapter extends BaseAdapter {
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     private ArrayList<CustomSongListDto> listViewItemList = new ArrayList<CustomSongListDto>();
 
-    // firebase db 연동
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     List<String> songList = new ArrayList<>();
@@ -54,8 +58,6 @@ public class SongListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         CustomViewHolder holder;
 
-        final int pos = position;
-
         // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null)
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_listview, null, false);
@@ -65,6 +67,7 @@ public class SongListViewAdapter extends BaseAdapter {
         holder.listIndex = (TextView) convertView.findViewById(R.id.indexTextView);
         holder.songTitle = (TextView) convertView.findViewById(R.id.songTextView);
         holder.singerName = (TextView) convertView.findViewById(R.id.singerTextView);
+        holder.playBtn = (ImageButton) convertView.findViewById(R.id.playingButton);
 
         convertView.setTag(holder);
 
@@ -76,6 +79,19 @@ public class SongListViewAdapter extends BaseAdapter {
         holder.songTitle.setText(listViewItem.getSongText());
         holder.singerName.setText(listViewItem.getSingerText());
 
+        holder.playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("clicked", Integer.toString(position));
+
+                Intent intent = new Intent(v.getContext(), SingingStandbyActivity.class);
+                intent.putExtra("userEmail", holder.songTitle.getText());
+                intent.putExtra("songName", holder.songTitle.getText());
+
+                ((SongListActivity)v.getContext()).startActivity(intent);
+            }
+        });
+
         return convertView;
     }
 
@@ -83,6 +99,7 @@ public class SongListViewAdapter extends BaseAdapter {
         TextView listIndex;
         TextView songTitle;
         TextView singerName;
+        ImageButton playBtn;
     }
 
     public void getData() {
@@ -97,7 +114,6 @@ public class SongListViewAdapter extends BaseAdapter {
                                 songList.add(document.getId());
                                 singerList.add(document.getData().get("singer").toString());
                             }
-                            Log.v("log for checking", "1.setting finish");
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -122,7 +138,6 @@ public class SongListViewAdapter extends BaseAdapter {
 
             listViewItemList.add(item);
         }
-
-        Log.v("log for checking", "2.adding item");
     }
+
 }

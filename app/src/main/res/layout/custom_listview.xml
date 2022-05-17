@@ -34,4 +34,18 @@
             android:layout_height="wrap_content"
             android:text="content" />
     </LinearLayout>
+<<<<<<< Updated upstream
+=======
+
+    <ImageButton
+        android:id="@+id/playingButton"
+        android:background="@android:color/transparent"
+        android:layout_width="20dp"
+        android:layout_height="30dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:scaleType="centerInside"/>
+<!--        app:srcCompat="@drawable/play" />-->
+
+>>>>>>> Stashed changes
 </LinearLayout>

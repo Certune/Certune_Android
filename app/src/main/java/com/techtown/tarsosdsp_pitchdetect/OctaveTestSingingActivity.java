@@ -26,12 +26,23 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+<<<<<<< Updated upstream:app/src/main/java/com/techtown/tarsosdsp_pitchdetect/OctaveTestSingingActivity.java
 import com.techtown.tarsosdsp_pitchdetect.domain.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.TestMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserNoteDto;
 import com.techtown.tarsosdsp_pitchdetect.domain.UserSongInfoDto;
 import com.techtown.tarsosdsp_pitchdetect.score.ProcessPitch;
+=======
+import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestMusicInfoDto;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
+import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestUserResultDto;
+import com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessPitch;
+>>>>>>> Stashed changes:app/src/main/java/com/techtown/tarsosdsp_pitchdetect/OctaveTest/activity/TestSingingActivity.java
 
 import java.io.File;
 import java.io.IOException;

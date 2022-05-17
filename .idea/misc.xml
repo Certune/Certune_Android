@@ -34,11 +34,13 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
         <entry key="app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/activity_email_password.xml" value="0.2942708333333333" />
+        <entry key="app/src/main/res/layout/activity_live_singing.xml" value="0.21429280354309854" />
         <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.28141511226244353" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.21300510243705637" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2921935313541035" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.3126618054457129" />
         <entry key="app/src/main/res/layout/activity_song_list.xml" value="0.26222826086956524" />
+        <entry key="app/src/main/res/layout/custom_listview.xml" value="0.19342105263157894" />
       </map>
     </option>
   </component>

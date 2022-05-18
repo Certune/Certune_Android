@@ -16,28 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
- 
-        <activity
-                android:name=".ScrollTestActivity"
-                android:exported="true">
-        </activity>
-        <activity
-            android:name=".Singing.activity.SingingTableActivity"
-            android:exported="true" />
-        <activity>
-            android:name=".Singing.activity.LiveSingingActivity"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".Singing.activity.SingGridActivity"
-            android:exported="true">
-        </activity>
         <activity
             android:name=".Singing.activity.LiveSingingActivity"
             android:exported="true">
@@ -74,11 +52,8 @@
             android:exported="true" />
         <activity
             android:name=".Login.LogInActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="true">
+
         </activity>
     </application>
 

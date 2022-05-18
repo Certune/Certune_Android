@@ -19,19 +19,27 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_songname_background.xml" value="0.21458333333333332" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/test_standby_test_complete_background.xml" value="0.14965277777777777" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/test_standby_test_incomplete_background.xml" value="0.14965277777777777" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_grid_item_view.xml" value="0.14649122807017545" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_live_singing.xml" value="0.264" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_log_in.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_main.xml" value="0.23802083333333332" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test.xml" value="0.2" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_end.xml" value="0.176" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_singing.xml" value="0.1" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_standby.xml" value="0.8800000000000001" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_standby.xml" value="0.264" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_register.xml" value="0.2326388888888889" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_scroll_test.xml" value="0.1" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_set_data_loader.xml" value="0.14356884057971014" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_sing_grid.xml" value="0.1" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_standby.xml" value="0.176" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_table.xml" value="0.16" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_song_list.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_practice.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_grid_layout.xml" value="0.19429824561403508" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/singing_grid_item.xml" value="0.23809523809523808" />
         <entry key="app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/activity_email_password.xml" value="0.2942708333333333" />
         <entry key="app/src/main/res/layout/activity_live_singing.xml" value="0.21429280354309854" />

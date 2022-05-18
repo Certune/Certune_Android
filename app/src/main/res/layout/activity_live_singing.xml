@@ -6,38 +6,55 @@
     android:layout_height="match_parent"
     tools:context=".Singing.activity.LiveSingingActivity">
 
-    <androidx.gridlayout.widget.GridLayout
-        android:id="@+id/gridLayout"
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="603dp"
+        android:fillViewport="true"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="1dp" >
+        tools:ignore="SpeakableTextPresentCheck">
 
-    </androidx.gridlayout.widget.GridLayout>
+        <androidx.gridlayout.widget.GridLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="fill_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:orientation="vertical"
+            app:rowCount="17"
+            tools:layout_editor_absoluteX="1dp">
+
+        </androidx.gridlayout.widget.GridLayout>
+
+    </HorizontalScrollView>
 
     <TextView
         android:id="@+id/currentLyricTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="81dp"
         android:text="이제야 목적지를 정했지만"
         android:textSize="23dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.91" />
 
     <TextView
         android:id="@+id/nextLyricTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="43dp"
+        android:layout_marginTop="20dp"
         android:text="가려한 날 막아서네 난 갈 길이 먼데"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentLyricTextView"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

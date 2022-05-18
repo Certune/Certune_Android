@@ -107,6 +107,8 @@ public class TestGraphActivity extends AppCompatActivity {
 
         // add empty data
         mChart.setData(data);
+
+        mChart.setScaleMinima(10f, 1f);
     }
 
     public void setAxis() {

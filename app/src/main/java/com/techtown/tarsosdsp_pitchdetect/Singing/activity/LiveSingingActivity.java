@@ -17,6 +17,13 @@ import android.widget.TextView;
 
 import androidx.gridlayout.widget.GridLayout;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -24,19 +31,31 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.AudioProcessor;
+import be.tarsos.dsp.io.TarsosDSPAudioFormat;
+import be.tarsos.dsp.io.android.AudioDispatcherFactory;
+import be.tarsos.dsp.pitch.PitchDetectionHandler;
+import be.tarsos.dsp.pitch.PitchProcessor;
+
 public class LiveSingingActivity extends AppCompatActivity {
+    AudioDispatcher dispatcher;
+    TarsosDSPAudioFormat tarsosDSPAudioFormat;
+
+    LineChart mChart;
 
     private String userEmail;
     private Boolean isShifting;
 
     private String songName = "신호등";
-    private String songLowKey = "A#4";
-    private String songHighKey = "D#5";
+    private String songLowKey = "D4";
+    private String songHighKey = "B5";
     private Double songEndTime = 123.23;
 
     ArrayList<NoteDto> noteDtoList = new ArrayList<>();
@@ -52,6 +71,21 @@ public class LiveSingingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_singing);
 
+        // Get xml instances
+        mChart = findViewById(R.id.chart);
+        scrollView = findViewById(R.id.horizontalScrollView);
+        gridLayout = findViewById(R.id.gridLayout);
+        gridLayout.setUseDefaultMargins(false);
+
+        // Basic Setting for tarsosDSP AudioFormat
+        tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
+                22050,
+                2 * 8,
+                1,
+                2 * 1,
+                22050,
+                ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
+
         /*
         Intent subIntent = new Intent();
         songName = subIntent.getStringExtra("songName");
@@ -61,101 +95,30 @@ public class LiveSingingActivity extends AppCompatActivity {
         isShifting = subIntent.getBooleanExtra("isShifting", false);
         */
 
-        scrollView = findViewById(R.id.horizontalScrollView);
-        gridLayout = findViewById(R.id.gridLayout);
-        gridLayout.setUseDefaultMargins(false);
-
         getSongEndTime();
-
+        microphoneOn();
+        setChart();
+        setAxis();
     }
 
     public void setCell(int noteIdx, int startTime, int endTime) {
         Log.v("노트 인덱스", String.valueOf(noteIdx));
         Log.v("시작 시간", String.valueOf(startTime));
         Log.v("종료 시간", String.valueOf(endTime));
-        GridLayout.Spec cellRow = GridLayout.spec(noteIdx, 1, 1f);
+        GridLayout.Spec cellRow = GridLayout.spec(noteIdx);
         GridLayout.Spec cellCol = GridLayout.spec(startTime, endTime - startTime);
+
+        GridLayout.LayoutParams param = new GridLayout.LayoutParams(cellRow, cellCol);
+        param.height = gridLayout.getHeight() / gridLayout.getRowCount();
+        param.width = endTime - startTime;
+        param.setGravity(Gravity.FILL_HORIZONTAL);
 
         cell = new Button(this);
         cell.setEnabled(false);
-
-        GridLayout.LayoutParams param = new GridLayout.LayoutParams(cellRow, cellCol);
-        param.height = 0;
-        //  param.width = 0;
-        param.setGravity(Gravity.FILL_HORIZONTAL);
         cell.setLayoutParams(param);
+        cell.setBackgroundColor(Color.GRAY); // 이거 없애면 버튼 홀쭉해짐
 
-        gridLayout.addView(cell);
-        Log.v("들어왔당", "추가까지 완");
-    }
-
-    public void setThis() {
-        // https://stackoverflow.com/questions/35924875/how-to-use-gridlayout-spec-for-a-column-extending-multiple-rows
-        // face view takes 2 rows, 1 column -- zero index based
-        GridLayout.Spec faceRow = GridLayout.spec(0, 2); // starts row 0, takes 2 rows
-        GridLayout.Spec faceCol = GridLayout.spec(0); // starts col 0, takes 1 col
-
-        GridLayout.Spec titleRow = GridLayout.spec(0); // starts row 0, takes 1 row
-        GridLayout.Spec titleCol = GridLayout.spec(1, 3); // starts col 1, takes 3 cols
-
-        GridLayout.Spec plusRow = GridLayout.spec(1); // starts row 1, takes 1 row
-        GridLayout.Spec plusCol = GridLayout.spec(1); // starts col 1, takes 1 col
-
-        GridLayout.Spec minusRow = GridLayout.spec(1); // starts row 1, takes 1 row
-        GridLayout.Spec minusCol = GridLayout.spec(2); // starts col 1, takes 1 col
-
-        GridLayout.Spec checkRow = GridLayout.spec(1); // starts row 1, takes 1 row
-        GridLayout.Spec checkCol = GridLayout.spec(3); // starts col 1, takes 1 col
-
-        // create the LayoutParams using our row/col for each view
-        GridLayout.LayoutParams faceParams = new GridLayout.LayoutParams(faceRow, faceCol);
-        faceParams.setGravity(Gravity.FILL_VERTICAL); // fill vertical so we take up the full 2 rows
-
-        // dummy text views to fill some space
-        TextView faceText = new TextView(this);
-        faceText.setPadding(32, 32, 32, 32); // add some random padding to make the views bigger
-        faceText.setLayoutParams(faceParams);
-        faceText.setText("FACE");
-        faceText.setGravity(Gravity.CENTER);
-        faceText.setBackgroundColor(Color.RED);
-        gridLayout.addView(faceText, faceParams);
-
-        GridLayout.LayoutParams titleParams = new GridLayout.LayoutParams(titleRow, titleCol);
-        titleParams.setGravity(Gravity.FILL_HORIZONTAL); // fill horizontal so we take up the full 3 columns
-        TextView titleText = new TextView(this);
-        titleText.setPadding(32, 32, 32, 32);
-        titleText.setLayoutParams(titleParams);
-        titleText.setText("TITLE");
-        titleText.setGravity(Gravity.CENTER);
-        titleText.setBackgroundColor(Color.BLUE);
-        gridLayout.addView(titleText, titleParams);
-
-        GridLayout.LayoutParams minusParams = new GridLayout.LayoutParams(minusRow, minusCol);
-        TextView minusText = new TextView(this);
-        minusText.setPadding(32, 32, 32, 32);
-        minusText.setLayoutParams(minusParams);
-        minusText.setText("MIN");
-        minusText.setGravity(Gravity.CENTER);
-        minusText.setBackgroundColor(Color.YELLOW);
-        gridLayout.addView(minusText, minusParams);
-
-        GridLayout.LayoutParams plusParams = new GridLayout.LayoutParams(plusRow, plusCol);
-        TextView plusText = new TextView(this);
-        plusText.setPadding(32, 32, 32, 32);
-        plusText.setLayoutParams(plusParams);
-        plusText.setText("PLS");
-        plusText.setGravity(Gravity.CENTER);
-        plusText.setBackgroundColor(Color.GREEN);
-        gridLayout.addView(plusText, plusParams);
-
-        GridLayout.LayoutParams checkParams = new GridLayout.LayoutParams(checkRow, checkCol);
-        TextView checkText = new TextView(this);
-        checkText.setPadding(32, 32, 32, 32);
-        checkText.setLayoutParams(faceParams);
-        checkText.setText("CHK");
-        checkText.setGravity(Gravity.CENTER);
-        checkText.setBackgroundColor(Color.MAGENTA);
-        gridLayout.addView(checkText, checkParams);
+        gridLayout.addView(cell, param);
     }
 
     public void settingView() {
@@ -164,6 +127,7 @@ public class LiveSingingActivity extends AppCompatActivity {
         gridLayout.setRowCount(songHighKeyIdx - songLowKeyIdx + 1);
         Log.v("row 개수", String.valueOf(gridLayout.getRowCount()));
         gridLayout.setColumnCount((int) Math.round(songEndTime * 100));
+
         for (NoteDto noteDto : noteDtoList) {
             int noteIdx = noteToIdx(noteDto.getNote()) - songLowKeyIdx;
             int startTime = (int) Math.round(Double.parseDouble(noteDto.getStartTime()) * 100);
@@ -194,12 +158,12 @@ public class LiveSingingActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     try {
-                        songEndTime = (Double) document.getData().get("endTime");
+//                        songEndTime = Double.parseDouble((String) document.getData().get("endTime"));
+                        songEndTime = 320.5;
                         setScrollSettings();
                         List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
 
-                        // TODO : i 최종 값 수정해야 함(현재는 든 게 없어서 empty String 에러
-                        for (int i = 0; i < 1; i++) {
+                        for (int i = 0; i < list.size(); i++) {
                             HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
                             ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
 
@@ -220,6 +184,111 @@ public class LiveSingingActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void addEntry(Float pitch) {
+        LineData data = mChart.getData();
+
+        if(data != null) {
+            // Check that data has a set. If not, create and add a set to data
+            ILineDataSet set = data.getDataSetByIndex(0);
+
+            if (set == null) {
+                set = createSet();
+                data.addDataSet(set);
+            }
+
+            data.addEntry(new Entry(set.getEntryCount(), pitch + 1), 0);
+            data.notifyDataChanged();
+
+            mChart.notifyDataSetChanged();
+            mChart.moveViewToX(data.getEntryCount());
+
+        }
+    }
+
+    public ILineDataSet createSet() {
+        LineDataSet set = new LineDataSet(null, null);
+        set.setAxisDependency(YAxis.AxisDependency.LEFT);
+        set.setLineWidth(3f);
+        set.setColor(Color.MAGENTA);
+        set.setHighlightEnabled(false);
+        set.setDrawValues(false);
+        set.setDrawCircles(false);
+        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set.setCubicIntensity(0.2f);
+
+        return set;
+    }
+
+    public void setChart() {
+        mChart.setExtraBottomOffset(15f);
+        mChart.setVisibleXRangeMaximum(10);
+        mChart.getDescription().setEnabled(false);
+        mChart.setTouchEnabled(false);
+        mChart.setDragEnabled(false);
+        mChart.setScaleEnabled(false);
+        mChart.setPinchZoom(false);
+        mChart.setDrawGridBackground(false);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        mChart.setData(data);
+
+        mChart.setScaleMinima(10f, 1f);
+    }
+
+    public void setAxis() {
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setDrawAxisLine(false);
+        xAxis.setEnabled(false);
+
+        YAxis leftYAxis = mChart.getAxisLeft();
+        leftYAxis.setAxisMinimum(0f);
+        leftYAxis.setAxisMaximum(200f);
+        leftYAxis.setDrawAxisLine(false);
+        leftYAxis.setEnabled(false);
+
+        YAxis rightYAxis = mChart.getAxisRight();
+        rightYAxis.setDrawAxisLine(false);
+        rightYAxis.setEnabled(false);
+
+        mChart.getXAxis().setDrawGridLines(false);
+        mChart.getAxisLeft().setDrawGridLines(false);
+        mChart.setDrawBorders(false);
+    }
+
+    public void microphoneOn() {
+        releaseDispatcher();
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+
+        PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
+            final float pitchInHz = res.getPitch();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(pitchInHz > 40) {
+                        addEntry(pitchInHz);
+                    }
+                }
+            });
+        };
+
+        AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
+        dispatcher.addAudioProcessor(pitchProcessor);
+
+        Thread audioThread = new Thread(dispatcher, "Audio Thread");
+        audioThread.start();
+    }
+
+    public void releaseDispatcher() {
+        if (dispatcher != null) {
+            if (!dispatcher.isStopped())
+                dispatcher.stop();
+            dispatcher = null;
+        }
     }
 
 }

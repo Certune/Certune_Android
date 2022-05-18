@@ -75,6 +75,7 @@ public class TestGraphActivity extends AppCompatActivity {
 
             mChart.notifyDataSetChanged();
             mChart.moveViewToX(data.getEntryCount());
+
         }
     }
 

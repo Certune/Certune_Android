@@ -26,17 +26,6 @@
             android:layout_height="600dp">
 
         </com.github.mikephil.charting.charts.LineChart>
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="300dp"
-            android:text="Button"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
     </FrameLayout>
 
 

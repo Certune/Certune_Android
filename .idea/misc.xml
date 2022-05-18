@@ -26,6 +26,7 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test.xml" value="0.2" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_end.xml" value="0.176" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_singing.xml" value="0.1" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_standby.xml" value="0.8800000000000001" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_standby.xml" value="0.264" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_register.xml" value="0.2326388888888889" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_scroll_test.xml" value="0.1" />
@@ -35,6 +36,7 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_table.xml" value="0.16" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_song_list.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_practice.xml" value="0.2489754098360656" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_grid_layout.xml" value="0.19429824561403508" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/singing_grid_item.xml" value="0.23809523809523808" />

@@ -47,7 +47,6 @@
         android:id="@+id/nextLyricTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="가려한 날 막아서네 난 갈 길이 먼데"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"

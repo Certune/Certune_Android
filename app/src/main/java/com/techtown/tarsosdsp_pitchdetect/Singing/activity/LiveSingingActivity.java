@@ -1,5 +1,17 @@
 package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import androidx.gridlayout.widget.GridLayout;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.global.MusicDto;
 import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
 
 import androidx.annotation.NonNull;
@@ -51,7 +63,7 @@ public class LiveSingingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_singing);
-
+      
         /*
         Intent subIntent = new Intent();
         songName = subIntent.getStringExtra("songName");

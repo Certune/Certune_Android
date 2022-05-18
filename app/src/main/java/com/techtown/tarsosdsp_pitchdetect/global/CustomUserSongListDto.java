@@ -1,0 +1,14 @@
+package com.techtown.tarsosdsp_pitchdetect.domain;
+
+import lombok.Builder;
+import lombok.Getter;
+
+
+@Getter
+@Builder
+public class CustomUserSongListDto {
+    private String songText;
+    private String singerText;
+    private String totalScoreText;
+}
+

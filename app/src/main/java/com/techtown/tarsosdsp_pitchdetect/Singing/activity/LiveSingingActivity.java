@@ -73,20 +73,20 @@ public class LiveSingingActivity extends AppCompatActivity {
         Log.v("노트 인덱스", String.valueOf(noteIdx));
         Log.v("시작 시간", String.valueOf(startTime));
         Log.v("종료 시간", String.valueOf(endTime));
-        GridLayout.Spec cellRow = GridLayout.spec(noteIdx, 1, 1f);
+        GridLayout.Spec cellRow = GridLayout.spec(noteIdx);
         GridLayout.Spec cellCol = GridLayout.spec(startTime, endTime - startTime);
+
+        GridLayout.LayoutParams param = new GridLayout.LayoutParams(cellRow, cellCol);
+        param.height = gridLayout.getHeight() / gridLayout.getRowCount();
+        param.width = endTime - startTime;
+        param.setGravity(Gravity.FILL_HORIZONTAL);
 
         cell = new Button(this);
         cell.setEnabled(false);
-
-        GridLayout.LayoutParams param = new GridLayout.LayoutParams(cellRow, cellCol);
-        param.height = 0;
-        //  param.width = 0;
-        param.setGravity(Gravity.FILL_HORIZONTAL);
         cell.setLayoutParams(param);
+        cell.setBackgroundColor(Color.GRAY); // 이거 없애면 버튼 홀쭉해짐
 
-        gridLayout.addView(cell);
-        Log.v("들어왔당", "추가까지 완");
+        gridLayout.addView(cell, param);
     }
 
     public void setThis() {
@@ -163,6 +163,7 @@ public class LiveSingingActivity extends AppCompatActivity {
         gridLayout.setRowCount(songHighKeyIdx - songLowKeyIdx + 1);
         Log.v("row 개수", String.valueOf(gridLayout.getRowCount()));
         gridLayout.setColumnCount((int) Math.round(songEndTime * 100));
+
         for (NoteDto noteDto : noteDtoList) {
             int noteIdx = noteToIdx(noteDto.getNote()) - songLowKeyIdx;
             int startTime = (int) Math.round(Double.parseDouble(noteDto.getStartTime()) * 100);

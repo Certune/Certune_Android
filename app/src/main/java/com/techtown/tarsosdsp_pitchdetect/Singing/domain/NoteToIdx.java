@@ -19,5 +19,4 @@ public class NoteToIdx {
     public static int noteToIdx(String songLowKey) {
         return noteList.indexOf(songLowKey);
     }
-
 }

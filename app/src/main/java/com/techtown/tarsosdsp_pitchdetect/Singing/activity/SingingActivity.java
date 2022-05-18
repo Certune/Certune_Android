@@ -74,7 +74,7 @@ public class SingingActivity extends AppCompatActivity {
     String userSex;
     String uid;
 
-    String songName;
+    String songName = "산호등";
     String singerName;
     Boolean isShifting;
 

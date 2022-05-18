@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".Singing.activity.LiveSingingActivity">
 
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/chart"
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        app:layout_constraintTop_toTopOf="parent">
+    </com.github.mikephil.charting.charts.LineChart>
+
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
@@ -47,6 +54,7 @@
         android:id="@+id/nextLyricTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="가려한 날 막아서네 난 갈 길이 먼데"
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"

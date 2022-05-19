@@ -41,11 +41,11 @@
     <ImageButton
         android:id="@+id/playingButton"
         android:background="@android:color/transparent"
-        android:layout_width="20dp"
+        android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_weight="1"
         android:layout_marginTop="10dp"
-        android:scaleType="centerInside"
-        />
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/play" />
 
 </LinearLayout>

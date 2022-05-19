@@ -30,6 +30,6 @@ public class SongListActivity extends AppCompatActivity {
                 list = (ListView) findViewById(R.id.songListArea);
                 list.setAdapter(adapter);
             }
-        }, 2500);
+        }, 3000);
     }
 }

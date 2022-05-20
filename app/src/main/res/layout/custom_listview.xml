@@ -46,6 +46,6 @@
         android:layout_weight="1"
         android:layout_marginTop="10dp"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/play" />
+        />
 
 </LinearLayout>

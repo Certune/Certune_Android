@@ -32,7 +32,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.R;
-import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserResultDto;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserScoreDto;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserUploadDto;
 import com.techtown.tarsosdsp_pitchdetect.global.MusicDto;
 import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
@@ -74,11 +74,11 @@ public class SingingActivity extends AppCompatActivity {
     String userSex;
     String uid;
 
-    String songName;
+    String songName = "산호등";
     String singerName;
     Boolean isShifting;
 
-    String songUrl;
+    String musicUrl;
     private long startTime;
 
     private TextView displayName;
@@ -237,44 +237,48 @@ public class SingingActivity extends AppCompatActivity {
 
     // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
-        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        StorageReference filepath = mStorage.child("songs").child(songName).child(songName+".mp3");
-        Log.v("FILEPATH", filepath.toString());
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        StorageReference storageRef = storage.child("songs").child(songName).child(songName+".mp3");
 
-        filepath.getDownloadUrl()
+        storageRef.getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        try {
-                            Log.v("download url", uri.toString());
-                            mediaPlayer = new MediaPlayer();
-                            mediaPlayer.setDataSource(uri.toString());
-                            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                                @Override
-                                public void onPrepared(MediaPlayer mp) {
-                                    Log.v("준비완", "간다");
-                                    mp.start();
-                                    startTime = System.nanoTime();
-                                }
-                            });
-                            mediaPlayer.prepare();
-                        } catch (Exception e) {
-                            Log.e("FETCH MUSIC", e.toString());
-                        }
+                        musicUrl = uri.toString();
+                        createMediaPlayer();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("음악 백그라운드 재생 실패", e.getMessage());
                     }
                 });
     }
 
+    public void createMediaPlayer(){
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(musicUrl);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    recordButton.setEnabled(true);
+                }
+            });
+            mediaPlayer.prepareAsync();
+        } catch (Exception e) {
+            Log.e("MEDIAPLAYER", e.getMessage());
+        }
+    }
+
     public void playAudio() {
+        releaseDispatcher();
+        mediaPlayer.start();
         musicMap = new HashMap<>(); // 녹음될 때마다 사용자 음성 담은 map 초기화
         long start = System.nanoTime(); // 시작 시간 측정
         try {
-            releaseDispatcher();
-
-            // 성공 ) 얘는 dispatcher와 별개로 돌아가는 메소드
-            //mediaPlayer = MediaPlayer.create(this, R.raw.music);
-            //mediaPlayer.start();
 
             FileInputStream fileInputStream = new FileInputStream(file);
             // 마이크가 아닌 파일을 소스로 하는 dispatcher 생성 -> AudioDispatcher 객체 생성 시 UniversalAudioInputStream 사용
@@ -571,15 +575,15 @@ public class SingingActivity extends AppCompatActivity {
         double totalRhythmScore = ((double) userTotalNoteNum / songTotalNoteTimeDto.getSongTotalNoteNum()) * 100;
         double totalScore = (totalNoteScore + totalRhythmScore) / 2;
 
-        SingingUserResultDto singingUserResultDto = SingingUserResultDto
+        SingingUserScoreDto singingUserResultDto = SingingUserScoreDto
                 .builder()
-                .songInfo(userMusicInfoList)
                 .noteScore(df.format(totalNoteScore))
                 .rhythmScore(df.format(totalRhythmScore))
+                .totalScore(df.format(totalScore))
                 .build();
 
         Log.v("SCORE", totalNoteScore + "/" + totalRhythmScore + "/" + totalScore);
-        uploadUserScore(singingUserResultDto, df.format(totalScore));
+        uploadUserScore(userMusicInfoList, singingUserResultDto);
         uploadWeakSentenceList(weakSentenceIdxList);
     }
 
@@ -606,11 +610,13 @@ public class SingingActivity extends AppCompatActivity {
         return songSentenceInfoList;
     }
 
-    private void uploadUserScore(SingingUserResultDto singingUserResultDto, String totalScore) {
+    private void uploadUserScore(List<UserMusicDto> singingResultList, SingingUserScoreDto singingUserScoreDto) {
         SingingUserUploadDto singingUserUploadDto = SingingUserUploadDto.builder()
-                .result(singingUserResultDto)
+                .result(singingResultList)
                 .singerName(singerName)
-                .totalScore(totalScore)
+                .totalScore(singingUserScoreDto.getTotalScore())
+                .noteScore(singingUserScoreDto.getNoteScore())
+                .rhythmScore(singingUserScoreDto.getRhythmScore())
                 .build();
 
         database.collection("User").document(userEmail).collection("userSongList").document("신호등")

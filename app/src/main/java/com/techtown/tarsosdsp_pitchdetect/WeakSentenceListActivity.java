@@ -36,9 +36,9 @@ public class WeakSentenceListActivity extends AppCompatActivity {
 
         // TODO : intent 추가해서 값 받아오기
 
-        songNameTextView = findViewById(R.id.songTextView2);
-        singerNameTextView = findViewById(R.id.singerTextView2);
-        recordBtn = findViewById(R.id.button);
+        songNameTextView = findViewById(R.id.myRecord_songTextView);
+        singerNameTextView = findViewById(R.id.myRecord_singerTextView);
+
 
         // Adapter 생성
         adapter = new WeakSentenceListViewAdapter();

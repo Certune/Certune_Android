@@ -8,7 +8,7 @@
     tools:context=".score.activity.SingingResult">
 
     <TextView
-        android:id="@+id/result_songTextView"
+        android:id="@+id/songTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
@@ -22,7 +22,7 @@
 
 
     <TextView
-        android:id="@+id/result_singerTextView"
+        android:id="@+id/singerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="38dp"
@@ -46,23 +46,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="323dp"
-        android:layout_height="126dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="233dp"
-        android:background="@drawable/rounded_rectangle_lined"
-        android:enabled="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/result_weekSentenceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="376dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="356dp"
         android:text="연습이 필요한 소절"
         android:textColor="@color/black"
         android:textSize="15sp"
@@ -71,23 +61,45 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:layout_width="323dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="410dp"
+        android:id="@+id/listView"
+        android:layout_width="367dp"
+        android:layout_height="254dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="388dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/scoreIcon"
+        android:id="@+id/scoreTextView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="264dp"
         android:layout_marginTop="70dp"
         android:background="@drawable/result_score_background"
-        android:text="70점"
+        android:text="76점"
         android:textSize="27dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="10dp"
+        android:progress="87"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="142dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar2"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="170dp"
+        android:layout_height="10dp"
+        android:progress="65"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

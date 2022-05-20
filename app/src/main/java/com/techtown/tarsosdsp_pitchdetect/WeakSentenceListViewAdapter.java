@@ -29,7 +29,7 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     // TODO : intent에서 값 받아오기
-    private String user = "user@naver.com";
+    private String user = "nitronium007@gmail.com";
     private String song = "신호등";
 
     List<String> LyricLists = new ArrayList<>();

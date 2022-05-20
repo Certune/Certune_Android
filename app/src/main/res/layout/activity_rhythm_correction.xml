@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".MyRecordActivity">
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginBottom="2dp">
+
+        <ListView
+            android:id="@+id/Ryythm_listView"
+            android:layout_width="340dp"
+            android:layout_height="432dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="172dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        </ListView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="203dp"
+            android:layout_height="85dp"
+            android:layout_marginEnd="192dp"
+            android:layout_marginBottom="73dp"
+            android:gravity="bottom|center"
+            android:text="박자연습"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="0.193"
+            app:layout_constraintVertical_bias="0.495" />
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+

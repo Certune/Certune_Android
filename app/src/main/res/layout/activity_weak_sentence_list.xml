@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".WeakSentenceListActivity">
 
 
@@ -24,8 +25,9 @@
         android:id="@+id/listView"
         android:layout_width="329dp"
         android:layout_height="467dp"
-        android:layout_marginStart="40dp"
         android:layout_marginTop="172dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -49,16 +51,16 @@
 
         <TextView
             android:id="@+id/songTextView2"
-            android:layout_width="72dp"
-            android:layout_height="50dp"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
             android:text="title"
             android:textSize="25dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/singerTextView2"
-            android:layout_width="63dp"
-            android:layout_height="32dp"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
             android:text="content"
             android:textSize="20dp" />
     </LinearLayout>

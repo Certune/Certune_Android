@@ -1,42 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="300dp"
-    android:layout_height="45dp"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="10dp">
 
-    <LinearLayout
-        android:layout_width="280dp"
-        android:layout_height="50dp"
-        android:layout_weight="4"
-        android:orientation="horizontal">
+    <TextView
+        android:id="@+id/sentenceTextView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginTop="3dp"
+        android:gravity="center_vertical"
+        android:text="weakSentence"
+        android:textColor="#000000"
+        android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/sentenceTextView"
-            android:layout_width="150dp"
-            android:layout_height="24dp"
-            android:layout_weight="2"
-            android:gravity="center_vertical"
-            android:text="weakSentence1"
-            android:textColor="#000000"
-            android:textSize="15dp" />
+    <ImageButton
+        android:id="@+id/result_playBtn"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_weight="1"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/play" />
 
-        <ImageView
-            android:id="@+id/playButton"
-            android:layout_width="2dp"
-            android:layout_height="25dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/play" />
+    <ImageButton
+        android:id="@+id/result_listenBtn"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_weight="1"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/headphones" />
 
-        <ImageView
-            android:id="@+id/playerButton"
-            android:layout_width="1dp"
-            android:layout_height="25dp"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/ic_baseline_headset_24" />
-
-
-    </LinearLayout>
 
 </LinearLayout>

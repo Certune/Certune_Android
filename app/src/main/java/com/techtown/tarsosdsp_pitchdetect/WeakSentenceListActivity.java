@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,7 +26,8 @@ public class WeakSentenceListActivity extends AppCompatActivity {
     TextView songNameTextView;
     TextView singerNameTextView;
 
-    Button recordBtn;
+    ImageButton recordBtn;
+    ImageButton listenBtn;
 
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
@@ -36,9 +38,10 @@ public class WeakSentenceListActivity extends AppCompatActivity {
 
         // TODO : intent 추가해서 값 받아오기
 
-        songNameTextView = findViewById(R.id.myRecord_songTextView);
-        singerNameTextView = findViewById(R.id.myRecord_singerTextView);
-
+        songNameTextView = findViewById(R.id.songTextView2);
+        singerNameTextView = findViewById(R.id.singerTextView2);
+        recordBtn = findViewById(R.id.result_playBtn);
+        listenBtn = findViewById(R.id.result_listenBtn);
 
         // Adapter 생성
         adapter = new WeakSentenceListViewAdapter();

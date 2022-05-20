@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +18,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.techtown.tarsosdsp_pitchdetect.domain.CustomUserSongListDto;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,8 @@ public class UserSongListViewAdapter extends BaseAdapter {
     List<String> songList = new ArrayList<>();
     List<String> singerList = new ArrayList<>();
     List<String> scoreList = new ArrayList<>();
+    List<String> noteScoreList = new ArrayList<>();
+    List<String> rhythmScoreList = new ArrayList<>();
 
     public UserSongListViewAdapter(){
         
@@ -64,6 +67,8 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.songTitle = (TextView) convertView.findViewById(R.id.songTextView);
         holder.singerName = (TextView) convertView.findViewById(R.id.singerTextView);
         holder.totalScore = (TextView) convertView.findViewById(R.id.scoreTextView);
+//        holder.noteScore = (TextView) convertView.findViewById(R.id.noteScoreTextView);
+//        holder.rhythmScore = (TextView)convertView.findViewById(R.id.rhythmScoreTextView);
 
         convertView.setTag(holder);
 
@@ -73,6 +78,8 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.songTitle.setText(listViewItem.getSongText());
         holder.singerName.setText(listViewItem.getSingerText());
         holder.totalScore.setText(listViewItem.getTotalScoreText());
+        holder.noteScore.setText(listViewItem.getNoteScoreText());
+        holder.rhythmScore.setText(listViewItem.getRhythmScoreText());
 
 
         return convertView;
@@ -82,6 +89,8 @@ public class UserSongListViewAdapter extends BaseAdapter {
         TextView songTitle;
         TextView singerName;
         TextView totalScore;
+        TextView noteScore;
+        TextView rhythmScore;
     }
 
     public void getUserSongList() {
@@ -95,10 +104,15 @@ public class UserSongListViewAdapter extends BaseAdapter {
                         String song = document.getId();
                         String singer = document.getData().get("singerName").toString();
                         String totalScore = document.getData().get("totalScore").toString();
-
+                        String noteScore = document.getData().get("noteScore").toString();
+                        String rhythmScore = document.getData().get("rhythmScore").toString();
+                        Log.v("음정점수 ",noteScore);
+                        Log.v("박자점수",rhythmScore);
                         songList.add(song);
                         singerList.add(singer);
                         scoreList.add(totalScore);
+                        noteScoreList.add(noteScore);
+                        rhythmScoreList.add(rhythmScore);
                     }
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
@@ -122,10 +136,11 @@ public class UserSongListViewAdapter extends BaseAdapter {
                     .songText(songList.get(i))
                     .singerText(singerList.get(i))
                     .totalScoreText(scoreList.get(i))
+                    .noteScoreText(noteScoreList.get(i))
+                    .rhythmScoreText(rhythmScoreList.get(i))
                     .build();
 
             userSongLists.add(item);
         }
-
     }
 }

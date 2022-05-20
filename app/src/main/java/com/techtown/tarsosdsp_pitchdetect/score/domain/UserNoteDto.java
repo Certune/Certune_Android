@@ -1,19 +1,18 @@
-package com.techtown.tarsosdsp_pitchdetect.domain;
+package com.techtown.tarsosdsp_pitchdetect.score.domain;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter @Setter
-@Builder
 public class UserNoteDto {
 
-    private String start_time;
+    private String startTime;
     private String note;
 
     @Builder
-    public UserNoteDto(String start_time, String note){
-        this.start_time = start_time;
+    public UserNoteDto(String startTime, String note){
+        this.startTime = startTime;
         this.note = note;
     }
 <<<<<<< HEAD

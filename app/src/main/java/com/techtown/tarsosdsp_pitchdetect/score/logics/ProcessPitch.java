@@ -1,7 +1,6 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.score.logics;
 
 public class ProcessPitch {
-    // pitch -> key
     public static String processPitch(float pitchInHz){
         String noteText = "Nope";
         if(pitchInHz >= 16.35 && pitchInHz < 17.32) {

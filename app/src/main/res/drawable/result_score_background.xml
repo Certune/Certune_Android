@@ -12,6 +12,6 @@
         android:bottomRightRadius="4dp"/>
     <!-- 선 크기 및 색 지정 -->
     <stroke
-        android:width="7dp"
+        android:width="8dp"
         android:color="#50B4AA" />
 </shape>

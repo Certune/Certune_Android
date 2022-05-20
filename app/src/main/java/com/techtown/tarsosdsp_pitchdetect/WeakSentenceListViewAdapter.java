@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,7 +30,7 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     // TODO : intent에서 값 받아오기
-    private String user = "user@naver.com";
+    private String user = "nitronium007@gmail.com";
     private String song = "신호등";
 
     List<String> LyricLists = new ArrayList<>();
@@ -64,6 +65,8 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
         // 화면에 표시될 View(Layout이 inflate된)으로부터 위젯에 대한 참조 획득
         holder = new CustomViewHolder();
         holder.sentence = (TextView) convertView.findViewById(R.id.sentenceTextView);
+        holder.recordBtn = (ImageButton) convertView.findViewById(R.id.result_playBtn);
+        holder.playBtn = (ImageButton) convertView.findViewById(R.id.result_listenBtn);
         convertView.setTag(holder);
 
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
@@ -79,6 +82,8 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
 
     class CustomViewHolder {
         TextView sentence;
+        ImageButton recordBtn;
+        ImageButton playBtn;
     }
 
     public List getWeakSentenceListInfo() {

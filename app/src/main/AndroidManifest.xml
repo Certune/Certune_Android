@@ -15,10 +15,62 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:hardwareAccelerated="false"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
-<<<<<<< Updated upstream
+        <activity
+            android:name=".correction.RhythmCorrection"
+            android:exported="true" />
+
+        <activity
+            android:name=".correction.PitchCorrectionResult"
+            android:exported="false" />
+        <activity
+            android:name=".correction.PitchCorrection"
+            android:exported="true"/>
+
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" /> <!-- <activity -->
+        <activity
+            android:name=".score.activity.SingingResult"
+            android:exported="true" />
+      
+        <activity>
+            android:name=".Singing.activity.LiveSingingActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".Singing.activity.TestGraphActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".Singing.activity.SingingStandbyActivity"
+            android:exported="true" />
         <activity
             android:name=".SongListActivity"
+            android:exported="true" />
+        </activity>
+        <activity
+            android:name=".OctaveTest.activity.TestEndActivity"
+            android:exported="true" />
+        <activity
+            android:name=".Login.RegisterActivity"
+            android:exported="true" />
+        <activity
+            android:name=".Singing.activity.SingingActivity"
+            android:exported="true">
+
+        </activity>
+        <activity
+            android:name=".OctaveTest.activity.TestStandbyActivity"
+            android:exported="true" />
+        <activity
+            android:name=".OctaveTest.activity.TestSingingActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MyRecordActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,62 +78,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-=======
-<!--        <activity-->
-<!--                android:name=".ScrollTestActivity"-->
-<!--                android:exported="true">-->
-<!--        </activity>-->
+        <activity
+            android:name=".WeakSentenceListActivity"
+            android:exported="true"/>
 
->>>>>>> Stashed changes
-        <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-        <activity
-<<<<<<< Updated upstream
-            android:name=".LogInActivity"
-            android:exported="true" />
-        <activity
-            android:name=".OctaveTestActivity"
-            android:exported="true" />
-        <activity
-            android:name=".OctaveTestSingingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
-=======
-            android:name=".Singing.activity.SingingStandbyActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SongListActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OctaveTest.activity.TestEndActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Login.RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Singing.activity.SingingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OctaveTest.activity.TestStandbyActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OctaveTest.activity.TestSingingActivity"
-            android:exported="false" />
         <activity
             android:name=".Login.LogInActivity"
-            android:exported="false"/>
-        <activity android:name=".MyRecordActivity"
-                android:exported="false"/>
-        <activity android:name=".WeakSentenceListActivity"
-            android:exported="true">
-        <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
->>>>>>> Stashed changes
+            android:exported="true" />
         </activity>
     </application>
 

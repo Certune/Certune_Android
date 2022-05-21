@@ -20,9 +20,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/songListArea"
         android:layout_width="329dp"
-        android:layout_height="501dp"
+        android:layout_height="500dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="128dp"
         app:layout_constraintStart_toStartOf="parent"

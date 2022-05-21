@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".WeakSentenceListActivity">
 
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -28,60 +29,52 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text=""
-            android:textSize="30dp" />
+
     </ListView>
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="27dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_west_24" />
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="446dp"
-        android:layout_weight="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/listView"
-        app:layout_constraintStart_toStartOf="@+id/listView"
-        app:layout_constraintTop_toTopOf="@+id/listView">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="30dp"
-            android:layout_gravity="center_vertical"
-            android:text=""/>
-
-    </FrameLayout>
-
-    <ListView
-        android:layout_width="167dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="16dp"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="153dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="14dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@+id/listView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.163"
+        app:layout_constraintHorizontal_bias="0.155"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.8">
 
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="2px"
-            android:background="#AAA3A3" />
-    </ListView>
+        <TextView
+            android:id="@+id/songTextView2"
+            android:layout_width="72dp"
+            android:layout_height="50dp"
+            android:text="title"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/singerTextView2"
+            android:layout_width="63dp"
+            android:layout_height="32dp"
+            android:text="content"
+            android:textSize="20dp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="31dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textView"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.027"
+        app:srcCompat="@drawable/ic_baseline_west_24"
+        tools:ignore="SpeakableTextPresentCheck" />
 </androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -39,7 +39,6 @@ public class MyRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_record);
 
-
         adapter = new UserSongListViewAdapter();
         adapter.getUserSongList();
 
@@ -50,7 +49,6 @@ public class MyRecordActivity extends AppCompatActivity {
 
                 listview = (ListView) findViewById(R.id.listView);
                 listview.setAdapter(adapter);
-
             }
         }, 2500);
 
@@ -72,3 +70,4 @@ public class MyRecordActivity extends AppCompatActivity {
 
 
 }
+

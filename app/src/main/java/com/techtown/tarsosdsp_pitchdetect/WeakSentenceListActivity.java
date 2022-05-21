@@ -1,31 +1,34 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
-import static android.content.ContentValues.TAG;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import com.google.firebase.firestore.CollectionReference;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class WeakSentenceListActivity extends AppCompatActivity {
-    private ListView list;
+    private ListView listview;
+    private WeakSentenceListViewAdapter adapter;
+    private String song = "신호등";
+    private String singerName;
 
-    //취약소절리스트 데이터 담을 리스트
-    List <String> itemList = new ArrayList<>();
+    TextView songNameTextView;
+    TextView singerNameTextView;
 
+    ImageButton recordBtn;
+    ImageButton listenBtn;
 
-    // firebase db 연동
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     @Override
@@ -33,37 +36,60 @@ public class WeakSentenceListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weak_sentence_list);
 
-        // User 컬렉션 > userName > userWeakSentenceList > "신호등" > weakSentence ArrayList에 있는 모든 요소 가져오기
-        CollectionReference ref = database.collection("User").document("user@naver.com").collection("userWeakSentenceList");
-        ref.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                for (DocumentSnapshot document : task.getResult()) {
-                    itemList = (List<String>) document.get("weakSentence");
-                    for (String s : itemList) {
-                        Log.d(TAG, s);
-                    }
-                }
-            } else {
-                Log.d(TAG, "Error getting collections: ", task.getException());
-            }
-        });
+        // TODO : intent 추가해서 값 받아오기
+
+        songNameTextView = findViewById(R.id.songTextView2);
+        singerNameTextView = findViewById(R.id.singerTextView2);
+        recordBtn = findViewById(R.id.result_playBtn);
+        listenBtn = findViewById(R.id.result_listenBtn);
+
+        // Adapter 생성
+        adapter = new WeakSentenceListViewAdapter();
+        adapter.getLyricList();
+        findSongInfo();
+
+        songNameTextView.setText(song);
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                list = (ListView) findViewById(R.id.listView);
-                ArrayAdapter adapter = new ArrayAdapter(WeakSentenceListActivity.this, android.R.layout.simple_list_item_1,itemList);
-                list.setAdapter(adapter);
+                adapter.addItem();
+
+                listview = (ListView) findViewById(R.id.listView);
+                listview.setAdapter(adapter);
             }
-        },4000);
+        }, 2500);
 
+/*
+        recordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), WeakSentenceListRecordActivity.class);
+                intent.putExtra("songName", songName);
+                intent.putExtra("singerName", singerName);
+                startActivity(intent);
+
+            }
+        });
+   */
     }
 
-    @Override
-    protected void onStart() {
-
-
-
-        super.onStart();
+    public void findSongInfo() {
+        DocumentReference docRef = database.collection("Song").document(song);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    try {
+                        singerName = document.getData().get("singer").toString();
+                        singerNameTextView.setText(singerName);
+                    } catch (Exception e) {
+                        Log.e("Song 정보 import", "노래 정보 로딩에 실패했습니다");
+                    }
+                }
+            }
+        });
     }
+
 }

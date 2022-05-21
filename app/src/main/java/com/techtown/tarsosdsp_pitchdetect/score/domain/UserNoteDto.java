@@ -15,4 +15,8 @@ public class UserNoteDto {
         this.startTime = startTime;
         this.note = note;
     }
+
 }
+
+
+

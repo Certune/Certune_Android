@@ -26,4 +26,8 @@ public class UserMusicDto {
         this.isPoor = isPoor;
         this.notes = notes;
     }
+    
+    public ArrayList<UserNoteDto> getNote() {
+        return  notes;
+    }
 }

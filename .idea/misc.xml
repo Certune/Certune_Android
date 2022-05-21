@@ -3,53 +3,64 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Android/platforms/android-31/data/res/layout/simple_list_item_1.xml" value="0.15694444444444444" />
         <entry key="..\:/Github/Android-practice/tarsosDSP_PitchDetect/app/src/main/res/layout/activity_main.xml" value="0.4" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.13402777777777777" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/basic_shadow.xml" value="0.1" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.13402777777777777" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/rounded_rectangle.xml" value="0.1" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/shadow.xml" value="0.15051546391752577" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_activity_songname_background.xml" value="0.21458333333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_keybutton_background.xml" value="0.16770833333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_lyric_background.xml" value="0.1701388888888889" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_singerName_background.xml" value="0.16770833333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_singername_background.xml" value="0.21458333333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_songName_background.xml" value="0.16770833333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/singing_standby_songname_background.xml" value="0.21458333333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/test_standby_test_complete_background.xml" value="0.14965277777777777" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/drawable/test_standby_test_incomplete_background.xml" value="0.14965277777777777" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_grid_item_view.xml" value="0.14649122807017545" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_live_singing.xml" value="0.264" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_log_in.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_main.xml" value="0.23802083333333332" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test.xml" value="0.2" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_end.xml" value="0.176" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_singing.xml" value="0.1" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_octave_test_standby.xml" value="0.264" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_register.xml" value="0.2326388888888889" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_scroll_test.xml" value="0.1" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_set_data_loader.xml" value="0.14356884057971014" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_sing_grid.xml" value="0.1" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_standby.xml" value="0.176" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_table.xml" value="0.16" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_song_list.xml" value="0.2489754098360656" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_practice.xml" value="0.2489754098360656" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_grid_layout.xml" value="0.19429824561403508" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/singing_grid_item.xml" value="0.23809523809523808" />
-        <entry key="app/src/main/res/drawable/login_button.xml" value="0.27456140350877195" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/basic_shadow.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/ic_baseline_west_24.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/rhythm_background.xml" value="0.195" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/rounded_rectangle.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/rounded_rectangle_lined.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/singing_standby_keybutton_background.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/singing_standby_lyric_background.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/singing_standby_singername_background.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/singing_standby_songname_background.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/test_standby_test_complete_background.xml" value="0.195" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/drawable/test_standby_test_incomplete_background.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_log_in.xml" value="0.2" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_main.xml" value="0.2203125" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_main2.xml" value="0.2116788321167883" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_my_record.xml" value="0.264" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_note_practice.xml" value="0.2234375" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_octave_test.xml" value="0.2" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_octave_test_end.xml" value="0.14130434782608695" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_octave_test_singing.xml" value="0.14130434782608695" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_octave_test_standby.xml" value="0.1" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_pitch_correction.xml" value="0.16" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_pitch_correction_result.xml" value="0.15416666666666667" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_register.xml" value="0.14402173913043478" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_rhythm_correction.xml" value="0.264" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_singing_result.xml" value="0.2" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_singing_standby.xml" value="0.18478260869565216" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_song_list.xml" value="0.12335359675785208" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_song_record.xml" value="0.2" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_song_singer_listview.xml" value="0.12335359675785208" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_table_layout_test.xml" value="0.1157548125633232" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_weak_sentence.xml" value="0.23177083333333334" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_weak_sentence_list.xml" value="0.264" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/activity_weak_sentence_list_record.xml" value="0.2" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/component_recordList.xml" value="0.12132725430597771" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.20175438596491227" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/fragment_home.xml" value="0.25364583333333335" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/fragment_myrecord.xml" value="0.16304347826086957" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/fragment_result.xml" value="0.17708333333333334" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/fragment_sing.xml" value="0.17708333333333334" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/myrecordlistview_item.xml" value="0.264" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/pitchcorrectionlistview_item.xml" value="0.2" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/rhythmcorrectionlistview_item.xml" value="0.2234375" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/rhythmcorrectionlistview_list.xml" value="0.23385416666666667" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/layout/weaksentencelistview_item.xml" value="0.22641509433962265" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/menu/bottom_nav_menu.xml" value="0.264" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/mipmap-anydpi-v26/rhythm.xml" value="0.1885" />
+        <entry key="..\:/Users/mok33/OneDrive/PitchDetection/app/src/main/res/mipmap-anydpi-v26/rhythm_round.xml" value="0.2055" />
         <entry key="app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.178125" />
         <entry key="app/src/main/res/layout/activity_email_password.xml" value="0.2942708333333333" />
-        <entry key="app/src/main/res/layout/activity_live_singing.xml" value="0.21429280354309854" />
-        <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.31975726338970367" />
+        <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.28141511226244353" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.21300510243705637" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2921935313541035" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.3126618054457129" />
         <entry key="app/src/main/res/layout/activity_song_list.xml" value="0.26222826086956524" />
-        <entry key="app/src/main/res/layout/activity_test_chart.xml" value="0.40020829213561115" />
-        <entry key="app/src/main/res/layout/activity_test_graph.xml" value="0.42013560171346404" />
-        <entry key="app/src/main/res/layout/custom_listview.xml" value="0.19342105263157894" />
       </map>
     </option>
   </component>

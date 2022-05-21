@@ -24,7 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.techtown.tarsosdsp_pitchdetect.domain.CustomUserSongListDto;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
 
 import java.util.ArrayList;
 import java.util.List;

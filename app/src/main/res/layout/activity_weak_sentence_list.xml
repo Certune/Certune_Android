@@ -12,23 +12,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="28dp"
         android:text="틀린 소절 연습"
         android:textColor="@color/black"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
         android:id="@+id/listView"
-        android:layout_width="329dp"
+        android:layout_width="375dp"
         android:layout_height="467dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="176dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
     </ListView>
 
@@ -52,7 +51,7 @@
             android:layout_width="72dp"
             android:layout_height="50dp"
             android:text="title"
-            android:textSize="25dp"
+            android:textSize="25sp"
             android:textStyle="bold" />
 
         <TextView
@@ -60,7 +59,8 @@
             android:layout_width="63dp"
             android:layout_height="32dp"
             android:text="content"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
+
     </LinearLayout>
 
     <ImageButton
@@ -68,13 +68,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="31dp"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.7"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.027"
+        app:layout_constraintVertical_bias="0.046"
         app:srcCompat="@drawable/ic_baseline_west_24"
         tools:ignore="SpeakableTextPresentCheck" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

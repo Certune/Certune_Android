@@ -15,48 +15,38 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:hardwareAccelerated="false"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
- 
         <activity
-                android:name=".ScrollTestActivity"
-                android:exported="true">
-        </activity>
-        <activity
-            android:name=".Singing.activity.SingingTableActivity"
+            android:name=".correction.RhythmCorrection"
             android:exported="true" />
-        <activity>
-            android:name=".Singing.activity.LiveSingingActivity"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
-            android:name=".Singing.activity.SingGridActivity"
-            android:exported="true">
-        </activity>
+            android:name=".correction.PitchCorrectionResult"
+            android:exported="false" />
         <activity
-            android:name=".Singing.activity.LiveSingingActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".correction.PitchCorrection"
+            android:exported="true"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" /> <!-- <activity -->
         <activity
             android:name=".score.activity.SingingResult"
             android:exported="true" />
+        <activity
+            android:name=".Singing.activity.LiveSingingActivity"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".Singing.activity.TestGraphActivity"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".Singing.activity.SingingStandbyActivity"
             android:exported="true" />
         <activity
             android:name=".SongListActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".OctaveTest.activity.TestEndActivity"
             android:exported="true" />
@@ -65,7 +55,8 @@
             android:exported="true" />
         <activity
             android:name=".Singing.activity.SingingActivity"
-            android:exported="true" />
+            android:exported="true">
+        </activity>
         <activity
             android:name=".OctaveTest.activity.TestStandbyActivity"
             android:exported="true" />
@@ -73,13 +64,18 @@
             android:name=".OctaveTest.activity.TestSingingActivity"
             android:exported="true" />
         <activity
-            android:name=".Login.LogInActivity"
+            android:name=".MyRecordActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
-
+        <activity
+            android:name=".WeakSentenceListActivity"
+            android:exported="true"/>
+        <activity
+            android:name=".Login.LogInActivity"
+            android:exported="true" />
+        </application>
 </manifest>

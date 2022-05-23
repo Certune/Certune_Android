@@ -1,35 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="400dp"
-    android:layout_height="100dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="10dp">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_weight="4">
+    <TextView
+        android:id="@+id/sentenceTextView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginTop="3dp"
+        android:gravity="center_vertical"
+        android:text="weakSentence"
+        android:textColor="#000000"
+        android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/sentenceTextView"
-            android:layout_width="238dp"
-            android:layout_height="91dp"
-            android:layout_weight="2"
-            android:gravity="center_vertical"
-            android:text="weakSentence1"
-            android:textColor="#000000"
-            android:textSize="20dp" />
+    <ImageButton
+        android:id="@+id/result_playBtn"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_weight="1"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/play" />
 
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
-        android:text="재생" />
+    <ImageButton
+        android:id="@+id/result_listenBtn"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_weight="1"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/headphones" />
 
 
 </LinearLayout>

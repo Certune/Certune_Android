@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 public class SongListViewAdapter extends BaseAdapter {
 
-
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     // TODO: ListView (RecyclerView) 각 row를 구성하는 요소를 전부 다 가지고 있는 List 보다는, 그런 구성요소를 만들기
     //  위해 필요한 '원본' 데이터를 가지고 있는게 좀 더 좋은 구조에요. 그래서 CustomSongListDto 에서 Index 값도 빠지는게

@@ -12,6 +12,7 @@
         android:layout_height="41dp"
         android:background="@drawable/singing_standby_songname_background"
         android:gravity="center"
+        android:textStyle="bold"
         android:text="곡 이름"
         android:textAlignment="center"
         android:textAllCaps="false"
@@ -20,35 +21,61 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.725" />
 
     <TextView
         android:id="@+id/singerName"
         android:layout_width="419dp"
         android:layout_height="49dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="96dp"
         android:background="@drawable/singing_standby_singername_background"
         android:gravity="center"
+        android:paddingBottom="20dp"
         android:text="가수 이름"
         android:textAlignment="center"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.333"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/lyrics"
         android:layout_width="0dp"
-        android:layout_height="135dp"
+        android:layout_height="150dp"
         android:layout_marginTop="128dp"
         android:background="@drawable/singing_standby_lyric_background"
         android:gravity="center"
         android:text="가사"
-        android:textSize="18sp"
         android:textAlignment="center"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/userKey"
+        android:layout_width="75dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center_vertical"
+        android:text="나의 키"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/userKeyLow"
+        app:layout_constraintHorizontal_bias="0.279"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/songKey" />
+
+    <TextView
+        android:id="@+id/songKey"
+        android:layout_width="75dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="330dp"
+        android:gravity="center_vertical"
+        android:text="노래 키"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,20 +83,21 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:text="사용자의 키에 맞추어 노래의 키를 자동으로 조절합니다."
+        android:textSize="10dp"
         app:layout_constraintBottom_toTopOf="@+id/singingButton"
         app:layout_constraintStart_toStartOf="@+id/textView5"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintVertical_bias="0.021" />
+        app:layout_constraintVertical_bias="0.054" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="76dp"
         android:text="키 조절하기"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -88,30 +116,20 @@
         android:id="@+id/singingButton"
         android:layout_width="307dp"
         android:layout_height="51dp"
-        android:layout_marginBottom="96dp"
+        android:layout_marginBottom="76dp"
         android:text="노래 부르기"
+        android:backgroundTint="#B4DFDB"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/songKey"
-        android:layout_width="75dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="312dp"
-        android:gravity="center_vertical"
-        android:text="노래 키"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/songKeyHigh"
         android:layout_width="75dp"
         android:layout_height="35dp"
         android:layout_marginTop="52dp"
-        android:layout_marginEnd="56dp"
+        android:layout_marginEnd="52dp"
         android:background="@drawable/singing_standby_keybutton_background"
         android:gravity="center"
         android:text="노래high키"
@@ -130,29 +148,15 @@
         android:text="노래low키"
         android:textAlignment="center"
         app:layout_constraintEnd_toStartOf="@+id/songKeyHigh"
-        app:layout_constraintHorizontal_bias="0.759"
+        app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toEndOf="@+id/songKey"
         app:layout_constraintTop_toBottomOf="@+id/lyrics" />
-
-    <TextView
-        android:id="@+id/userKey"
-        android:layout_width="75dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center_vertical"
-        android:text="나의 키"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/userKeyLow"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songKey" />
 
     <TextView
         android:id="@+id/userKeyHigh"
         android:layout_width="75dp"
         android:layout_height="35dp"
-        android:layout_marginStart="37dp"
+        android:layout_marginStart="33dp"
         android:layout_marginTop="12dp"
         android:background="@drawable/singing_standby_keybutton_background"
         android:gravity="center"
@@ -168,7 +172,7 @@
         android:layout_width="75dp"
         android:layout_height="35dp"
         android:layout_marginTop="12dp"
-        android:layout_marginEnd="168dp"
+        android:layout_marginEnd="160dp"
         android:background="@drawable/singing_standby_keybutton_background"
         android:gravity="center"
         android:text="내low키"

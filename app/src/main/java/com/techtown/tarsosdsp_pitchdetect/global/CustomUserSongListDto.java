@@ -10,7 +10,5 @@ public class CustomUserSongListDto {
     private String songText;
     private String singerText;
     private String totalScoreText;
-    private String noteScoreText;
-    private String rhythmScoreText;
 }
 

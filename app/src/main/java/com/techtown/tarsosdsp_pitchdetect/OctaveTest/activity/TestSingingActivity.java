@@ -65,6 +65,7 @@ public class TestSingingActivity extends AppCompatActivity {
     private String userSex;
     private String octaveHighLow;
 
+    View pitchLine;
     HorizontalScrollView scrollView;
     Button recordButton;
     Button stopButton;
@@ -115,6 +116,7 @@ public class TestSingingActivity extends AppCompatActivity {
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
+        pitchLine = findViewById(R.id.pitchLine);
         scrollView = findViewById(R.id.octaveTest_scrollView);
         recordButton = findViewById(R.id.octaveTest_recordButton);
         stopButton = findViewById(R.id.octaveTest_stopButton);
@@ -178,6 +180,7 @@ public class TestSingingActivity extends AppCompatActivity {
                                 Log.v("time", String.valueOf(time));
                                 if (!prevOctave.equals(octav)) {
                                     Log.v("time / octave", String.valueOf(time) + " / " + octav);
+
                                     map.put(time, octav);
                                     prevOctave = octav;
                                 }

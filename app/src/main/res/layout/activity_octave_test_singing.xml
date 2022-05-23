@@ -7,6 +7,12 @@
     android:background="#212121"
     tools:context=".OctaveTest.activity.TestSingingActivity">
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#00FF00"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <HorizontalScrollView
         android:id="@+id/octaveTest_scrollView"
         android:layout_width="match_parent"
@@ -14,9 +20,11 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/pitchLine"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
+
             <Button
                 android:id="@+id/restBtn0"
                 android:layout_width="100dp"
@@ -33,7 +41,7 @@
                 android:id="@+id/button2"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="450dp"/>
+                android:layout_marginTop="450dp" />
 
             <Button
                 android:id="@+id/button3"
@@ -84,8 +92,6 @@
                 android:background="#212121" />
 
 
-
-
             <Button
                 android:id="@+id/button10"
                 android:layout_width="100dp"
@@ -96,7 +102,7 @@
                 android:id="@+id/button11"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="400dp"/>
+                android:layout_marginTop="400dp" />
 
             <Button
                 android:id="@+id/button12"
@@ -147,10 +153,6 @@
                 android:background="#212121" />
 
 
-
-
-
-
             <Button
                 android:id="@+id/button19"
                 android:layout_width="100dp"
@@ -161,7 +163,7 @@
                 android:id="@+id/button20"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="350dp"/>
+                android:layout_marginTop="350dp" />
 
             <Button
                 android:id="@+id/button21"
@@ -212,11 +214,6 @@
                 android:background="#212121" />
 
 
-
-
-
-
-
             <Button
                 android:id="@+id/button28"
                 android:layout_width="100dp"
@@ -227,7 +224,7 @@
                 android:id="@+id/button29"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="300dp"/>
+                android:layout_marginTop="300dp" />
 
             <Button
                 android:id="@+id/button30"
@@ -278,12 +275,6 @@
                 android:background="#212121" />
 
 
-
-
-
-
-
-
             <Button
                 android:id="@+id/button37"
                 android:layout_width="100dp"
@@ -294,7 +285,7 @@
                 android:id="@+id/button38"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:layout_marginTop="250dp"/>
+                android:layout_marginTop="250dp" />
 
             <Button
                 android:id="@+id/button39"
@@ -350,22 +341,22 @@
 
     <Button
         android:id="@+id/octaveTest_recordButton"
-        android:background="@drawable/record_stop_button"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginBottom="64dp"
+        android:background="@drawable/record_stop_button"
         android:text="Record"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/octaveTest_stopButton"
-        android:background="@drawable/record_stop_button"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="64dp"
+        android:background="@drawable/record_stop_button"
         android:text="Stop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

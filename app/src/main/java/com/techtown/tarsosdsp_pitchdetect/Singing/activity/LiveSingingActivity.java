@@ -7,13 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.TextView;
 
 import androidx.gridlayout.widget.GridLayout;
 
@@ -29,6 +29,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SentenceInfoDto;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingNoteDto;
 import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 
 import java.nio.ByteOrder;
@@ -58,24 +60,78 @@ public class LiveSingingActivity extends AppCompatActivity {
     private String songHighKey = "B5";
     private Double songEndTime = 123.23;
 
-    ArrayList<NoteDto> noteDtoList = new ArrayList<>();
+    ArrayList<SingingNoteDto> noteDtoList = new ArrayList<>();
+    ArrayList<SentenceInfoDto> sentenceInfoList = new ArrayList<>();
 
     private HorizontalScrollView scrollView;
     GridLayout gridLayout;
     Button cell;
+    LoadingDialog dialog;
+
+    int firstNoteStartTime;
+    Long showStartTime;
+
+    Boolean isNoteLoad = false;
 
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+    final Handler handlerSong = new Handler();
+    final Handler handlerSetting = new Handler();
+    final Handler handlerSetting2 = new Handler();
+
+    final Runnable runnableSong = new Runnable() {
+        @Override
+        public void run() {
+            setScrollSettings();
+            for (SingingNoteDto noteDto : noteDtoList) {
+                int noteIdx = noteToIdx(noteDto.getNote());
+                int startTime = (int) Math.round(Double.parseDouble(noteDto.getStartTime()) * 10);
+                int endTime = (int) Math.round(Double.parseDouble(noteDto.getEndTime()) * 10);
+                boolean isNote = noteDto.getIsNote();
+                Log.v("isNote", String.valueOf(isNote));
+                setCell(noteIdx, startTime, endTime, isNote, false);
+            }
+            isNoteLoad = true;
+            checkLoading();
+        }
+    };
+
+    final Runnable runnableSetting = new Runnable() {
+        @Override
+        public void run() {
+            for (int j = 0; j < gridLayout.getRowCount(); j++) {
+                setCell(j, 0, 1, false, true);
+            }
+        }
+    };
+
+    final Runnable runnableSetting2 = new Runnable() {
+        @Override
+        public void run() {
+            for (int i = 0; i < gridLayout.getColumnCount(); i++) {
+                setCell(0, i, i + 1, false, true);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_singing);
 
+        handlerSetting.post(runnableSetting);
+        handlerSetting2.post(runnableSetting2);
+
         // Get xml instances
         mChart = findViewById(R.id.chart);
         scrollView = findViewById(R.id.horizontalScrollView);
         gridLayout = findViewById(R.id.gridLayout);
         gridLayout.setUseDefaultMargins(false);
+
+        dialog = new LoadingDialog(this);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false);
+        dialog.show();
 
         // Basic Setting for tarsosDSP AudioFormat
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
@@ -95,54 +151,72 @@ public class LiveSingingActivity extends AppCompatActivity {
         isShifting = subIntent.getBooleanExtra("isShifting", false);
         */
 
-        getSongEndTime();
-        microphoneOn();
-        setChart();
-        setAxis();
+       getSongEndTime();
+
+//        microphoneOn();
+//        setChart();
+//        setAxis();
+
     }
 
-    public void setCell(int noteIdx, int startTime, int endTime) {
+    public void checkLoading() {
+        // TODO : mp3 player 로딩 완료창도 추가
+        if (isNoteLoad) {
+            dialog.dismiss();
+            showStartTime = System.currentTimeMillis();
+        }
+        final Handler handlerStart = new Handler();
+
+        handlerStart.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setScrollSettings();
+            }
+        }, firstNoteStartTime * 1000L);
+    }
+
+    public void setCell(int noteIdx, int startTime, int endTime, boolean isNote, boolean isPrepare) {
         Log.v("노트 인덱스", String.valueOf(noteIdx));
         Log.v("시작 시간", String.valueOf(startTime));
         Log.v("종료 시간", String.valueOf(endTime));
-        GridLayout.Spec cellRow = GridLayout.spec(noteIdx);
-        GridLayout.Spec cellCol = GridLayout.spec(startTime, endTime - startTime);
+        GridLayout.Spec cellRow = GridLayout.spec(noteIdx, 1, 1f);
+        GridLayout.Spec cellCol = GridLayout.spec(startTime);
 
         GridLayout.LayoutParams param = new GridLayout.LayoutParams(cellRow, cellCol);
-        param.height = gridLayout.getHeight() / gridLayout.getRowCount();
-        param.width = endTime - startTime;
-        param.setGravity(Gravity.FILL_HORIZONTAL);
+        param.height = 0;
+        param.width = (endTime - startTime) * 10;
 
         cell = new Button(this);
         cell.setEnabled(false);
         cell.setLayoutParams(param);
-        cell.setBackgroundColor(Color.GRAY); // 이거 없애면 버튼 홀쭉해짐
+        if (isNote) {
+            cell.setBackgroundColor(Color.GRAY);
+            Log.v("true일 때 색깔", "얍");
+        }
+        else {
+            cell.setBackgroundColor(Color.BLUE); // 이거 없애면 버튼 홀쭉해짐
+            Log.v("FALSE일 때 색깔", "얍");
+        }
+        if (isPrepare)
+            cell.setBackgroundColor(Color.RED);
 
         gridLayout.addView(cell, param);
     }
 
     public void settingView() {
-        int songLowKeyIdx = noteToIdx(songLowKey);
-        int songHighKeyIdx = noteToIdx(songHighKey);
-        gridLayout.setRowCount(songHighKeyIdx - songLowKeyIdx + 1);
         Log.v("row 개수", String.valueOf(gridLayout.getRowCount()));
-        gridLayout.setColumnCount((int) Math.round(songEndTime * 100));
+        gridLayout.setColumnCount((int) Math.round(songEndTime * 10));
 
-        for (NoteDto noteDto : noteDtoList) {
-            int noteIdx = noteToIdx(noteDto.getNote()) - songLowKeyIdx;
-            int startTime = (int) Math.round(Double.parseDouble(noteDto.getStartTime()) * 100);
-            int endTime = (int) Math.round(Double.parseDouble(noteDto.getEndTime()) * 100);
-            setCell(noteIdx, startTime, endTime);
-        }
+        handlerSong.post(runnableSong);
     }
 
     private void setScrollSettings() {
-        LinearInterpolator interpolator = new LinearInterpolator();
         scrollView.post(new Runnable() {
             @Override
             public void run() {
-                ObjectAnimator objectAnimator = ObjectAnimator.ofInt(scrollView, "scrollX", 1000000);
-                objectAnimator.setDuration(Math.round(songEndTime * 100000)); // TODO : SONG 길이에 맞춰서 넣어줘야 함
+                ObjectAnimator objectAnimator = ObjectAnimator.ofInt(scrollView, "scrollX", 50000);
+                Long durationTime = (long) (songEndTime * 1000); // TODO : SONG 길이에 맞춰서 넣어줘야 함
+                objectAnimator.setDuration(durationTime);
                 objectAnimator.setInterpolator(new LinearInterpolator());
                 objectAnimator.start();
             }
@@ -151,36 +225,51 @@ public class LiveSingingActivity extends AppCompatActivity {
 
     private void getSongEndTime() {
 
-        database.collection("Song").document("신호등")
+        database.collection("Singing").document("신호등")
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-                    try {
+//                    try {
 //                        songEndTime = Double.parseDouble((String) document.getData().get("endTime"));
-                        songEndTime = 320.5;
-                        setScrollSettings();
-                        List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
+                    songEndTime = 231.3;
+                    List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
 
-                        for (int i = 0; i < list.size(); i++) {
-                            HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
-                            ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+                    for (int i = 0; i < list.size(); i++) {
+                        HashMap<String, Object> map = (HashMap) list.get(i);
 
-                            for (HashMap<String, Object> notemap : arrayMap) {
-                                NoteDto noteDto = new NoteDto(
-                                        String.valueOf(notemap.get("start_time")),
-                                        String.valueOf(notemap.get("end_time")),
-                                        String.valueOf(notemap.get("note"))
-                                );
-                                noteDtoList.add(noteDto);
-                            }
+                        // sentence 정보
+                        String lyrics = (String) map.get("lyrics");
+                        String startTime = (String) map.get("start_time");
+                        String endTime = (String) map.get("end_time");
+
+                        SentenceInfoDto sentenceInfoDto = SentenceInfoDto.builder()
+                                .lyrics(lyrics)
+                                .startTime(startTime)
+                                .endTime(endTime)
+                                .build();
+                        sentenceInfoList.add(sentenceInfoDto);
+
+                        // note 정보
+                        ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+                        for (HashMap<String, Object> notemap : arrayMap) {
+                            SingingNoteDto noteDto = SingingNoteDto.builder()
+                                    .startTime(String.valueOf(notemap.get("start_time")))
+                                    .endTime(String.valueOf(notemap.get("end_time")))
+                                    .note(String.valueOf(notemap.get("note")))
+                                    .isNote((Boolean) notemap.get("isNote"))
+                                    .build();
+
+                            noteDtoList.add(noteDto);
                         }
-                        settingView();
 
-                    } catch (Exception e) {
-                        Log.e("endTimeImport", e.getMessage());
                     }
+                    settingView();
+
+//                    } catch (Exception e) {
+//                        Log.e("endTimeImport", e.getMessage());
+//                    }
                 }
             }
         });
@@ -189,7 +278,7 @@ public class LiveSingingActivity extends AppCompatActivity {
     public void addEntry(Float pitch) {
         LineData data = mChart.getData();
 
-        if(data != null) {
+        if (data != null) {
             // Check that data has a set. If not, create and add a set to data
             ILineDataSet set = data.getDataSetByIndex(0);
 
@@ -269,7 +358,7 @@ public class LiveSingingActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(pitchInHz > 40) {
+                    if (pitchInHz > 40) {
                         addEntry(pitchInHz);
                     }
                 }

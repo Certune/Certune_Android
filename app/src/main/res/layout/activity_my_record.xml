@@ -9,19 +9,17 @@
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="204dp"
-        android:layout_height="67dp"
+        android:layout_width="203dp"
+        android:layout_height="85dp"
+        android:gravity="bottom|center"
         android:text="마이레코드"
         android:textSize="32sp"
-        app:layout_constraintBottom_toTopOf="@+id/listView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.193"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.495" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/listView2"
         android:layout_width="329dp"
         android:layout_height="467dp"
         android:layout_marginTop="172dp"

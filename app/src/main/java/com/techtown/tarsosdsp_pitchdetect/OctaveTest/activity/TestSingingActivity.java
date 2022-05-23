@@ -7,6 +7,7 @@ import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessTimeRange.p
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -15,8 +16,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.HorizontalScrollView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -63,7 +65,7 @@ public class TestSingingActivity extends AppCompatActivity {
     private String userSex;
     private String octaveHighLow;
 
-    TextView pitchTextView;
+    HorizontalScrollView scrollView;
     Button recordButton;
     Button stopButton;
 
@@ -113,9 +115,9 @@ public class TestSingingActivity extends AppCompatActivity {
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
-        pitchTextView = findViewById(R.id.pitchTextView);
-        recordButton = findViewById(R.id.recordButton);
-        stopButton = findViewById(R.id.stopButton);
+        scrollView = findViewById(R.id.octaveTest_scrollView);
+        recordButton = findViewById(R.id.octaveTest_recordButton);
+        stopButton = findViewById(R.id.octaveTest_stopButton);
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,9 +149,9 @@ public class TestSingingActivity extends AppCompatActivity {
     String prevOctave;
 
     public void recordAudio() {
-
         releaseDispatcher();
         mediaPlayer.start();
+        setScrollSettings();
         long start = System.nanoTime();
         prevOctave = "";
         map = new HashMap<>(); // 녹음될 때마다 map 초기화
@@ -561,6 +563,19 @@ public class TestSingingActivity extends AppCompatActivity {
                         Log.i("음악 백그라운드 재생 실패", e.getMessage());
                     }
                 });
+    }
+
+    private void setScrollSettings() {
+        LinearInterpolator interpolator = new LinearInterpolator();
+        scrollView.post(new Runnable() {
+            @Override
+            public void run() {
+                ObjectAnimator objectAnimator = ObjectAnimator.ofInt(scrollView, "scrollX", 1000000);
+                objectAnimator.setDuration(Math.round(25 * 100000)); // TODO : SONG 길이에 맞춰서 넣어줘야 함
+                objectAnimator.setInterpolator(new LinearInterpolator());
+                objectAnimator.start();
+            }
+        });
     }
 
 

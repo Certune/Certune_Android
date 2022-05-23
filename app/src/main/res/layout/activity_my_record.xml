@@ -7,10 +7,28 @@
     android:layout_height="match_parent"
     tools:context=".MyRecordActivity">
 
+    <ImageButton
+        android:id="@+id/west_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="31dp"
+        android:background="@android:color/transparent"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.039"
+        app:srcCompat="@drawable/ic_baseline_west_24"
+        tools:ignore="SpeakableTextPresentCheck" />
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="203dp"
         android:layout_height="85dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="48dp"
         android:gravity="bottom|center"
         android:text="마이레코드"
         android:textSize="32sp"

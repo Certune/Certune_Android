@@ -4,40 +4,74 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".correction.PitchCorrectionResult">
+
+
+    <ImageButton
+        android:id="@+id/west_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="31dp"
+        android:background="@android:color/transparent"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.039"
+        app:srcCompat="@drawable/ic_baseline_west_24"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
         android:id="@+id/scoreTextView"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="172dp"
         android:background="@drawable/result_score_background"
-        android:text="70점"
+        android:text="87점"
         android:textSize="27dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/resetBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="168dp"
+        android:background="#8cdbd2"
         android:text="확인"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.835"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/endText" />
 
     <TextView
         android:id="@+id/endText"
-        android:layout_width="321dp"
-        android:layout_height="73dp"
-        android:text="테스트를 완료하셨습니다."
+        android:layout_width="342dp"
+        android:layout_height="85dp"
+        android:gravity="center"
+        android:text="음정 감각이 훌륭하시군요!"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.426" />
+        app:layout_constraintVertical_bias="0.57" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="256dp"
+        android:layout_height="52dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="88dp"
+        android:gravity="center"
+        android:text="민지 님의 점수는? "
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

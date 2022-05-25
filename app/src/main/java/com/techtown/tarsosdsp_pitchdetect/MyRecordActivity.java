@@ -36,7 +36,7 @@ public class MyRecordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_record);
 
-        listview = (ListView) findViewById(R.id.listView2);
+        listview = (ListView) findViewById(R.id.myrecord_listView);
         navigationView = findViewById(R.id.nav_view_myrecord);
 
         adapter = new UserSongListViewAdapter();
@@ -49,7 +49,7 @@ public class MyRecordActivity extends AppCompatActivity {
                 listview.setAdapter(adapter);
 
             }
-        }, 3500);
+        }, 1000);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

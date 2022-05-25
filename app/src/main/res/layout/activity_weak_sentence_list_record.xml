@@ -8,6 +8,22 @@
     tools:context=".WeakSentenceListActivity">
 
 
+    <ImageButton
+        android:id="@+id/west_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="31dp"
+        android:background="@android:color/transparent"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.003"
+        app:srcCompat="@drawable/ic_baseline_west_24"
+        tools:ignore="SpeakableTextPresentCheck" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -22,16 +38,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="27dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-<!--        app:srcCompat="@drawable/ic_baseline_west_24" />-->
+    <!--        app:srcCompat="@drawable/ic_baseline_west_24" />-->
 
     <TextView
         android:id="@+id/textView2"

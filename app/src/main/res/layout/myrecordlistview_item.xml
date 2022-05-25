@@ -8,28 +8,30 @@
     android:padding="10dp">
 
     <LinearLayout
-        android:layout_width="200dp"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="23dp"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/songTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="title"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/singerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="content" />
+            android:text="content"
+            android:textSize="10dp" />
     </LinearLayout>
 
-    <FrameLayout android:layout_width="wrap_content"
+    <FrameLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal">
 
@@ -44,18 +46,18 @@
 
         <TextView
             android:id="@+id/scoreTextView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="20dp"
+            android:layout_height="14dp"
             android:layout_gravity="center"
             android:layout_marginTop="1dp"
             android:gravity="center|center_horizontal"
             android:text="score"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="15dp"
+            android:textColor="@color/black"
+            android:textSize="12dp"
             android:textStyle="bold" />
 
         />
 
-</FrameLayout>
->
+    </FrameLayout>
+    >
 </LinearLayout>

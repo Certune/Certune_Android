@@ -49,7 +49,6 @@
             android:layout_width="340dp"
             android:layout_height="600dp"
             android:layout_marginTop="100dp" />
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

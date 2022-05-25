@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".correction.PitchCorrectionResult">
-
+    tools:context=".correction.RhythmCorrectionResult">
 
     <ImageButton
         android:id="@+id/west_arrow"
@@ -30,7 +29,7 @@
         android:layout_height="120dp"
         android:layout_marginTop="172dp"
         android:background="@drawable/result_score_background"
-        android:text="87점"
+        android:text="79점"
         android:textSize="27dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,8 +53,8 @@
         android:layout_width="342dp"
         android:layout_height="85dp"
         android:gravity="center"
-        android:text="음정 감각이 훌륭하시군요!"
-        android:textSize="30sp"
+        android:text="매일 하루에 10분씩 연습해서 90점을 목표로!"
+        android:textSize="25sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,12 +65,13 @@
         android:id="@+id/textView4"
         android:layout_width="256dp"
         android:layout_height="52dp"
-        android:layout_marginStart="104dp"
+        android:layout_marginStart="76dp"
         android:layout_marginTop="88dp"
         android:gravity="center"
-        android:text="Certune 님의 점수는? "
+        android:text="민지 님의 점수는? "
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -42,7 +42,7 @@
             android:layout_width="1dp"
             android:layout_height="25dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/ic_baseline_headset_24" />
+            app:srcCompat="@drawable/headphones" />
 
 
 

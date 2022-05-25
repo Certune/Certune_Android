@@ -35,7 +35,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/resetBtn"
         android:layout_width="wrap_content"
@@ -51,10 +50,9 @@
 
     <TextView
         android:id="@+id/endText"
-        android:layout_width="342dp"
-        android:layout_height="85dp"
-        android:gravity="center"
-        android:text="음정 감각이 훌륭하시군요!"
+        android:layout_width="321dp"
+        android:layout_height="73dp"
+        android:text="테스트를 완료하셨습니다."
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

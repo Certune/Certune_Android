@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect.OctaveTest.activity;
+package com.techtown.tarsosdsp_pitchdetect.correction;
 
 import static com.techtown.tarsosdsp_pitchdetect.score.logics.CalcStartTimeRange.calcStartTimeRange;
 import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessNoteRange.processNoteRange;
@@ -56,7 +56,7 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
-public class TestSingingActivity extends AppCompatActivity {
+public class OctavePractiveActivity extends AppCompatActivity {
 
     final int highestNoteIdx = 4;
     final int lowestNoteIdx = 0;
@@ -90,21 +90,21 @@ public class TestSingingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_octave_test_singing);
+        setContentView(R.layout.activity_octave_practive);
 
-        Intent intent = getIntent();
-        userEmail = intent.getStringExtra("userEmail");
-        userSex = intent.getStringExtra("userSex");
-        octaveHighLow = intent.getStringExtra("octaveHighLow");
-
-        Log.v("USEREMAIL", userEmail);
-        Log.v("USERSEX", userSex);
-        Log.v("OctaveHighLow", octaveHighLow);
+//        Intent intent = getIntent();
+//        userEmail = intent.getStringExtra("userEmail");
+//        userSex = intent.getStringExtra("userSex");
+//        octaveHighLow = intent.getStringExtra("octaveHighLow");
+//
+//        Log.v("USEREMAIL", userEmail);
+//        Log.v("USERSEX", userSex);
+//        Log.v("OctaveHighLow", octaveHighLow);
 
         File sdCard = Environment.getExternalStorageDirectory();
         file = new File(sdCard, filename);
 
-        getOctaveMusicData();
+//        getOctaveMusicData();
         fetchAudioUrlFromFirebase();
 
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
@@ -136,7 +136,7 @@ public class TestSingingActivity extends AppCompatActivity {
                     stopRecording();
                     isRecording = false;
                 }
-                Intent intent = new Intent(getApplicationContext(), TestEndActivity.class);
+                Intent intent = new Intent(getApplicationContext(), PitchCorrection.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("userSex", userSex);
                 intent.putExtra("octaveHighLow", octaveHighLow);
@@ -494,60 +494,60 @@ public class TestSingingActivity extends AppCompatActivity {
                 });
     }
 
-    private void getOctaveMusicData() {
-        Task<DocumentSnapshot> querySnapshot = database.collection("OctaveTest").document(userSex)
-                .collection("highLowTest").document(octaveHighLow).get();
-        querySnapshot
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        double noteTime = (double) documentSnapshot.get("note_time");
-                        ArrayList<HashMap<String, Object>> octaves = (ArrayList<HashMap<String, Object>>) documentSnapshot.get("octaves");
-
-                        startTimeList = new ArrayList<>();
-                        endTimeList = new ArrayList<>();
-                        musicTotalInfoList = new ArrayList<>();
-
-                        for (int i= 0; i < octaves.size(); i++) {
-                            HashMap<String, Object> noteListMap = octaves.get(i);
-                            double octaveStartTime = Double.parseDouble(String.valueOf(noteListMap.get("start_time")));
-                            ArrayList<String> noteList = (ArrayList<String>) noteListMap.get("notes");
-                            double octaveEndTime = octaveStartTime + noteTime * noteList.size();
-
-                            ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
-                            for (int j = 0; j < noteList.size(); j++) {
-                                NoteDto noteDto = NoteDto.builder()
-                                        .startTime(String.valueOf(octaveStartTime + noteTime * j))
-                                        .note(noteList.get(j))
-                                        .endTime(String.valueOf(octaveStartTime + noteTime * (j + 1)))
-                                        .build();
-                                noteDtoArrayList.add(noteDto);
-                            }
-
-                            TestMusicInfoDto testMusicDto = TestMusicInfoDto.builder()
-                                    .startTime(octaveStartTime)
-                                    .endTime(octaveEndTime)
-                                    .notes(noteDtoArrayList)
-                                    .build();
-
-                            startTimeList.add(octaveStartTime);
-                            endTimeList.add(octaveEndTime);
-                            musicTotalInfoList.add(testMusicDto);
-                        }
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.v("ERROR", "not enough records for calculating");
-                    }
-                });
-    }
+//    private void getOctaveMusicData() {
+//        Task<DocumentSnapshot> querySnapshot = database.collection("OctaveTest").document(userSex)
+//                .collection("highLowTest").document(octaveHighLow).get();
+//        querySnapshot
+//                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+//                    @Override
+//                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        double noteTime = (double) documentSnapshot.get("note_time");
+//                        ArrayList<HashMap<String, Object>> octaves = (ArrayList<HashMap<String, Object>>) documentSnapshot.get("octaves");
+//
+//                        startTimeList = new ArrayList<>();
+//                        endTimeList = new ArrayList<>();
+//                        musicTotalInfoList = new ArrayList<>();
+//
+//                        for (int i= 0; i < octaves.size(); i++) {
+//                            HashMap<String, Object> noteListMap = octaves.get(i);
+//                            double octaveStartTime = Double.parseDouble(String.valueOf(noteListMap.get("start_time")));
+//                            ArrayList<String> noteList = (ArrayList<String>) noteListMap.get("notes");
+//                            double octaveEndTime = octaveStartTime + noteTime * noteList.size();
+//
+//                            ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
+//                            for (int j = 0; j < noteList.size(); j++) {
+//                                NoteDto noteDto = NoteDto.builder()
+//                                        .startTime(String.valueOf(octaveStartTime + noteTime * j))
+//                                        .note(noteList.get(j))
+//                                        .endTime(String.valueOf(octaveStartTime + noteTime * (j + 1)))
+//                                        .build();
+//                                noteDtoArrayList.add(noteDto);
+//                            }
+//
+//                            TestMusicInfoDto testMusicDto = TestMusicInfoDto.builder()
+//                                    .startTime(octaveStartTime)
+//                                    .endTime(octaveEndTime)
+//                                    .notes(noteDtoArrayList)
+//                                    .build();
+//
+//                            startTimeList.add(octaveStartTime);
+//                            endTimeList.add(octaveEndTime);
+//                            musicTotalInfoList.add(testMusicDto);
+//                        }
+//                    }
+//                })
+//                .addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.v("ERROR", "not enough records for calculating");
+//                    }
+//                });
+//    }
 
     // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
         final FirebaseStorage storage = FirebaseStorage.getInstance();
-        String url = "gs://certune-73ce6.appspot.com/" + userSex + "Pitch/" + userSex + octaveHighLow + ".mp3";
+        String url = "gs://certune-73ce6.appspot.com/" + "octave/A#3 C4 D4 D#4 F4.mp3";
         StorageReference storageRef = storage.getReferenceFromUrl(url);
 
         storageRef.getDownloadUrl()

@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="350dp"
-    android:layout_height="wrap_content"
+    android:layout_width="300dp"
+    android:layout_height="80dp"
     android:orientation="horizontal"
     android:padding="10dp">
 
@@ -38,18 +38,19 @@
 
         <ImageButton
             android:id="@+id/scoreButton_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/myrecord_score1_background"
-            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
-            />
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/transparent"
+            tools:ignore="SpeakableTextPresentCheck" />
 
         <TextView
             android:id="@+id/scoreTextView"
             android:layout_width="20dp"
             android:layout_height="14dp"
             android:layout_gravity="center"
-            android:gravity="center|top"
+            android:layout_marginTop="1dp"
+            android:gravity="center|center_horizontal"
             android:text="score"
             android:textColor="@color/black"
             android:textSize="12dp"

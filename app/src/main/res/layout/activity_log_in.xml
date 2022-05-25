@@ -5,48 +5,46 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:clickable="true"
     android:focusableInTouchMode="true">
-
-    <EditText
-        android:id="@+id/edittext_password"
-        android:layout_width="240dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="50dp"
-        android:hint="Password"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edittext_email" />
 
     <EditText
         android:id="@+id/edittext_email"
         android:layout_width="240dp"
         android:layout_height="45dp"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="330dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginTop="372dp"
+        android:layout_marginEnd="52dp"
         android:hint="E-mail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/idTextView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/pwTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="410dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="452dp"
         android:text="PW"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edittext_password"
+        android:layout_width="240dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="444dp"
+        android:layout_marginEnd="52dp"
+        android:hint="Password"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/idTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="345dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="388dp"
         android:text="ID"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

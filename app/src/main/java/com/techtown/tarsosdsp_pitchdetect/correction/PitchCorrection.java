@@ -3,22 +3,29 @@ package com.techtown.tarsosdsp_pitchdetect.correction;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.techtown.tarsosdsp_pitchdetect.MyRecordActivity;
+import com.techtown.tarsosdsp_pitchdetect.OctaveTest.activity.TestSingingActivity;
 import com.techtown.tarsosdsp_pitchdetect.PitchCorrectionListAdapter;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
+import com.techtown.tarsosdsp_pitchdetect.score.activity.SingingResult;
 
 public class PitchCorrection extends AppCompatActivity {
 
     private ListView listView;
     private PitchCorrectionListAdapter adapter;
+    ImageButton playBtn;
 
 
     @Override
@@ -27,6 +34,8 @@ public class PitchCorrection extends AppCompatActivity {
         setContentView(R.layout.activity_pitch_correction);
 
         adapter = new PitchCorrectionListAdapter();
+
+        playBtn = findViewById(R.id.correction_playButton);
 
         listView = (ListView)findViewById(R.id.Pitch_listView);
         listView.setAdapter(adapter);

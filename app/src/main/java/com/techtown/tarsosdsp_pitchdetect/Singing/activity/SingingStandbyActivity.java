@@ -1,7 +1,10 @@
 package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
+import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
+
 import static android.content.ContentValues.TAG;
 
+import android.graphics.drawable.Drawable;
 import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
 
 import androidx.annotation.NonNull;
@@ -95,7 +98,7 @@ public class SingingStandbyActivity extends AppCompatActivity {
         singingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SingingActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LiveSingingActivity.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("songName", songName);
                 intent.putExtra("singerName", singerName);

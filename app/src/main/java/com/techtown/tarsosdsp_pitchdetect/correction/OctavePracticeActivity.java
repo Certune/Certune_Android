@@ -22,7 +22,6 @@ import android.widget.HorizontalScrollView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -90,7 +89,7 @@ public class OctavePracticeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_octave_practive);
+        setContentView(R.layout.activity_octave_practice);
 
 //        Intent intent = getIntent();
 //        userEmail = intent.getStringExtra("userEmail");

@@ -1,14 +1,16 @@
 package com.techtown.tarsosdsp_pitchdetect.global;
 
-import android.graphics.drawable.Drawable;
-
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-
-
+@Setter
 @Getter
-@Builder
 public class CustomWeakSentenceListDto {
-    private String sentenceText;
+    String sentenceText;
+
+    @Builder
+    public CustomWeakSentenceListDto(){
+        this.sentenceText = sentenceText;
+    }
 }

@@ -1,5 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect;
-
+package com.techtown.tarsosdsp_pitchdetect.MyRecord;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +16,8 @@ import android.widget.ListView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
 import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
 import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
@@ -47,14 +48,14 @@ public class MyRecordActivity extends AppCompatActivity {
             public void run() {
                 adapter.addItem();
                 listview.setAdapter(adapter);
-
             }
         }, 1000);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-               Intent intent = new Intent(getApplicationContext(),WeakSentenceListActivity.class);
+
+               Intent intent = new Intent(getApplicationContext(), WeakSentenceListActivity.class);
                startActivity(intent);
             }
         });

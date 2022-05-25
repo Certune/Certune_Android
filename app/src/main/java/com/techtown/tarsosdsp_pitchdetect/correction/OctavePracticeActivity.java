@@ -56,7 +56,7 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
-public class OctavePractiveActivity extends AppCompatActivity {
+public class OctavePracticeActivity extends AppCompatActivity {
 
     final int highestNoteIdx = 4;
     final int lowestNoteIdx = 0;

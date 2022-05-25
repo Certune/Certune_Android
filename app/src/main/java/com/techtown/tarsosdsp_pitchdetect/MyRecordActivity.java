@@ -1,49 +1,46 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.drawable.Drawable;
-import android.media.Image;
+import android.content.Intent;
+
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+
+import android.widget.ListView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MyRecordActivity extends AppCompatActivity {
 
     ListView listview;
     UserSongListViewAdapter adapter;
-
+    ArrayList<CustomUserSongListDto> list = new ArrayList<>();
+    BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_record);
 
-        listview = (ListView) findViewById(R.id.listView2);
+        listview = (ListView) findViewById(R.id.myrecord_listView);
+        navigationView = findViewById(R.id.nav_view_myrecord);
 
         adapter = new UserSongListViewAdapter();
         adapter.getUserSongList();
-
-
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -52,16 +49,37 @@ public class MyRecordActivity extends AppCompatActivity {
                 listview.setAdapter(adapter);
 
             }
-        }, 3500);
+        }, 1000);
 
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+               Intent intent = new Intent(getApplicationContext(),WeakSentenceListActivity.class);
+               startActivity(intent);
+            }
+        });
 
-//        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView parent, View v, int position, long id) {
-//                // TODO : 버튼 추가
-//            }
-//
-//        });
+        navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                switch (item.getItemId()) {
+                    case R.id.navigation_songList:
+                        intent = new Intent(getApplicationContext(), SongListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.navigation_pitch:
+                        intent = new Intent(getApplicationContext(), PitchCorrection.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.navigation_rhythm:
+                        intent = new Intent(getApplicationContext(), RhythmCorrection.class);
+                        startActivity(intent);
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
 //        @Override

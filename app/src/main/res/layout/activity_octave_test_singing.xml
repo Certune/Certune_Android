@@ -7,12 +7,6 @@
     android:background="#212121"
     tools:context=".OctaveTest.activity.TestSingingActivity">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="#00FF00"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
     <HorizontalScrollView
         android:id="@+id/octaveTest_scrollView"
         android:layout_width="match_parent"

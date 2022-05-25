@@ -1,6 +1,12 @@
 package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
+import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
+
 import static android.content.ContentValues.TAG;
+
+import android.graphics.drawable.Drawable;
+
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -91,7 +97,7 @@ public class SingingStandbyActivity extends AppCompatActivity {
         singingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), SingingActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LiveSingingActivity.class);
                 intent.putExtra("userEmail", userEmail);
                 intent.putExtra("songName", songName);
                 intent.putExtra("singerName", singerName);
@@ -120,7 +126,7 @@ public class SingingStandbyActivity extends AppCompatActivity {
                         String firstLyrics = firstMap.get("lyrics");
                         HashMap<String, String> secondMap = (HashMap) list.get(1);
                         String secondLyrics = secondMap.get("lyrics");
-                        lyrics = firstLyrics + "\n" + secondLyrics;
+                        lyrics = firstLyrics + "\n\n" + secondLyrics;
 
                         // 노래 최저, 최고음 가져오기
                         songLowKey = (String) document.getData().get("lowKey");
@@ -136,6 +142,18 @@ public class SingingStandbyActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void changeUserKeyColor() {
+        int songHighKeyIdx = noteToIdx(songHighKey);
+        int songLowKeyIdx = noteToIdx(songLowKey);
+        int userHighKeyIdx = noteToIdx(userHighKey);
+        int userLowKeyIdx = noteToIdx(userLowKey);
+
+        Drawable drawable = getResources().getDrawable(R.drawable.singing_standby_keybutton_background_danger);
+        if (userHighKeyIdx < songHighKeyIdx || userLowKeyIdx > songLowKeyIdx)
+            userHighKeyTextView.setBackground(drawable);
+
     }
 
     private void findUserKeyInfo() {
@@ -154,6 +172,8 @@ public class SingingStandbyActivity extends AppCompatActivity {
 
                             userLowKeyTextView.setText(userLowKey);
                             userHighKeyTextView.setText(userHighKey);
+
+                            changeUserKeyColor();
                         } else {
                             Log.e("유저 정보 오류", "사용자 정보가 존재하지 않습니다.");
                         }

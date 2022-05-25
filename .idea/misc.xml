@@ -39,8 +39,17 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_grid_layout.xml" value="0.19429824561403508" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/singing_grid_item.xml" value="0.23809523809523808" />
+        <entry key="app/src/main/res/drawable/dialog_loading.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/ic_baseline_music_note_24.xml" value="0.18055555555555555" />
         <entry key="app/src/main/res/drawable/inging_standby_keybutton_background_danger.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/loading_bg.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/loading_image.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/login_button.xml" value="0.27456140350877195" />
+        <entry key="app/src/main/res/drawable/myrecord_highscore.xml" value="0.20277777777777778" />
+        <entry key="app/src/main/res/drawable/myrecord_midscore.xml" value="0.20277777777777778" />
+        <entry key="app/src/main/res/drawable/myrecord_score1_background.xml" value="0.175" />
+        <entry key="app/src/main/res/drawable/myrecord_score2_background.xml" value="0.175" />
+        <entry key="app/src/main/res/drawable/myrecord_score3_background.xml" value="0.175" />
         <entry key="app/src/main/res/drawable/outline_arrow_back_ios_new_20.xml" value="0.178125" />
         <entry key="app/src/main/res/drawable/progress_bar.xml" value="0.25394736842105264" />
         <entry key="app/src/main/res/drawable/progress_bar_bad.xml" value="0.26481481481481484" />
@@ -49,28 +58,37 @@
         <entry key="app/src/main/res/drawable/result_score_background.xml" value="0.25394736842105264" />
         <entry key="app/src/main/res/drawable/singing_standby_keybutton_background_danger.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/singing_standby_lyric_background.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/singing_standby_singername_background.xml" value="0.27456140350877195" />
+        <entry key="app/src/main/res/drawable/test_standby_test_complete_background.xml" value="0.20277777777777778" />
         <entry key="app/src/main/res/layout/activity_email_password.xml" value="0.2942708333333333" />
         <entry key="app/src/main/res/layout/activity_high_octave.xml" value="0.20471014492753623" />
-        <entry key="app/src/main/res/layout/activity_live_singing.xml" value="0.37364418384038967" />
-        <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.31975726338970367" />
+        <entry key="app/src/main/res/layout/activity_live_singing.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_log_in.xml" value="0.2512105257227603" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.21300510243705637" />
         <entry key="app/src/main/res/layout/activity_low_octave_test.xml" value="0.20471014492753623" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2921935313541035" />
-        <entry key="app/src/main/res/layout/activity_my_record.xml" value="0.15806159420289856" />
+        <entry key="app/src/main/res/layout/activity_my_record.xml" value="0.14987289760300462" />
+        <entry key="app/src/main/res/layout/activity_octave_practive.xml" value="0.12111425111021397" />
         <entry key="app/src/main/res/layout/activity_octave_test_end.xml" value="0.15806159420289856" />
         <entry key="app/src/main/res/layout/activity_octave_test_singing.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_octave_test_standby.xml" value="0.129981884057971" />
+        <entry key="app/src/main/res/layout/activity_pitch_correction.xml" value="0.18085510485910958" />
+        <entry key="app/src/main/res/layout/activity_pitch_correction_result.xml" value="0.13043478260869565" />
         <entry key="app/src/main/res/layout/activity_register.xml" value="0.3126618054457129" />
         <entry key="app/src/main/res/layout/activity_singing_result.xml" value="0.28786414531086335" />
-        <entry key="app/src/main/res/layout/activity_singing_standby.xml" value="0.3866814164980016" />
-        <entry key="app/src/main/res/layout/activity_song_list.xml" value="0.26222826086956524" />
+        <entry key="app/src/main/res/layout/activity_singing_standby.xml" value="0.25228435407889704" />
+        <entry key="app/src/main/res/layout/activity_song_list.xml" value="0.17700643527246143" />
         <entry key="app/src/main/res/layout/activity_song_record.xml" value="0.15806159420289856" />
         <entry key="app/src/main/res/layout/activity_test_chart.xml" value="0.40020829213561115" />
         <entry key="app/src/main/res/layout/activity_test_graph.xml" value="0.42013560171346404" />
-        <entry key="app/src/main/res/layout/activity_weak_sentence_list.xml" value="0.16757246376811594" />
-        <entry key="app/src/main/res/layout/activity_weak_sentence_list_record.xml" value="0.16757246376811594" />
+        <entry key="app/src/main/res/layout/activity_weak_sentence_list.xml" value="0.2658638041438113" />
+        <entry key="app/src/main/res/layout/activity_weak_sentence_list_record.xml" value="0.6286837830729292" />
         <entry key="app/src/main/res/layout/custom_listview.xml" value="0.31144545460278883" />
-        <entry key="app/src/main/res/layout/myrecordlistview_item.xml" value="0.16757246376811594" />
+        <entry key="app/src/main/res/layout/dialog_loading.xml" value="0.21829710144927536" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.17255434782608695" />
+        <entry key="app/src/main/res/layout/fragment_second.xml" value="0.17255434782608695" />
+        <entry key="app/src/main/res/layout/myrecordlistview_item.xml" value="0.2446337192235166" />
+        <entry key="app/src/main/res/layout/pitchcorrectionlistview_item.xml" value="0.36721311475409835" />
         <entry key="app/src/main/res/layout/weaksentencelistview_item.xml" value="0.3122632388507911" />
       </map>
     </option>

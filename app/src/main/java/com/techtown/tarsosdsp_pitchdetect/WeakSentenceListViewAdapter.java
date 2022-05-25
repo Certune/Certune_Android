@@ -2,6 +2,9 @@ package com.techtown.tarsosdsp_pitchdetect;
 
 import static android.content.ContentValues.TAG;
 
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +20,21 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingActivity;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomWeakSentenceListDto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnClickListener {
+public class WeakSentenceListViewAdapter extends BaseAdapter {
 
+    String musicUrl;
+    MediaPlayer mediaPlayer;
 
+    private SingingActivity singingActivity;
     private ArrayList<CustomWeakSentenceListDto> weakSentenceLists = new ArrayList<CustomWeakSentenceListDto>();
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
@@ -36,9 +45,10 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
     List<String> LyricLists = new ArrayList<>();
     List<String> weakSentenceList = new ArrayList<>();
 
+
     //WeakSentenceListViewAdapter 생성자
     public WeakSentenceListViewAdapter() {
-
+        fetchAudioUrlFromFirebase();
     }
 
     //Adapter에 사용되는 데이터 개수 리턴
@@ -73,12 +83,18 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
         CustomWeakSentenceListDto listViewItem = weakSentenceLists.get(position);
         holder.sentence.setText(listViewItem.getSentenceText());
 
+
+        holder.playBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.v("버튼클릭", "얍");
+                mediaPlayer.start();
+                Log.v("버튼클릭완", "얍");
+            }
+        });
         return convertView;
     }
 
-    @Override
-    public void onClick(View v) {
-    }
 
     class CustomViewHolder {
         TextView sentence;
@@ -142,4 +158,42 @@ public class WeakSentenceListViewAdapter extends BaseAdapter implements View.OnC
             weakSentenceLists.add(item);
         }
     }
+
+    private void fetchAudioUrlFromFirebase() {
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        StorageReference storageRef = storage.child("songs").child("신호등").child("0.mp3");
+
+        storageRef.getDownloadUrl()
+                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        musicUrl = uri.toString();
+                        createMediaPlayer();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("음악 백그라운드 재생 실패", e.getMessage());
+                    }
+                });
+    }
+
+    public void createMediaPlayer(){
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(musicUrl);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    Log.v("준비완", "짠");
+                }
+            });
+            mediaPlayer.prepareAsync();
+        } catch (Exception e) {
+            Log.e("MEDIAPLAYER", e.getMessage());
+        }
+    }
+
 }

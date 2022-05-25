@@ -2,11 +2,17 @@ package com.techtown.tarsosdsp_pitchdetect;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserSongListViewAdapter extends BaseAdapter {
+
+    // 버튼 클릭 이벤트를 위한 Listener 인터페이스 정의
+    public interface ListBtnClickListener{
+        void onListBtnClick(int position);
+    }
+
+    // 생성자로부터 전달된 ListBtnClickListener 저장
+    private ListBtnClickListener listBtnClickListener ;
+
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     ArrayList<CustomUserSongListDto> userSongLists = new ArrayList<>();
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -33,8 +48,9 @@ public class UserSongListViewAdapter extends BaseAdapter {
     List<String> singerList = new ArrayList<>();
     List<String> scoreList = new ArrayList<>();
 
+
     public UserSongListViewAdapter(){
-        
+
     }
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
@@ -54,8 +70,6 @@ public class UserSongListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         CustomViewHolder holder;
 
-
-        // "listview_item" Layout을 inflate하여 convertView 참조 획득.
         if (convertView == null)
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.myrecordlistview_item, null, false);
 
@@ -64,8 +78,9 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.songTitle = (TextView) convertView.findViewById(R.id.songTextView);
         holder.singerName = (TextView) convertView.findViewById(R.id.singerTextView);
         holder.totalScore = (TextView) convertView.findViewById(R.id.scoreTextView);
-
+        holder.scoreBtn = (ImageButton) convertView.findViewById(R.id.scoreButton_image);
         convertView.setTag(holder);
+
 
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
         CustomUserSongListDto listViewItem = userSongLists.get(position);
@@ -73,6 +88,22 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.songTitle.setText(listViewItem.getSongText());
         holder.singerName.setText(listViewItem.getSingerText());
         holder.totalScore.setText(listViewItem.getTotalScoreText());
+        int score = Integer.parseInt(scoreList.get(position));
+        if(score<40){
+            holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score3_background);
+        }else if(score<70){
+            holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score2_background);
+        } else {
+            holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score1_background);
+        }
+        holder.scoreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), WeakSentenceListActivity.class);
+
+                ((MyRecordActivity)v.getContext()).startActivity(intent);
+            }
+        });
 
 
         return convertView;
@@ -82,6 +113,7 @@ public class UserSongListViewAdapter extends BaseAdapter {
         TextView songTitle;
         TextView singerName;
         TextView totalScore;
+        ImageButton scoreBtn;
     }
 
     public void getUserSongList() {
@@ -92,19 +124,20 @@ public class UserSongListViewAdapter extends BaseAdapter {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        String song = document.getId();
+                        String song =  document.getId();
                         String singer = document.getData().get("singerName").toString();
                         String totalScore = document.getData().get("totalScore").toString();
 
                         songList.add(song);
                         singerList.add(singer);
-                        scoreList.add(totalScore);
+                        scoreList.add(String.valueOf((int)Double.parseDouble(totalScore)));
                     }
                 } else {
                     Log.d(TAG, "Error getting documents: ", task.getException());
                 }
             }
         });
+
     }
 
     // 지정한 위치(position)에 있는 데이터 리턴 : 필수 구현
@@ -126,6 +159,5 @@ public class UserSongListViewAdapter extends BaseAdapter {
 
             userSongLists.add(item);
         }
-
     }
 }

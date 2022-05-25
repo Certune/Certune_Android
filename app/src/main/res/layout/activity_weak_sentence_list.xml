@@ -13,10 +13,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="30dp"
         android:text="틀린 소절 연습"
         android:textColor="@color/black"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,19 +25,18 @@
         android:id="@+id/listView"
         android:layout_width="329dp"
         android:layout_height="467dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="220dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
 
     </ListView>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="153dp"
-        android:layout_height="80dp"
+        android:layout_height="65dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="14dp"
         android:gravity="center_vertical"
@@ -51,32 +50,37 @@
 
         <TextView
             android:id="@+id/songTextView2"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
+            android:layout_width="72dp"
+            android:layout_height="33dp"
             android:text="title"
+            android:textColor="@color/black"
             android:textSize="25dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/singerTextView2"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="2dp"
             android:text="content"
             android:textSize="20dp" />
+
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/west_arrow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="31dp"
+        android:background="@android:color/transparent"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.027"
         app:srcCompat="@drawable/ic_baseline_west_24"
         tools:ignore="SpeakableTextPresentCheck" />
-</androidx.constraintlayout.widget.ConstraintLayout>
 
+</androidx.constraintlayout.widget.ConstraintLayout>

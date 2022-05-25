@@ -9,17 +9,17 @@
     android:background="@color/white"
     android:focusableInTouchMode="true">
 
+
     <ImageButton
         android:id="@+id/backBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="37dp"
+        android:layout_marginTop="56dp"
         android:background="@android:color/transparent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/outline_arrow_back_ios_new_20" />
-
 
     <EditText
         android:id="@+id/edittext_name"
@@ -28,6 +28,7 @@
         android:layout_marginStart="60dp"
         android:layout_marginTop="8dp"
         android:hint="name"
+        android:textSize="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
 
@@ -51,6 +52,7 @@
         android:layout_marginStart="60dp"
         android:layout_marginTop="12dp"
         android:hint="E-mail"
+        android:textSize="15dp"
         android:minHeight="48dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/idTextView" />
@@ -96,7 +98,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="50dp"
         android:text="회원가입"
         android:textColor="@color/black"
         android:textSize="25sp"
@@ -123,6 +125,7 @@
         android:layout_height="48dp"
         android:layout_marginStart="60dp"
         android:layout_marginTop="8dp"
+        android:textSize="15dp"
         android:hint="Password (6글자 이상 입력하세요.)"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pwTextView" />

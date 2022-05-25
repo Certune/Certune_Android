@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -14,7 +13,7 @@ import android.widget.TextView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
-import com.techtown.tarsosdsp_pitchdetect.WeakSentenceListViewAdapter;
+import com.techtown.tarsosdsp_pitchdetect.MyRecord.WeakSentenceListViewAdapter;
 
 // TODO : 점수에 따라 progress bar 색상 바꾸기
 public class SingingResult extends AppCompatActivity {
@@ -63,21 +62,21 @@ public class SingingResult extends AppCompatActivity {
         rhythmProgressBar = findViewById(R.id.progressBar2);
 
         listview = (ListView) findViewById(R.id.result_listView);
-        adapter = new WeakSentenceListViewAdapter();
-        adapter.getLyricList();
-
-        // TODO : 이전 뷰에서 singer name, song name 받아오기
-        songNameTextView.setText(song);
-        singerNameTextView.setText(singerName);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                adapter.addItem();
-
-                listview = (ListView) findViewById(R.id.result_listView);
-                listview.setAdapter(adapter);
-            }
-        }, 3500);
+//        adapter = new WeakSentenceListViewAdapter();
+//        adapter.getLyricList();
+//
+//        // TODO : 이전 뷰에서 singer name, song name 받아오기
+//        songNameTextView.setText(song);
+//        singerNameTextView.setText(singerName);
+//
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                adapter.addItem();
+//
+//                listview = (ListView) findViewById(R.id.result_listView);
+//                listview.setAdapter(adapter);
+//            }
+//        }, 3500);
     }
 }

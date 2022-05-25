@@ -3,9 +3,12 @@ package com.techtown.tarsosdsp_pitchdetect;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -28,6 +31,7 @@ public class WeakSentenceListActivity extends AppCompatActivity {
 
     ImageButton recordBtn;
     ImageButton listenBtn;
+    ImageButton backBtn;
 
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
@@ -42,6 +46,15 @@ public class WeakSentenceListActivity extends AppCompatActivity {
         singerNameTextView = findViewById(R.id.singerTextView2);
         recordBtn = findViewById(R.id.result_playBtn);
         listenBtn = findViewById(R.id.result_listenBtn);
+        backBtn = findViewById(R.id.backButton2);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MyRecordActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Adapter 생성
         adapter = new WeakSentenceListViewAdapter();
@@ -60,18 +73,17 @@ public class WeakSentenceListActivity extends AppCompatActivity {
             }
         }, 2500);
 
-/*
-        recordBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), WeakSentenceListRecordActivity.class);
-                intent.putExtra("songName", songName);
-                intent.putExtra("singerName", singerName);
-                startActivity(intent);
 
-            }
-        });
-   */
+//        recordBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(), WeakSentenceListRecordActivity.class);
+//                intent.putExtra("songName", song);
+//                intent.putExtra("singerName", singerName);
+//
+//                startActivity(intent);
+//            }
+//        });
     }
 
     public void findSongInfo() {

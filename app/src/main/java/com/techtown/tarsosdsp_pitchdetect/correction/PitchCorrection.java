@@ -10,12 +10,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.techtown.tarsosdsp_pitchdetect.MyRecordActivity;
-import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
-import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
 
 public class PitchCorrection extends AppCompatActivity {
 

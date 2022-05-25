@@ -41,7 +41,7 @@ public class TestGraphActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test_graph);
 
         // Get xml instances
-        pitchTextView = (TextView) findViewById(R.id.pitchView);
+//        pitchTextView = (TextView) findViewById(R.id.pitchView);
         mChart = findViewById(R.id.chart);
 
         // Basic Setting for tarsosDSP AudioFormat
@@ -75,15 +75,14 @@ public class TestGraphActivity extends AppCompatActivity {
 
             mChart.notifyDataSetChanged();
             mChart.moveViewToX(data.getEntryCount());
-
         }
     }
 
     public ILineDataSet createSet() {
         LineDataSet set = new LineDataSet(null, null);
         set.setAxisDependency(YAxis.AxisDependency.LEFT);
-        set.setLineWidth(3f);
-        set.setColor(Color.MAGENTA);
+        set.setLineWidth(1f);
+        set.setColor(Color.GREEN);
         set.setHighlightEnabled(false);
         set.setDrawValues(false);
         set.setDrawCircles(false);
@@ -106,10 +105,13 @@ public class TestGraphActivity extends AppCompatActivity {
         LineData data = new LineData();
         data.setValueTextColor(Color.WHITE);
 
+        mChart.setScaleMinima(10f, 1f);
+
         // add empty data
         mChart.setData(data);
 
-        mChart.setScaleMinima(10f, 1f);
+        Legend l = mChart.getLegend();
+        l.setEnabled(false);
     }
 
     public void setAxis() {
@@ -141,7 +143,7 @@ public class TestGraphActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    pitchTextView.setText(Float.toString(pitchInHz));
+//                    pitchTextView.setText(Float.toString(pitchInHz));
                     if(pitchInHz > 40) {
                         addEntry(pitchInHz);
                     }

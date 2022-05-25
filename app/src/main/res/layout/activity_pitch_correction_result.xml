@@ -69,7 +69,7 @@
         android:layout_marginStart="104dp"
         android:layout_marginTop="88dp"
         android:gravity="center"
-        android:text="민지 님의 점수는? "
+        android:text="Certune 님의 점수는? "
         android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

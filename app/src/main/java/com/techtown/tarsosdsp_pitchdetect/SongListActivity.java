@@ -1,7 +1,5 @@
 package com.techtown.tarsosdsp_pitchdetect;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,6 +21,8 @@ import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
 
 public class SongListActivity extends AppCompatActivity {
+    private static final String TAG = "SongListActivity";
+
     private ListView list;
     private SongListViewAdapter adapter;
     BottomNavigationView navigationView;

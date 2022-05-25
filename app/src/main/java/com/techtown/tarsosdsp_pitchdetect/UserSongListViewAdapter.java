@@ -2,6 +2,7 @@ package com.techtown.tarsosdsp_pitchdetect;
 
 import static android.content.ContentValues.TAG;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.DrawableWrapper;
 import android.util.Log;
@@ -28,6 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserSongListViewAdapter extends BaseAdapter {
+
+    // 버튼 클릭 이벤트를 위한 Listener 인터페이스 정의
+    public interface ListBtnClickListener{
+        void onListBtnClick(int position);
+    }
+
+    // 생성자로부터 전달된 ListBtnClickListener 저장
+    private ListBtnClickListener listBtnClickListener ;
+
     // Adapter에 추가된 데이터를 저장하기 위한 ArrayList
     ArrayList<CustomUserSongListDto> userSongLists = new ArrayList<>();
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -39,8 +49,9 @@ public class UserSongListViewAdapter extends BaseAdapter {
     List<String> scoreList = new ArrayList<>();
 
 
+
     public UserSongListViewAdapter(){
-        
+
     }
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
@@ -71,6 +82,7 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.scoreBtn = (ImageButton) convertView.findViewById(R.id.scoreButton_image);
         convertView.setTag(holder);
 
+
         // Data Set(listViewItemList)에서 position에 위치한 데이터 참조 획득
         CustomUserSongListDto listViewItem = userSongLists.get(position);
 
@@ -78,11 +90,24 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.singerName.setText(listViewItem.getSingerText());
         holder.totalScore.setText(listViewItem.getTotalScoreText());
         int score = Integer.parseInt(scoreList.get(position));
-            if(score<40){
-                holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score3_background);
-            }else if(score<70){
-                holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score2_background);
+      
+        if(score<40){
+            holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score3_background);
+        }else if(score<70){
+            holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score2_background);
+        } else {
+            holder.scoreBtn.setBackgroundResource(R.drawable.myrecord_score1_background);
+        }
+        holder.scoreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), WeakSentenceListActivity.class);
+
+                ((MyRecordActivity)v.getContext()).startActivity(intent);
             }
+        });
+        holder.noteScore.setText(listViewItem.getNoteScoreText());
+        holder.rhythmScore.setText(listViewItem.getRhythmScoreText());
 
 
         return convertView;
@@ -93,6 +118,8 @@ public class UserSongListViewAdapter extends BaseAdapter {
         TextView singerName;
         TextView totalScore;
         ImageButton scoreBtn;
+        TextView noteScore;
+        TextView rhythmScore;
     }
 
     public void getUserSongList() {

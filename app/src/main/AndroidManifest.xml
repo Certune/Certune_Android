@@ -54,7 +54,8 @@
             android:exported="true" />
         <activity
             android:name=".WeakSentenceListActivity"
-            android:exported="true" />
+            android:exported="true" >
+        </activity>
         <activity
             android:name=".MyRecordActivity"
             android:exported="true" />
@@ -63,7 +64,8 @@
             android:exported="true" />
         <activity
             android:name=".Login.RegisterActivity"
-            android:exported="true" />
+            android:exported="true">
+        </activity>
         <activity
             android:name=".Singing.activity.SingingActivity"
             android:exported="true" />
@@ -75,16 +77,7 @@
             android:exported="true" />
         <activity
             android:name=".Login.LogInActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MyRecordActivity"
-            android:exported="true" >
+            android:exported="true">
         </activity>
-        <activity
-            android:name=".WeakSentenceListActivity"
-            android:exported="true"/>
-        <activity
-            android:name=".Login.LogInActivity"
-            android:exported="true" />
         </application>
 </manifest>

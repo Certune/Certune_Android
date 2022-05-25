@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.correction;
 
 
 import android.view.LayoutInflater;
@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
 
 import java.util.ArrayList;

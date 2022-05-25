@@ -1,4 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect.score.activity;
+package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,13 +10,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
-import com.techtown.tarsosdsp_pitchdetect.UserSongListViewAdapter;
 import com.techtown.tarsosdsp_pitchdetect.WeakSentenceListViewAdapter;
 
 // TODO : 점수에 따라 progress bar 색상 바꾸기

@@ -9,7 +9,7 @@
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textView_singinglist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
@@ -23,12 +23,13 @@
 
     <ListView
         android:id="@+id/songListArea"
-        android:layout_width="331dp"
-        android:layout_height="452dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="128dp"
+        android:layout_width="387dp"
+        android:layout_height="485dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="172dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+    </ListView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view_songlist"
@@ -41,6 +42,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu"
-        app:labelVisibilityMode="unlabeled" />
+        app:itemIconTint="@drawable/bottom_nav_menu_selector"
+        app:itemTextColor="@drawable/bottom_nav_menu_selector"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

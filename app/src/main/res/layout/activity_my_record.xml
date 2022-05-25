@@ -8,24 +8,24 @@
     tools:context=".MyRecordActivity">
 
     <TextView
-        android:id="@+id/textView3"
-        android:layout_width="203dp"
-        android:layout_height="85dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="48dp"
-        android:gravity="bottom|center"
-        android:text="마이레코드"
-        android:textSize="32sp"
+        android:id="@+id/textView_myrecord"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="84dp"
+        android:text="마이 레코드"
+        android:textColor="@color/black"
+        android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ListView
-        android:id="@+id/listView2"
-        android:layout_width="329dp"
-        android:layout_height="381dp"
+        android:id="@+id/myrecord_listView"
+        android:layout_width="387dp"
+        android:layout_height="485dp"
+        android:layout_marginStart="00dp"
         android:layout_marginTop="172dp"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
     </ListView>
@@ -37,11 +37,14 @@
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
         android:background="?android:attr/windowBackground"
+        app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu"
-        app:labelVisibilityMode="unlabeled" />
+        app:itemIconTint="@drawable/bottom_nav_menu_selector"
+        app:itemTextColor="@drawable/bottom_nav_menu_selector"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

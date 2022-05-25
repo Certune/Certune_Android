@@ -21,6 +21,7 @@ import com.techtown.tarsosdsp_pitchdetect.Login.LogInActivity;
 import com.techtown.tarsosdsp_pitchdetect.Login.RegisterActivity;
 import com.techtown.tarsosdsp_pitchdetect.MyRecordActivity;
 import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
 import com.techtown.tarsosdsp_pitchdetect.UserSongListViewAdapter;
 import com.techtown.tarsosdsp_pitchdetect.WeakSentenceListViewAdapter;
 
@@ -56,7 +57,7 @@ public class SingingResult extends AppCompatActivity {
         checkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(SingingResult.this, MyRecordActivity.class);
+                Intent intent = new Intent(SingingResult.this, SongListActivity.class);
                 startActivity(intent);
                 finish();
             }

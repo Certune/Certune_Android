@@ -1,6 +1,5 @@
 package com.techtown.tarsosdsp_pitchdetect.correction;
 
-
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,14 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
-
-
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
-import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingStandbyActivity;
-import com.techtown.tarsosdsp_pitchdetect.correction.OctavePracticeActivity;
-import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
 
 import java.util.ArrayList;

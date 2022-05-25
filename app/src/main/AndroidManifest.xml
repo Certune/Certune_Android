@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
-            android:name=".correction.OctavePractiveActivity"
+            android:name=".correction.OctavePracticeActivity"
             android:exported="true"
             android:label="@string/title_activity_octave_practive"
             android:theme="@style/Theme.TarsosDSP_PitchDetect.NoActionBar" />

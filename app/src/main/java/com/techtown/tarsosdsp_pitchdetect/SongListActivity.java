@@ -19,9 +19,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
 import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
+import com.techtown.tarsosdsp_pitchdetect.MyRecord.MyRecordActivity;
 
 public class SongListActivity extends AppCompatActivity {
     private static final String TAG = "SongListActivity";
+
+    String songName;
+    String singerName;
 
     private ListView list;
     private SongListViewAdapter adapter;

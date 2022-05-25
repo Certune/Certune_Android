@@ -1,18 +1,14 @@
-package com.techtown.tarsosdsp_pitchdetect;
+package com.techtown.tarsosdsp_pitchdetect.MyRecord;
 
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +19,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
 
 import java.util.ArrayList;
@@ -101,8 +98,10 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.scoreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), WeakSentenceListActivity.class);
 
+                Intent intent = new Intent(v.getContext(), WeakSentenceListActivity.class);
+                intent.putExtra("songName", holder.songTitle.getText());
+                intent.putExtra("singerName", holder.singerName.getText());
                 ((MyRecordActivity)v.getContext()).startActivity(intent);
             }
         });

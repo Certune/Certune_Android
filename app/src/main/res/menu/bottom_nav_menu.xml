@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_songList"
+        android:icon="@drawable/ic_baseline_playlist_play_24"
+        android:title="SongList" />
+
+    <item
+        android:id="@+id/navigation_myRecord"
+        android:icon="@drawable/ic_baseline_music_note_24"
+        android:title="MyRecord" />
+
+    <item
+        android:id="@+id/navigation_pitch"
+        android:icon="@drawable/ic_baseline_mic_24"
+        android:title="PitchCorrection" />
+
+    <item
+        android:id="@+id/navigation_rhythm"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="RhythmCorrection" />
+
+</menu>

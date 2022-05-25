@@ -53,7 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        backBtn = (ImageButton) findViewById(R.id.backBtn);
+        backBtn = (ImageButton) findViewById(R.id.west_arrow);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override

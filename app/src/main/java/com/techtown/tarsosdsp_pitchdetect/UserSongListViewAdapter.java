@@ -113,8 +113,6 @@ public class UserSongListViewAdapter extends BaseAdapter {
         TextView singerName;
         TextView totalScore;
         ImageButton scoreBtn;
-        TextView noteScore;
-        TextView rhythmScore;
     }
 
     public void getUserSongList() {

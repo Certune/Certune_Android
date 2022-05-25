@@ -22,7 +22,6 @@ import android.widget.HorizontalScrollView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -56,7 +55,7 @@ import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
 import be.tarsos.dsp.writer.WriterProcessor;
 
-public class OctavePractiveActivity extends AppCompatActivity {
+public class OctavePracticeActivity extends AppCompatActivity {
 
     final int highestNoteIdx = 4;
     final int lowestNoteIdx = 0;
@@ -90,7 +89,7 @@ public class OctavePractiveActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_octave_practive);
+        setContentView(R.layout.activity_octave_practice);
 
 //        Intent intent = getIntent();
 //        userEmail = intent.getStringExtra("userEmail");

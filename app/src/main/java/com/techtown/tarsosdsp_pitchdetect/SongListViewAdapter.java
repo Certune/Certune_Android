@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingStandbyActivity;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
@@ -77,11 +78,13 @@ public class SongListViewAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Log.v("clicked", Integer.toString(position));
 
-                Intent intent = new Intent(v.getContext(), SingingStandbyActivity.class);
-                intent.putExtra("userEmail", holder.songTitle.getText());
-                intent.putExtra("songName", holder.songTitle.getText());
-
-                ((SongListActivity)v.getContext()).startActivity(intent);
+                if (holder.songTitle.getText().equals("신호등")) {
+                    Intent intent = new Intent(v.getContext(), SingingStandbyActivity.class);
+                    intent.putExtra("userEmail", holder.songTitle.getText());
+                    intent.putExtra("songName", holder.songTitle.getText());
+                    ((SongListActivity) v.getContext()).startActivity(intent);
+                }
+                Toast.makeText(v.getContext(), "현재는 신호등만 제공됩니다.", Toast.LENGTH_LONG).show();
             }
         });
 

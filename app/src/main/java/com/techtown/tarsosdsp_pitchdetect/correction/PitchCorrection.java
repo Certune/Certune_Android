@@ -1,32 +1,27 @@
 package com.techtown.tarsosdsp_pitchdetect.correction;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.techtown.tarsosdsp_pitchdetect.MyRecordActivity;
-import com.techtown.tarsosdsp_pitchdetect.OctaveTest.activity.TestSingingActivity;
-import com.techtown.tarsosdsp_pitchdetect.PitchCorrectionListAdapter;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
-import com.techtown.tarsosdsp_pitchdetect.score.activity.SingingResult;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.techtown.tarsosdsp_pitchdetect.MyRecordActivity;
+import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
 
 public class PitchCorrection extends AppCompatActivity {
 
     private ListView listView;
     private PitchCorrectionListAdapter adapter;
-    ImageButton playBtn;
-
+    BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +30,9 @@ public class PitchCorrection extends AppCompatActivity {
 
         adapter = new PitchCorrectionListAdapter();
 
-        playBtn = findViewById(R.id.correction_playButton);
-
         listView = (ListView)findViewById(R.id.Pitch_listView);
+        navigationView = findViewById(R.id.nav_view_pitch);
+
         listView.setAdapter(adapter);
 
         adapter.addItem("C4 - C5");
@@ -55,6 +50,28 @@ public class PitchCorrection extends AppCompatActivity {
                 CustomPitchCorrectionListDto customPitchCorrectionListDto = (CustomPitchCorrectionListDto) parent.getItemAtPosition(position);
 
                 String noteRange = customPitchCorrectionListDto.getOctave();
+            }
+        });
+
+        navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                switch (item.getItemId()) {
+                    case R.id.navigation_songList:
+                        intent = new Intent(getApplicationContext(), SongListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.navigation_myRecord:
+                        intent = new Intent(getApplicationContext(), MyRecordActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.navigation_rhythm:
+                        intent = new Intent(getApplicationContext(), RhythmCorrection.class);
+                        startActivity(intent);
+                        break;
+                }
+                return true;
             }
         });
     }

@@ -42,6 +42,14 @@ public class RhythmCorrection extends AppCompatActivity {
         adapter.addItem("3/8 박자");
         adapter.addItem("4/2 박자");
         adapter.addItem("4/4 박자");
+        adapter.addItem("4/8 박자");
+        adapter.addItem("6/4 박자");
+        adapter.addItem("6/8 박자");
+        adapter.addItem("9/4 박자");
+        adapter.addItem("9/8 박자");
+        adapter.addItem("9/16 박자");
+        adapter.addItem("12/8 박자");
+        adapter.addItem("12/16 박자");
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

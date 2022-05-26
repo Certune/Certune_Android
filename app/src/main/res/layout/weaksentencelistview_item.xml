@@ -4,6 +4,7 @@
     android:layout_width="350dp"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@color/white"
     android:padding="10dp">
 
     <TextView
@@ -36,6 +37,16 @@
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/headphones" />
+
+    <ImageButton
+        android:id="@+id/result_recordBtn"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_weight="1"
+        android:layout_marginTop="1dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/microphone" />
 
 
 </LinearLayout>

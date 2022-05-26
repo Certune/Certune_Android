@@ -22,10 +22,10 @@
 
     <ListView
         android:id="@+id/Pitch_listView"
-        android:layout_width="387dp"
-        android:layout_height="485dp"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="172dp"
+        android:layout_width="329dp"
+        android:layout_height="473dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="176dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
     </ListView>

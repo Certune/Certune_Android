@@ -13,6 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
@@ -24,8 +26,7 @@ import java.util.List;
 
 public class WeakSentenceListActivity extends AppCompatActivity {
 
-    // TODO : userEmail 현재 로그인한 유저로 받아오기(firebase에서 유저 조회)
-    String userEmail = "nitronium007@gmail.com";
+    String userEmail;
     private String songName;
     private String singerName;
 
@@ -50,6 +51,9 @@ public class WeakSentenceListActivity extends AppCompatActivity {
         Intent subIntent = getIntent();
         songName = subIntent.getStringExtra("songName");
         singerName = subIntent.getStringExtra("singerName");
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            userEmail = user.getEmail();
 
         songNameTextView = findViewById(R.id.weak_songTextView);
         singerNameTextView = findViewById(R.id.weak_singerTextView);
@@ -75,9 +79,6 @@ public class WeakSentenceListActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot documentSnapshot = task.getResult();
                         weakSentenceIndexList = (List<String>) documentSnapshot.get("weakSentence");
-                        Log.v("index of weaky", weakSentenceIndexList.get(0));
-                        Log.v("index of weaky", weakSentenceIndexList.get(1));
-                        Log.v("index of weaky", weakSentenceIndexList.get(2));
                     } else {
                         Log.d(TAG, "Error getting collections: ", task.getException());
                     }

@@ -10,11 +10,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -39,16 +42,16 @@ public class UserSongListViewAdapter extends BaseAdapter {
     ArrayList<CustomUserSongListDto> userSongLists = new ArrayList<>();
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
-    private String user = "nitronium007@gmail.com";
+    private String userEmail;
 
     List<String> songList = new ArrayList<>();
     List<String> singerList = new ArrayList<>();
     List<String> scoreList = new ArrayList<>();
 
-
-
     public UserSongListViewAdapter(){
-
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            userEmail = user.getEmail();
     }
 
     // Adapter에 사용되는 데이터의 개수를 리턴. : 필수 구현
@@ -98,11 +101,14 @@ public class UserSongListViewAdapter extends BaseAdapter {
         holder.scoreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(v.getContext(), WeakSentenceListActivity.class);
-                intent.putExtra("songName", holder.songTitle.getText());
-                intent.putExtra("singerName", holder.singerName.getText());
-                ((MyRecordActivity)v.getContext()).startActivity(intent);
+                if (holder.songTitle.getText().equals("신호등")) {
+                    Intent intent = new Intent(v.getContext(), WeakSentenceListActivity.class);
+                    intent.putExtra("songName", holder.songTitle.getText());
+                    intent.putExtra("singerName", holder.singerName.getText());
+                    ((MyRecordActivity) v.getContext()).startActivity(intent);
+                }
+                else
+                    Toast.makeText(v.getContext(), "현재는 신호등만 제공됩니다.", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -118,7 +124,7 @@ public class UserSongListViewAdapter extends BaseAdapter {
 
     public void getUserSongList() {
         Log.v("*****", "getting item");
-        CollectionReference ref = database.collection("User").document(user).collection("userSongList");
+        CollectionReference ref = database.collection("User").document(userEmail).collection("userSongList");
         ref.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

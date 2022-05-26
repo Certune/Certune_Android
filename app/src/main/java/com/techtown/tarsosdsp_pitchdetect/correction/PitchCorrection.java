@@ -35,14 +35,24 @@ public class PitchCorrection extends AppCompatActivity {
 
         listView.setAdapter(adapter);
 
-        adapter.addItem("C4 - C5");
-        adapter.addItem("D4 - D5");
-        adapter.addItem("E4 - E5");
-        adapter.addItem("F4 - F5");
-        adapter.addItem("G4 - G5");
-        adapter.addItem("A4 - A5");
-        adapter.addItem("B4 - B5");
-        adapter.addItem("C5 - C6");
+        adapter.addItem("A#3 - F4");
+        adapter.addItem("A3 - E4");
+        adapter.addItem("B3 - F#4");
+        adapter.addItem("C#3 - G#3");
+        adapter.addItem("C#4 - G#4");
+        adapter.addItem("C4 - G4");
+        adapter.addItem("D#3 - A#3");
+        adapter.addItem("D#4 - A#4");
+        adapter.addItem("D3 - A3");
+        adapter.addItem("D4 - A4");
+        adapter.addItem("E3 - B3");
+        adapter.addItem("E4 - B4");
+        adapter.addItem("F#3 - C#4");
+        adapter.addItem("F3 - C4");
+        adapter.addItem("F4 - C5");
+        adapter.addItem("G#3 - D#4");
+        adapter.addItem("G3 - D4");
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

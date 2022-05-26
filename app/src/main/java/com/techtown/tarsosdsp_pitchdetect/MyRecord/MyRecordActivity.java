@@ -49,7 +49,7 @@ public class MyRecordActivity extends AppCompatActivity {
                 adapter.addItem();
                 listview.setAdapter(adapter);
             }
-        }, 1000);
+        }, 3000);
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -13,8 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
-        android:layout_marginTop="30dp"
-        android:text="틀린 소절 연습"
+        android:layout_marginTop="48dp"
+        android:text="취약 소절 연습"
         android:textColor="@color/black"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -25,7 +25,7 @@
         android:id="@+id/weak_listView"
         android:layout_width="329dp"
         android:layout_height="467dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginTop="192dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -36,15 +36,13 @@
         android:id="@+id/linearLayout2"
         android:layout_width="153dp"
         android:layout_height="65dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginTop="32dp"
         android:gravity="center_vertical"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.155"
+        app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.8">
+        app:layout_constraintTop_toBottomOf="@+id/textView">
 
         <TextView
             android:id="@+id/weak_songTextView"
@@ -75,9 +73,10 @@
         android:minHeight="48dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/textView"
+        app:layout_constraintHorizontal_bias="0.437"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.027"
+        app:layout_constraintVertical_bias="0.049"
         app:srcCompat="@drawable/ic_baseline_west_24"
         tools:ignore="SpeakableTextPresentCheck" />
 

@@ -2,25 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="300dp"
-    android:layout_height="70dp"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:orientation="horizontal"
     android:padding="10dp">
 
         <ImageView
             android:id="@+id/music"
-            android:layout_width="10dp"
-            android:layout_height="30dp"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/ic_baseline_music_note_24" />
-
 
         <TextView
             android:id="@+id/correction_pitchTextView"
-            android:layout_width="80dp"
-            android:layout_height="45dp"
-            android:layout_weight="2"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center_vertical"
             android:layout_gravity="center"
             android:text="C4 - B4"
@@ -29,24 +30,35 @@
 
         <ImageButton
             android:id="@+id/correction_playButton"
-            android:layout_width="15dp"
-            android:layout_height="25dp"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
             android:layout_weight="1"
+            android:layout_marginTop="1dp"
             android:layout_gravity="center"
-            android:layout_marginRight="5dp"
-            app:srcCompat="@drawable/play"
+            android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:background="@android:color/transparent" />
+            app:srcCompat="@drawable/play" />
 
         <ImageButton
             android:id="@+id/correction_listenButton"
-            android:layout_width="15dp"
-            android:layout_height="25dp"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
             android:layout_weight="1"
+            android:layout_marginTop="1dp"
             android:layout_gravity="center"
+            android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/headphones"
-            android:background="@android:color/transparent" />
+            app:srcCompat="@drawable/headphones" />
 
+        <ImageButton
+            android:id="@+id/recordButton"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_weight="1"
+            android:layout_marginTop="1dp"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/microphone" />
 
 </LinearLayout>

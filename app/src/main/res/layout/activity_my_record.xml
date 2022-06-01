@@ -25,7 +25,7 @@
         android:id="@+id/myrecord_listView"
         android:layout_width="387dp"
         android:layout_height="485dp"
-        android:layout_marginStart="00dp"
+        android:layout_marginStart="50dp"
         android:layout_marginTop="172dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

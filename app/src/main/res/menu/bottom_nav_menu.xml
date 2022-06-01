@@ -4,29 +4,25 @@
     <item
         android:id="@+id/navigation_songList"
         android:icon="@drawable/ic_baseline_playlist_play_24"
-        android:enabled="true"
         android:checked="false"
-        android:title=" " />
+        android:title="" />
 
     <item
         android:id="@+id/navigation_myRecord"
         android:icon="@drawable/headphones"
-        android:enabled="true"
         android:checked="false"
-        android:title=" " />
+        android:title="" />
 
     <item
         android:id="@+id/navigation_pitch"
         android:icon="@drawable/ic_baseline_music_note_24"
-        android:enabled="true"
         android:checked="false"
-        android:title=" " />
+        android:title="" />
 
     <item
         android:id="@+id/navigation_rhythm"
         android:icon="@drawable/drum"
-        android:enabled="true"
         android:checked="false"
-        android:title=" " />
+        android:title="" />
 
 </menu>

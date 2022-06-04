@@ -1,8 +1,11 @@
 package com.techtown.tarsosdsp_pitchdetect.MyRecord;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -48,8 +51,8 @@ public class WeakSentenceSingingResultActivity extends AppCompatActivity {
         totalscoreButton.setText(totalScoreText);
         noteScoreTextView.setText(noteScoreText);
         rhythmScoreTextView.setText(rhythmScoreText);
-        noteScoreProgressbar.setProgress((int) Math.round(Double.parseDouble(noteScore)));
-        rhythmScoreProgressbar.setProgress((int) Math.round(Double.parseDouble(rhythmScore)));
+
+        setProgressColors();
 
         endButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,5 +63,35 @@ public class WeakSentenceSingingResultActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void setProgressColors() {
+        // note progress
+        int noteScoreProgress = (int) Math.round(Double.parseDouble(noteScore));
+
+        Drawable noteProgressDrawable;
+        if (noteScoreProgress < 40)
+            noteProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_bad, null);
+        else if (noteScoreProgress < 70)
+            noteProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_soso, null);
+        else
+            noteProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar, null);
+
+        noteScoreProgressbar.setProgress(noteScoreProgress);
+        noteScoreProgressbar.setProgressDrawable(noteProgressDrawable);
+
+        // rhythm progress
+        int rhythmScoreProgress = (int) Math.round(Double.parseDouble(rhythmScore));
+
+        Drawable rhythmProgressDrawable;
+        if (rhythmScoreProgress < 40)
+            rhythmProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_bad, null);
+        else if (rhythmScoreProgress < 70)
+            rhythmProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_soso, null);
+        else
+            rhythmProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar, null);
+
+        rhythmScoreProgressbar.setProgress(rhythmScoreProgress);
+        rhythmScoreProgressbar.setProgressDrawable(rhythmProgressDrawable);
     }
 }

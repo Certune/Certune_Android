@@ -38,9 +38,6 @@ public class WeakSentenceListActivity extends AppCompatActivity {
     TextView songNameTextView;
     TextView singerNameTextView;
 
-    ImageButton recordBtn;
-    ImageButton listenBtn;
-
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     @Override
@@ -57,8 +54,6 @@ public class WeakSentenceListActivity extends AppCompatActivity {
 
         songNameTextView = findViewById(R.id.weak_songTextView);
         singerNameTextView = findViewById(R.id.weak_singerTextView);
-        recordBtn = findViewById(R.id.result_playBtn);
-        listenBtn = findViewById(R.id.result_listenBtn);
 
         songNameTextView.setText(songName);
         singerNameTextView.setText(singerName);

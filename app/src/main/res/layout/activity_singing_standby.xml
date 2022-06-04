@@ -45,7 +45,7 @@
         android:id="@+id/singerName"
         android:layout_width="match_parent"
         android:layout_height="49dp"
-        android:layout_marginTop="124dp"
+        android:layout_marginTop="120dp"
         android:background="@drawable/singing_standby_singername_background"
         android:gravity="center"
         android:paddingBottom="20dp"

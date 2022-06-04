@@ -18,6 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
+            android:name=".MyRecord.WeakSentenceSingingResultActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MyRecord.WeakSentenceSingingActivity"
+            android:exported="true" />
+        <activity
             android:name=".correction.OctavePracticeActivity"
             android:exported="true"
             android:label="@string/title_activity_octave_practice"
@@ -30,7 +36,7 @@
             android:exported="false" />
         <activity
             android:name=".correction.PitchCorrection"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".Singing.activity.LiveSingingActivity"
             android:exported="true" />
@@ -39,25 +45,20 @@
             android:exported="true" />
         <activity
             android:name=".Singing.activity.SingingResult"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".Singing.activity.SingingStandbyActivity"
             android:exported="true" />
         <activity
             android:name=".SongListActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="true" />
+        <activity
+            android:name=".MyRecord.WeakSentenceListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".MyRecord.MyRecordActivity"
+            android:exported="true">
         </activity>
-        <activity
-            android:name=".WeakSentenceListActivity"
-            android:exported="true" />
-        <activity
-            android:name=".MyRecordActivity"
-            android:exported="true" />
         <activity
             android:name=".OctaveTest.activity.TestEndActivity"
             android:exported="true" />
@@ -75,6 +76,12 @@
             android:exported="true" />
         <activity
             android:name=".Login.LogInActivity"
-            android:exported="true" />
-        </application>
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
 </manifest>

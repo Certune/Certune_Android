@@ -107,7 +107,7 @@ public class WeakSentenceListViewAdapter extends BaseAdapter {
         holder.playUserBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                fetchUserUrlFromFirebase(userWeakSentenceList.get(position));
             }
         });
         convertView.setTag(holder);
@@ -138,8 +138,43 @@ public class WeakSentenceListViewAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    private void fetchUserUrlFromFirebase(String songIdx) {
+        Log.v("user url fetch", songIdx);
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        StorageReference storageRef = storage.child("User").child(userEmail).child("songs").child(songName).child(songIdx + ".mp3");
+
+        storageRef.getDownloadUrl()
+                .addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        musicUrl = uri.toString();
+                        mediaPlayer = new MediaPlayer();
+                        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                        try {
+                            mediaPlayer.setDataSource(musicUrl);
+                            mediaPlayer.prepareAsync();
+                        } catch (Exception e) {
+                            Log.e("FETCH AUDIO", e.getMessage());
+                        }
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                Log.e("user mediaplayer 시작", "mediaplayerstart");
+                                mediaPlayer.start();
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("음악 백그라운드 재생 실패", e.getMessage());
+                    }
+                });
+    }
+
     private void fetchAudioUrlFromFirebase(String songIdx) {
-        Log.v("fetch", songIdx);
+        Log.v("song url fetch", songIdx);
         StorageReference storage = FirebaseStorage.getInstance().getReference();
         StorageReference storageRef = storage.child("songs").child("신호등").child(songIdx + ".mp3");
 
@@ -159,7 +194,7 @@ public class WeakSentenceListViewAdapter extends BaseAdapter {
                         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-                                Log.e("mediaplayer 시작", "mediaplayerstart");
+                                Log.e("song mediaplayer 시작", "mediaplayerstart");
                                 mediaPlayer.start();
                             }
                         });

@@ -60,7 +60,7 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_scroll_test.xml" value="0.1" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_set_data_loader.xml" value="0.14356884057971014" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_sing_grid.xml" value="0.1" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_result.xml" value="0.1" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_result.xml" value="0.152" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_standby.xml" value="0.264" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_singing_table.xml" value="0.16" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_song_list.xml" value="0.152" />
@@ -70,7 +70,7 @@
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_list_record.xml" value="0.21666666666666667" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_practice.xml" value="0.2489754098360656" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_singing.xml" value="0.15381319622964867" />
-        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_singing_result.xml" value="0.17630676949443017" />
+        <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/activity_weak_sentence_singing_result.xml" value="0.4" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/content_octave_practive.xml" value="0.14166666666666666" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_grid_layout.xml" value="0.19429824561403508" />
         <entry key="..\:/Github/PitchDetection/app/src/main/res/layout/custom_listview.xml" value="0.2" />

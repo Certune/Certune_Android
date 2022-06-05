@@ -206,19 +206,23 @@ public class LiveSingingActivity extends AppCompatActivity {
 //        setAxis();
 
         timeHandler.postDelayed(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 currentLyric.setText("가려한 날 막아서네 난 갈 길이 먼데");
                 nextLyric.setText("새빨간 얼굴로 화를 냈던 친구가 생각나네");
-            } }, 30000);
+            }
+        }, 30000);
 
         timeHandler.postDelayed(new Runnable() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 currentLyric.setText("새빨간 얼굴로 화를 냈던 친구가 생각나네");
                 nextLyric.setText("이미 난 발걸음을 떼었지만");
-            } }, 36000);
+            }
+        }, 36000);
     }
 
-    public void createMediaPlayer(){
+    public void createMediaPlayer() {
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(musicUrl);
@@ -340,8 +344,7 @@ public class LiveSingingActivity extends AppCompatActivity {
         if (isNote) {
             cell.setBackgroundColor(Color.GRAY);
             Log.v("true일 때 색깔", "얍");
-        }
-        else {
+        } else {
             cell.setBackgroundColor(Color.parseColor("#212121")); // 이거 없애면 버튼 홀쭉해짐
             Log.v("FALSE일 때 색깔", "얍");
         }
@@ -422,112 +425,4 @@ public class LiveSingingActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-//
-//    public void addEntry(Float pitch) {
-//        LineData data = mChart.getData();
-//
-//        if(data != null) {
-//            // Check that data has a set. If not, create and add a set to data
-//            ILineDataSet set = data.getDataSetByIndex(0);
-//
-//            if (set == null) {
-//                set = createSet();
-//                data.addDataSet(set);
-//            }
-//
-//            data.addEntry(new Entry(set.getEntryCount(), pitch * 10), 0);
-//            data.notifyDataChanged();
-//
-//            mChart.notifyDataSetChanged();
-//            mChart.moveViewToX(data.getEntryCount());
-//        }
-//    }
-//
-//    public ILineDataSet createSet() {
-//        LineDataSet set = new LineDataSet(null, null);
-//        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set.setLineWidth(1f);
-//        set.setColor(Color.GREEN);
-//        set.setHighlightEnabled(false);
-//        set.setDrawValues(false);
-//        set.setDrawCircles(false);
-//        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        set.setCubicIntensity(0.2f);
-//
-//        return set;
-//    }
-//
-//    public void setChart() {
-//        mChart.setVisibleXRangeMaximum(15);
-//        mChart.getDescription().setEnabled(false);
-//        mChart.setTouchEnabled(false);
-//        mChart.setDragEnabled(false);
-//        mChart.setScaleYEnabled(false);
-//        mChart.setPinchZoom(false);
-//        mChart.setDrawGridBackground(false);
-//
-//        LineData data = new LineData();
-//
-//        // add empty data
-//        mChart.setData(data);
-//
-//        mChart.setScaleMinima(100f, 1f);
-//
-//        // set legend
-//        Legend l = mChart.getLegend();
-//        l.setEnabled(false);
-//    }
-//
-//    public void setAxis() {
-//        XAxis xAxis = mChart.getXAxis();
-//        xAxis.setDrawAxisLine(false);
-//        xAxis.setEnabled(false);
-//
-//        YAxis leftYAxis = mChart.getAxisLeft();
-//        // leftYAxis.setAxisMinimum(0f);
-//        // leftYAxis.setAxisMaximum(200f);
-//        leftYAxis.setDrawAxisLine(false);
-//        leftYAxis.setEnabled(false);
-//
-//        YAxis rightYAxis = mChart.getAxisRight();
-//        rightYAxis.setDrawAxisLine(false);
-//        rightYAxis.setEnabled(false);
-//
-//        mChart.getXAxis().setDrawGridLines(false);
-//        mChart.getAxisLeft().setDrawGridLines(false);
-//        mChart.setDrawBorders(false);
-//    }
-//
-//    public void microphoneOn() {
-//        releaseDispatcher();
-//        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
-//
-//        PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
-//            final float pitchInHz = res.getPitch();
-//            String note = ProcessPitch.processPitch(pitchInHz);
-//            runOnUiThread(() -> {
-//                if(pitchInHz > 40) {
-//                    addEntry((float) noteToIdx(note));
-//                }
-//            });
-//        };
-//
-//        AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
-//        dispatcher.addAudioProcessor(pitchProcessor);
-//
-//        Thread audioThread = new Thread(dispatcher, "Audio Thread");
-//        audioThread.start();
-//    }
-//
-//    public void releaseDispatcher() {
-//        if (dispatcher != null) {
-//            if (!dispatcher.isStopped())
-//                dispatcher.stop();
-//            dispatcher = null;
-//        }
-//    }
-
 }

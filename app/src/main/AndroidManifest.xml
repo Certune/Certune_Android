@@ -18,9 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TarsosDSP_PitchDetect">
         <activity
-            android:name=".correction.OctavePractiveActivity"
+            android:name=".correction.OctavePracticeActivity"
             android:exported="true"
-            android:label="@string/title_activity_octave_practive"
+            android:label="@string/title_activity_octave_practice"
             android:theme="@style/Theme.TarsosDSP_PitchDetect.NoActionBar" />
         <activity
             android:name=".correction.RhythmCorrection"
@@ -38,18 +38,24 @@
             android:name=".Singing.activity.TestGraphActivity"
             android:exported="true" />
         <activity
-            android:name=".score.activity.SingingResult"
+            android:name=".Singing.activity.SingingResult"
             android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Singing.activity.SingingStandbyActivity"
             android:exported="true" />
         <activity
             android:name=".SongListActivity"
-            android:exported="true" />
+            android:exported="true" >
+        </activity>
         <activity
             android:name=".WeakSentenceListActivity"
-            android:exported="true" />
+            android:exported="true" >
+        </activity>
         <activity
             android:name=".MyRecordActivity"
             android:exported="true" />
@@ -58,7 +64,8 @@
             android:exported="true" />
         <activity
             android:name=".Login.RegisterActivity"
-            android:exported="true" />
+            android:exported="true">
+        </activity>
         <activity
             android:name=".Singing.activity.SingingActivity"
             android:exported="true" />
@@ -70,12 +77,7 @@
             android:exported="true" />
         <activity
             android:name=".Login.LogInActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="true">
         </activity>
-        </application>
+    </application>
 </manifest>

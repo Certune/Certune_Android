@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx;
+import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +62,7 @@ public class SingingStandbyActivity extends AppCompatActivity {
 
     Switch shiftingSwitch;
     Button singingBtn;
+    ImageButton backBtn;
 
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
@@ -83,6 +86,7 @@ public class SingingStandbyActivity extends AppCompatActivity {
 
         shiftingSwitch = findViewById(R.id.shiftingSwitch);
         singingBtn = findViewById(R.id.singingButton);
+        backBtn = findViewById(R.id.backButton);
 
         songNameTextView.setText(songName);
         findSongInfo();
@@ -105,6 +109,14 @@ public class SingingStandbyActivity extends AppCompatActivity {
                 intent.putExtra("isShifting", isShifting);
                 intent.putExtra("songLowKey", songLowKey);
                 intent.putExtra("songHighKey", songHighKey);
+                startActivity(intent);
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), SongListActivity.class);
                 startActivity(intent);
             }
         });

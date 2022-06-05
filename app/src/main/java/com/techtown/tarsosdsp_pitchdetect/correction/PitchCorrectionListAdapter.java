@@ -1,5 +1,4 @@
-package com.techtown.tarsosdsp_pitchdetect;
-
+package com.techtown.tarsosdsp_pitchdetect.correction;
 
 import android.content.Intent;
 import android.util.Log;
@@ -10,13 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
-
-
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.techtown.tarsosdsp_pitchdetect.Singing.activity.SingingStandbyActivity;
-import com.techtown.tarsosdsp_pitchdetect.correction.OctavePractiveActivity;
-import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
+import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
 
 import java.util.ArrayList;
@@ -59,7 +53,7 @@ public class PitchCorrectionListAdapter extends BaseAdapter  {
             public void onClick(View v) {
                 Log.v("clicked", Integer.toString(position));
 
-                Intent intent = new Intent(v.getContext(), OctavePractiveActivity.class);
+                Intent intent = new Intent(v.getContext(), OctavePracticeActivity.class);
 //                intent.putExtra("userEmail", holder.songTitle.getText());
 //                intent.putExtra("songName", holder.songTitle.getText());
 
@@ -92,5 +86,6 @@ public class PitchCorrectionListAdapter extends BaseAdapter  {
         pitchCorrectionLists.add(customPitchCorrectionListDto);
     }
 }
+
 
 

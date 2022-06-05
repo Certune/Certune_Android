@@ -44,14 +44,12 @@
         android:id="@+id/textView2"
         android:layout_width="124dp"
         android:layout_height="72dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="34dp"
+        android:layout_marginTop="68dp"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintHorizontal_bias="0.137"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

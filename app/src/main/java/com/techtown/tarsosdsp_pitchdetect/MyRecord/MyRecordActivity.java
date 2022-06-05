@@ -1,55 +1,62 @@
-package com.techtown.tarsosdsp_pitchdetect.correction;
+package com.techtown.tarsosdsp_pitchdetect.MyRecord;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+
 import android.os.Bundle;
+import android.os.Handler;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+
 import android.widget.ListView;
 
-import com.techtown.tarsosdsp_pitchdetect.R;
-import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.techtown.tarsosdsp_pitchdetect.MyRecordActivity;
+import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
+import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
+import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
 
-public class PitchCorrection extends AppCompatActivity {
+import java.util.ArrayList;
 
-    private ListView listView;
-    private PitchCorrectionListAdapter adapter;
+
+public class MyRecordActivity extends AppCompatActivity {
+
+    ListView listview;
+    UserSongListViewAdapter adapter;
+    ArrayList<CustomUserSongListDto> list = new ArrayList<>();
     BottomNavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pitch_correction);
+        setContentView(R.layout.activity_my_record);
 
-        adapter = new PitchCorrectionListAdapter();
+        listview = (ListView) findViewById(R.id.myrecord_listView);
+        navigationView = findViewById(R.id.nav_view_myrecord);
 
-        listView = (ListView)findViewById(R.id.Pitch_listView);
-        navigationView = findViewById(R.id.nav_view_pitch);
+        adapter = new UserSongListViewAdapter();
+        adapter.getUserSongList();
 
-        listView.setAdapter(adapter);
-
-        adapter.addItem("C4 - C5");
-        adapter.addItem("D4 - D5");
-        adapter.addItem("E4 - E5");
-        adapter.addItem("F4 - F5");
-        adapter.addItem("G4 - G5");
-        adapter.addItem("A4 - A5");
-        adapter.addItem("B4 - B5");
-        adapter.addItem("C5 - C6");
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        new Handler().postDelayed(new Runnable() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CustomPitchCorrectionListDto customPitchCorrectionListDto = (CustomPitchCorrectionListDto) parent.getItemAtPosition(position);
+            public void run() {
+                adapter.addItem();
+                listview.setAdapter(adapter);
+            }
+        }, 1000);
 
-                String noteRange = customPitchCorrectionListDto.getOctave();
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+
+                Intent intent = new Intent(getApplicationContext(), WeakSentenceListActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -62,8 +69,8 @@ public class PitchCorrection extends AppCompatActivity {
                         intent = new Intent(getApplicationContext(), SongListActivity.class);
                         startActivity(intent);
                         break;
-                    case R.id.navigation_myRecord:
-                        intent = new Intent(getApplicationContext(), MyRecordActivity.class);
+                    case R.id.navigation_pitch:
+                        intent = new Intent(getApplicationContext(), PitchCorrection.class);
                         startActivity(intent);
                         break;
                     case R.id.navigation_rhythm:
@@ -75,4 +82,3 @@ public class PitchCorrection extends AppCompatActivity {
             }
         });
     }
-}

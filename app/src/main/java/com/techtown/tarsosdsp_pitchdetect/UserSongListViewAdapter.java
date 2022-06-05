@@ -48,8 +48,6 @@ public class UserSongListViewAdapter extends BaseAdapter {
     List<String> singerList = new ArrayList<>();
     List<String> scoreList = new ArrayList<>();
 
-
-
     public UserSongListViewAdapter(){
 
     }
@@ -106,9 +104,6 @@ public class UserSongListViewAdapter extends BaseAdapter {
                 ((MyRecordActivity)v.getContext()).startActivity(intent);
             }
         });
-        holder.noteScore.setText(listViewItem.getNoteScoreText());
-        holder.rhythmScore.setText(listViewItem.getRhythmScoreText());
-
 
         return convertView;
     }
@@ -118,8 +113,6 @@ public class UserSongListViewAdapter extends BaseAdapter {
         TextView singerName;
         TextView totalScore;
         ImageButton scoreBtn;
-        TextView noteScore;
-        TextView rhythmScore;
     }
 
     public void getUserSongList() {

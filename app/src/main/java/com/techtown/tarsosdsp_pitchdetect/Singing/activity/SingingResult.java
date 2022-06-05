@@ -3,8 +3,10 @@ package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 import  static android.content.ContentValues.TAG;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -93,6 +95,37 @@ public class SingingResult extends AppCompatActivity {
         }, 3000);
 
         getLyricList();
+        setProgressColors();
+    }
+
+    private void setProgressColors() {
+        // note progress
+        int noteScoreProgress = (int) Math.round(noteScore);
+
+        Drawable noteProgressDrawable;
+        if (noteScoreProgress < 40)
+            noteProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_bad, null);
+        else if (noteScoreProgress < 70)
+            noteProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_soso, null);
+        else
+            noteProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar, null);
+
+        noteProgressBar.setProgress(noteScoreProgress);
+        noteProgressBar.setProgressDrawable(noteProgressDrawable);
+
+        // rhythm progress
+        int rhythmScoreProgress = (int) Math.round(rhythmScore);
+
+        Drawable rhythmProgressDrawable;
+        if (rhythmScoreProgress < 40)
+            rhythmProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_bad, null);
+        else if (rhythmScoreProgress < 70)
+            rhythmProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar_soso, null);
+        else
+            rhythmProgressDrawable = ResourcesCompat.getDrawable(getResources(), R.drawable.progress_bar, null);
+
+        rhythmProgressBar.setProgress(rhythmScoreProgress);
+        rhythmProgressBar.setProgressDrawable(rhythmProgressDrawable);
     }
 
     public void getScore() {

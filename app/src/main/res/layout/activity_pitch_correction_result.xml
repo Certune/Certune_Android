@@ -7,71 +7,41 @@
     android:background="@color/white"
     tools:context=".correction.PitchCorrectionResult">
 
-
-    <ImageButton
-        android:id="@+id/west_arrow"
+    <TextView
+        android:id="@+id/textView_myrecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="31dp"
-        android:background="@android:color/transparent"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="84dp"
+        android:text="음정 연습 결과"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.039"
-        app:srcCompat="@drawable/ic_baseline_west_24"
-        tools:ignore="SpeakableTextPresentCheck" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/scoreTextView"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="172dp"
+        android:layout_width="177dp"
+        android:layout_height="176dp"
+        android:layout_marginTop="252dp"
         android:background="@drawable/result_score_background"
         android:text="87점"
-        android:textSize="27dp"
+        android:textSize="40dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/resetBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="168dp"
+        android:layout_width="307dp"
+        android:layout_height="51dp"
+        android:layout_marginBottom="212dp"
         android:background="#8cdbd2"
         android:text="확인"
         android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.835"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/endText" />
-
-    <TextView
-        android:id="@+id/endText"
-        android:layout_width="342dp"
-        android:layout_height="85dp"
-        android:gravity="center"
-        android:text="음정 감각이 훌륭하시군요!"
-        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.57" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="256dp"
-        android:layout_height="52dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginTop="88dp"
-        android:gravity="center"
-        android:text="Certune 님의 점수는? "
-        android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

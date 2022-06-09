@@ -18,7 +18,7 @@
             app:srcCompat="@drawable/drum" />
 
         <TextView
-            android:id="@+id/rhythmTextView"
+            android:id="@+id/correction_rhythmTextView"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -27,8 +27,8 @@
             android:textColor="#000000"
             android:textSize="20dp" />
 
-        <ImageView
-            android:id="@+id/playButton"
+        <ImageButton
+            android:id="@+id/correction_playButton"
             android:layout_width="23dp"
             android:layout_height="23dp"
             android:layout_weight="1"
@@ -37,28 +37,5 @@
             android:background="@android:color/transparent"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/play" />
-
-        <ImageButton
-            android:id="@+id/playerButton"
-            android:layout_width="23dp"
-            android:layout_height="23dp"
-            android:layout_weight="1"
-            android:layout_marginTop="1dp"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/headphones" />
-
-        <ImageButton
-            android:id="@+id/recordButton"
-            android:layout_width="23dp"
-            android:layout_height="25dp"
-            android:layout_weight="1"
-            android:layout_marginTop="1dp"
-            android:layout_gravity="center"
-            android:background="@android:color/transparent"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/microphone" />
-
 
 </LinearLayout>

@@ -94,7 +94,7 @@ public class LiveSingingActivity extends AppCompatActivity {
     ArrayList<SingingNoteDto> noteDtoList = new ArrayList<>();
     ArrayList<SentenceInfoDto> sentenceInfoList = new ArrayList<>();
 
-    View pitchGraph;
+    Button pitchGraph;
 
     private HorizontalScrollView scrollView;
     GridLayout gridLayout;
@@ -429,7 +429,7 @@ public class LiveSingingActivity extends AppCompatActivity {
             final float pitchInHz = res.getPitch();
             String note = ProcessPitch.processPitch(pitchInHz);
             runOnUiThread(() -> {
-//                pitchGraph.setY(1000 - pitchInHz);
+                pitchGraph.setY((float) (1600 - pitchInHz * 3.3));
             });
         };
 

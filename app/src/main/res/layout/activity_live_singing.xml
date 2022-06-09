@@ -7,12 +7,12 @@
     android:background="#212121"
     tools:context=".Singing.activity.LiveSingingActivity">
 
-    <View
+    <Button
         android:id="@+id/pitchGraph"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="1dp"
         android:layout_marginTop="600dp"
-        android:backgroundTint="#00ff00"
+        android:background="#00ff00"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- GridLayout part -->

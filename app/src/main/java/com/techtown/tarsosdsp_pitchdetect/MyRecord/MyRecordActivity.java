@@ -18,8 +18,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
-import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
-import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection.PitchCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection.RhythmCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomUserSongListDto;
 
 import java.util.ArrayList;
@@ -55,11 +55,12 @@ public class MyRecordActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
 
-               Intent intent = new Intent(getApplicationContext(), WeakSentenceListActivity.class);
-               startActivity(intent);
+                Intent intent = new Intent(getApplicationContext(), WeakSentenceListActivity.class);
+                startActivity(intent);
             }
         });
 
+        navigationView.setSelectedItemId(R.id.navigation_myRecord);
         navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

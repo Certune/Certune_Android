@@ -38,7 +38,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.MyRecord.domain.UserWeakMusicDto;
-import com.techtown.tarsosdsp_pitchdetect.MyRecord.domain.UserWeakNoteDto;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.Singing.activity.LoadingDialog;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingNoteDto;
@@ -77,7 +76,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
     String lyric;
     double sentenceStartTime;
     double sentenceEndTime;
-    double sentenceDurationTime;
+    double sentenceNoteEndTime;
     List<NoteDto> sentenceNoteDtoList = new ArrayList<>();
 
     /* 레이아웃 */
@@ -194,9 +193,6 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
     public void checkLoading() {
         if (isNoteLoad && isMusicLoad) {
             dialog.dismiss();
-            calcStartTime = System.nanoTime();
-            Log.v("로딩 종료 시간", String.valueOf(calcStartTime));
-            sentenceDurationTime = sentenceEndTime - sentenceStartTime + calcStartTime;
             mediaPlayer.start();
             setScrollSettings();
             startPitchDetection();
@@ -265,7 +261,8 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
     private void startPitchDetection() {
         prevOctave = "";
         userMap = new HashMap<>(); // 노긍ㅁ할 때마다 사용자 음성 담은 map 초기화
-        long start = System.nanoTime();
+        calcStartTime = System.nanoTime();
+        Log.v("로딩 종료 시간", String.valueOf(calcStartTime));
 
         releaseDispatcher();
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
@@ -315,10 +312,54 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         for (Object key : mapkey) {
             Log.v("result", String.valueOf(key) + "/ value: " + userMap.get(key));
         }
+        ArrayList<NoteDto> sortedMapKey = sortMapKey(mapkey);
+        for (NoteDto noteDto : sortedMapKey) {
+            Log.v("sortedResult", noteDto.getStartTime() + " : " + noteDto.getNote() + " : " + noteDto.getEndTime());
+        }
         addWAVToFireStorage();
-        addDataToFireStore(mapkey);
+        addDataToFireStore(sortedMapKey);
 
         releaseDispatcher();
+    }
+
+    public ArrayList<NoteDto> sortMapKey(Object[] mapkey) {
+        ArrayList<NoteDto> userKeyList = new ArrayList();
+        String keyStartTime = mapkey[0].toString();
+        String keyEndTime = "0.0";
+
+        Object key;
+        String keyValue;
+
+        for (int i = 1; i < mapkey.length; i++) {
+            // 이전 값을 넣어줌
+            key = mapkey[i];
+            keyValue = userMap.get(key);
+
+            if (!keyValue.equals("Nope")) {
+                keyEndTime = key.toString();
+                NoteDto keyNoteDto = NoteDto.builder()
+                        .startTime(keyStartTime)
+                        .note(keyValue)
+                        .endTime(keyEndTime)
+                        .build();
+                userKeyList.add(keyNoteDto);
+            }
+            // 현재 key의 시작 시간 update
+            keyStartTime = key.toString();
+        }
+
+        key = mapkey[mapkey.length - 1];
+        keyValue = userMap.get(key);
+        if (!keyValue.equals("Nope")) {
+            NoteDto keyNoteDto = NoteDto.builder()
+                    .startTime(keyStartTime)
+                    .note(keyValue)
+                    .endTime(keyStartTime + 0.05)
+                    .build();
+            userKeyList.add(keyNoteDto);
+        }
+
+        return userKeyList;
     }
 
     public SingingUserScoreDto calcUserScore(UserWeakMusicDto userMusicDto) {
@@ -326,17 +367,15 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         // 소절 내에 들어온 note들
         int noteIdx = 0;
         int userCorrectNoteNum = 0;
-        boolean isWrongNote = false;
         boolean isFirstNote = false;
-        boolean isCorrectNote = true;
 
-        ArrayList<UserWeakNoteDto> userNotes = userMusicDto.getNotes();
+        ArrayList<NoteDto> userNotes = userMusicDto.getNotes();
 
         Double userTotalTime = 0.0;
         Double userNoteStartTime = 0.0;
         Double songNoteEndTime = Double.parseDouble(sentenceNoteDtoList.get(noteIdx).getEndTime());
 
-        for (UserWeakNoteDto userNoteDto : userNotes) {
+        for (NoteDto userNoteDto : userNotes) {
             userNoteStartTime = Double.parseDouble(userNoteDto.getStartTime());
             ArrayList<Double> timeRangeList = processTimeRange(sentenceNoteDtoList.get(noteIdx).getStartTime());
 
@@ -376,43 +415,14 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         return singingUserScoreDto;
     }
 
-    public UserWeakMusicDto checkUserDataIsInRange(Object[] mapkey) {
+    public UserWeakMusicDto checkUserDataIsInRange(ArrayList<NoteDto> sortedMapKey) {
 
-        ArrayList<UserWeakNoteDto> userWeakNoteList = new ArrayList<>();
-        boolean isOctave = false;
-        double keyStartTime = 0.0;
-        double keyEndTime = 0.0;
-        String keyOctave = "START";
-        for (Object key : mapkey) {
-            if (isOctave) {
-                keyEndTime = Double.parseDouble(key.toString()) - keyStartTime;
-                UserWeakNoteDto userNoteDto = UserWeakNoteDto.builder()
-                        .startTime(String.valueOf(keyStartTime))
-                        .note(keyOctave)
-                        .endTime(String.valueOf(keyStartTime + keyEndTime))
-                        .build();
+        ArrayList<NoteDto> userWeakNoteList = new ArrayList<>();
 
-                Log.v("결과", userNoteDto.getNote() + " : " + userNoteDto.getStartTime() + " : " + userNoteDto.getEndTime());
-                userWeakNoteList.add(userNoteDto);
-            }
-            keyStartTime = Double.parseDouble(key.toString());
-            if (keyStartTime <= sentenceEndTime - sentenceStartTime + calcStartTime) {
-                keyOctave = userMap.get(key);
-                if (keyOctave.equals("Nope"))
-                    isOctave = false;
-                else
-                    isOctave = true;
-            }
-        }
-        if (isOctave) {
-            // TODO : 문장 끝인지 확인
-            keyEndTime = (sentenceEndTime - sentenceStartTime + calcStartTime) - keyStartTime;
-            UserWeakNoteDto userNoteDto = UserWeakNoteDto.builder()
-                    .startTime(String.valueOf(keyStartTime))
-                    .note(keyOctave)
-                    .endTime(String.valueOf(keyEndTime))
-                    .build();
-            userWeakNoteList.add(userNoteDto);
+        for (NoteDto noteDto : sortedMapKey) {
+            if (Double.parseDouble(noteDto.getEndTime()) > sentenceNoteEndTime)
+                break;
+            userWeakNoteList.add(noteDto);
         }
 
         UserWeakMusicDto userMusicDto = UserWeakMusicDto.builder()
@@ -426,8 +436,8 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         return userMusicDto;
     }
 
-    private void addDataToFireStore(Object[] mapkey) {
-        UserWeakMusicDto userMusicInfo = checkUserDataIsInRange(mapkey);
+    private void addDataToFireStore(ArrayList<NoteDto> sortedMapKey) {
+        UserWeakMusicDto userMusicInfo = checkUserDataIsInRange(sortedMapKey);
         SingingUserScoreDto singingUserScoreDto = calcUserScore(userMusicInfo);
         Intent intent = new Intent(getApplicationContext(), WeakSentenceSingingResultActivity.class);
         intent.putExtra("noteScore", singingUserScoreDto.getNoteScore());
@@ -438,7 +448,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
 
     private void addWAVToFireStorage() {
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        StorageReference filepath = mStorage.child("User").child(userEmail).child("songs").child(songName).child(filename + sentenceIdx + ".wav");
+        StorageReference filepath = mStorage.child("User").child(userEmail).child("songs").child(songName).child(sentenceIdx + ".wav");
 
         Uri uri = Uri.fromFile(file);
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -455,12 +465,6 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
                 dispatcher.stop();
             dispatcher = null;
         }
-
-//        if (mediaPlayer != null) {
-//            mediaPlayer.reset();
-//            mediaPlayer.release();
-//            mediaPlayer = null;
-//        }
     }
 
     /* DB 접근 */
@@ -483,7 +487,6 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
 
                     lyricText.setText(lyric);
 
-
                     ArrayList<HashMap<String, Object>> noteArrayMap = (ArrayList<HashMap<String, Object>>) sentencemap.get("notes");
                     for (HashMap<String, Object> noteMap : noteArrayMap) {
                         NoteDto noteDto = NoteDto.builder()
@@ -495,6 +498,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
                         Log.v("SONG 정보", noteDto.getStartTime() + " : " + noteDto.getEndTime() + " : " + noteDto.getNote());
                         sentenceNoteDtoList.add(noteDto);
                         sentenceTotalTime += Double.parseDouble(noteDto.getEndTime()) - Double.parseDouble(noteDto.getStartTime());
+                        sentenceNoteEndTime = Double.parseDouble(noteDto.getEndTime());
                     }
                     isSongFirebaseLoad = true;
                     checkFirebaseLoad();

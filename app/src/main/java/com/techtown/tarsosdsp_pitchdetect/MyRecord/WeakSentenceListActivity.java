@@ -2,22 +2,30 @@ package com.techtown.tarsosdsp_pitchdetect.MyRecord;
 
 import static android.content.ContentValues.TAG;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
+import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection.PitchCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection.RhythmCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomWeakSentenceListDto;
 
 import java.util.ArrayList;
@@ -37,6 +45,8 @@ public class WeakSentenceListActivity extends AppCompatActivity {
 
     TextView songNameTextView;
     TextView singerNameTextView;
+    ImageButton backButton;
+    BottomNavigationView navigationView;
 
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
@@ -54,6 +64,8 @@ public class WeakSentenceListActivity extends AppCompatActivity {
 
         songNameTextView = findViewById(R.id.weak_songTextView);
         singerNameTextView = findViewById(R.id.weak_singerTextView);
+        backButton = findViewById(R.id.backButton);
+        navigationView = findViewById(R.id.nav_view_myrecord);
 
         songNameTextView.setText(songName);
         singerNameTextView.setText(singerName);
@@ -63,8 +75,38 @@ public class WeakSentenceListActivity extends AppCompatActivity {
         // Adapter 생성
         adapter = new WeakSentenceListViewAdapter();
         listview.setAdapter(adapter);
-
         getLyricList();
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MyRecordActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        navigationView.setSelectedItemId(R.id.navigation_myRecord);
+        navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
+                switch (item.getItemId()) {
+                    case R.id.navigation_songList:
+                        intent = new Intent(getApplicationContext(), SongListActivity.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.navigation_pitch:
+                        intent = new Intent(getApplicationContext(), PitchCorrection.class);
+                        startActivity(intent);
+                        break;
+                    case R.id.navigation_rhythm:
+                        intent = new Intent(getApplicationContext(), RhythmCorrection.class);
+                        startActivity(intent);
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     public void getLyricList() {

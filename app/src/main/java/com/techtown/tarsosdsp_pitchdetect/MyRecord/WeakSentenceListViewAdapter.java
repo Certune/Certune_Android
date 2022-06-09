@@ -20,6 +20,8 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -31,8 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WeakSentenceListViewAdapter extends BaseAdapter {
-    // TODO : intent에서 값 받아오기
-    private String userEmail = "nitronium007@gmail.com";
+    private String userEmail;
     private String songName = "신호등";
     private String singerName = "이무진";
 
@@ -45,6 +46,9 @@ public class WeakSentenceListViewAdapter extends BaseAdapter {
     public static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     public WeakSentenceListViewAdapter() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            userEmail = user.getEmail();
         getWeakSentenceList();
     }
 

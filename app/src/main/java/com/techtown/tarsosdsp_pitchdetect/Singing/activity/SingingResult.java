@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.MyRecord.WeakSentenceListViewAdapter;
@@ -27,12 +29,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-// TODO : 점수에 따라 progress bar 색상 바꾸기
 // TODO : 이전 뷰에서 userEmail, singer name, song name 받아오기
 public class SingingResult extends AppCompatActivity {
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
-    String userEmail = "nitronium007@gmail.com";
+    String userEmail;
 
     String songName = "신호등";
     String singerName = "이무진";
@@ -68,6 +69,10 @@ public class SingingResult extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            userEmail = user.getEmail();
 
         songNameTextView = findViewById(R.id.result_songTextView);
         singerNameTextView = findViewById(R.id.result_singerTextView);

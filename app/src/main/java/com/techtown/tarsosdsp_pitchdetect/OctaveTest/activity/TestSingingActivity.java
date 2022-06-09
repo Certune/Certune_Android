@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -29,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.techtown.tarsosdsp_pitchdetect.R;
+import com.techtown.tarsosdsp_pitchdetect.Singing.activity.LoadingDialog;
 import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 import com.techtown.tarsosdsp_pitchdetect.OctaveTest.domain.TestMusicInfoDto;
 import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
@@ -65,9 +68,9 @@ public class TestSingingActivity extends AppCompatActivity {
     private String userSex;
     private String octaveHighLow;
 
+    LoadingDialog dialog;
+
     HorizontalScrollView scrollView;
-    Button recordButton;
-    Button stopButton;
 
     Map<Double, String> map;
     String musicUrl;
@@ -116,34 +119,11 @@ public class TestSingingActivity extends AppCompatActivity {
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         scrollView = findViewById(R.id.octaveTest_scrollView);
-        recordButton = findViewById(R.id.octaveTest_recordButton);
-        stopButton = findViewById(R.id.octaveTest_stopButton);
 
-        recordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isRecording) {
-                    recordAudio();
-                    isRecording = true;
-                }
-            }
-        });
-
-        stopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isRecording) {
-                    stopRecording();
-                    isRecording = false;
-                }
-                Intent intent = new Intent(getApplicationContext(), TestEndActivity.class);
-                intent.putExtra("userEmail", userEmail);
-                intent.putExtra("userSex", userSex);
-                intent.putExtra("octaveHighLow", octaveHighLow);
-                startActivity(intent);
-                finish();
-            }
-        });
+        dialog = new LoadingDialog(this);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false);
+        dialog.show();
     }
 
     String prevOctave;
@@ -196,23 +176,6 @@ public class TestSingingActivity extends AppCompatActivity {
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void createMediaPlayer() {
-        mediaPlayer = new MediaPlayer();
-        try {
-            mediaPlayer.setDataSource(musicUrl);
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    recordButton.setEnabled(true);
-                }
-            });
-            mediaPlayer.prepareAsync();
-        } catch (Exception e) {
-            Log.e("MEDIAPLAYER", e.getMessage());
         }
     }
 
@@ -544,11 +507,46 @@ public class TestSingingActivity extends AppCompatActivity {
                 });
     }
 
-    // stream music directly from firebase
+    /* Mediaplayer 설정 */
+    public void createMediaPlayer() {
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(musicUrl);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    dialog.dismiss();
+                    if (!isRecording) {
+                        recordAudio();
+                        isRecording = true;
+                    }
+                }
+            });
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    if (isRecording) {
+                        stopRecording();
+                        isRecording = false;
+                    }
+                    Intent intent = new Intent(getApplicationContext(), TestEndActivity.class);
+                    intent.putExtra("userEmail", userEmail);
+                    intent.putExtra("userSex", userSex);
+                    intent.putExtra("octaveHighLow", octaveHighLow);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        } catch (Exception e) {
+            Log.e("MEDIAPLAYER", e.getMessage());
+        }
+    }
+
     private void fetchAudioUrlFromFirebase() {
-        final FirebaseStorage storage = FirebaseStorage.getInstance();
-        String url = "gs://certune-73ce6.appspot.com/" + userSex + "Pitch/" + userSex + octaveHighLow + ".mp3";
-        StorageReference storageRef = storage.getReferenceFromUrl(url);
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        StorageReference storageRef = storage.child(userSex+"Pitch").child(userSex+octaveHighLow+ ".mp3");
 
         storageRef.getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {

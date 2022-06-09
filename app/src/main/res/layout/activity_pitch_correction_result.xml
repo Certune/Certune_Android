@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".correction.PitchCorrectionResult">
+    tools:context=".correction.PitchCorrection.PitchCorrectionSingingResult">
 
     <TextView
-        android:id="@+id/textView_myrecord"
+        android:id="@+id/textView_pitchcorrection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
@@ -21,10 +21,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/scoreTextView"
+        android:id="@+id/scoreTextButton"
         android:layout_width="177dp"
         android:layout_height="176dp"
-        android:layout_marginTop="252dp"
+        android:layout_marginTop="248dp"
         android:background="@drawable/result_score_background"
         android:text="87점"
         android:textSize="40dp"
@@ -33,13 +33,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/resetBtn"
+        android:id="@+id/endButton"
         android:layout_width="307dp"
         android:layout_height="51dp"
-        android:layout_marginBottom="212dp"
+        android:layout_marginBottom="196dp"
         android:background="#8cdbd2"
         android:text="확인"
-        android:textColor="@color/white"
+        android:textColor="#455A64"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

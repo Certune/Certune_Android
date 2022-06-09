@@ -1,27 +1,33 @@
-package com.techtown.tarsosdsp_pitchdetect.correction;
+package com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.techtown.tarsosdsp_pitchdetect.MyRecord.MyRecordActivity;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
-import com.techtown.tarsosdsp_pitchdetect.global.CustomPitchCorrectionListDto;
+import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection.PitchCorrection;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RhythmCorrection extends AppCompatActivity {
 
     private ListView listView;
     private RhythmCorrectionListAdapter adapter;
     BottomNavigationView navigationView;
+
+    private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,34 +38,11 @@ public class RhythmCorrection extends AppCompatActivity {
 
         listView = (ListView)findViewById(R.id.Rhythm_listView);
         navigationView = findViewById(R.id.nav_view_rhythm);
+
         listView.setAdapter(adapter);
+        getRhythmList();
 
-        adapter.addItem("2/2 박자");
-        adapter.addItem("2/4 박자");
-        adapter.addItem("2/8 박자");
-        adapter.addItem("3/2 박자");
-        adapter.addItem("3/4 박자");
-        adapter.addItem("3/8 박자");
-        adapter.addItem("4/2 박자");
-        adapter.addItem("4/4 박자");
-        adapter.addItem("4/8 박자");
-        adapter.addItem("6/4 박자");
-        adapter.addItem("6/8 박자");
-        adapter.addItem("9/4 박자");
-        adapter.addItem("9/8 박자");
-        adapter.addItem("9/16 박자");
-        adapter.addItem("12/8 박자");
-        adapter.addItem("12/16 박자");
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CustomPitchCorrectionListDto customPitchCorrectionListDto = (CustomPitchCorrectionListDto) parent.getItemAtPosition(position);
-
-                String rhythm = customPitchCorrectionListDto.getOctave();
-            }
-        });
-
+        navigationView.setSelectedItemId(R.id.navigation_rhythm);
         navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -81,5 +64,25 @@ public class RhythmCorrection extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    public void getRhythmList() {
+        database.collection("Correction").document("RhythmCorrection").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                try {
+                    ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>) document.getData().get("rhythms");
+
+                    for (int i=0; i<list.size(); i++){
+                        HashMap<String, Object> sentencemap = (HashMap<String, Object>) list.get(i);
+                        String rhythmInfo = (String) sentencemap.get("notes");
+                        adapter.addItem(rhythmInfo);
+                    }
+                } catch (Exception e) {
+                    Log.e("getRhythmList", "해당 소절의 정보를 가져올 수 없습니다.");
+                }
+            }
+        });
+
     }
 }

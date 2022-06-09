@@ -26,14 +26,6 @@ import android.widget.TextView;
 
 import androidx.gridlayout.widget.GridLayout;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -83,8 +75,6 @@ public class LiveSingingActivity extends AppCompatActivity {
 
     AudioDispatcher dispatcher;
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
-
-    LineChart mChart;
 
     Map<Double, String> map; // {key : octav}
     Map<Double, String> musicMap;
@@ -165,7 +155,6 @@ public class LiveSingingActivity extends AppCompatActivity {
         }
     };
 
-    int timerCnt = 0;
     int tmp = 0;
     long duration = 1;
     final Runnable runnableLyric = new Runnable() {
@@ -180,22 +169,6 @@ public class LiveSingingActivity extends AppCompatActivity {
         }
     };
 
-//
-//    public void startTimer() {
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            public void run() {
-//                setLyric();
-//
-//                System.out.println("period = " + duration);
-//                timer.cancel(); // cancel time
-//
-//                if(tmp != startTimeList.size() - 2) tmp++;
-//                duration = (long) (endTimeList.get(tmp) - startTimeList.get(tmp));
-//                startTimer();   // start the time again with a new period time
-//            }
-//        }, endTimeList.get(0).longValue() * 1000, duration * 1000);}
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,10 +176,8 @@ public class LiveSingingActivity extends AppCompatActivity {
 
         handlerSetting.post(runnableSetting);
         handlerSetting2.post(runnableSetting2);
-//        timeHandler.post(runnableLyric);
 
         // Get xml instances
-//        mChart = findViewById(R.id.chart);
         scrollView = findViewById(R.id.horizontalScrollView);
         gridLayout = findViewById(R.id.gridLayout);
         gridLayout.setUseDefaultMargins(false);
@@ -242,8 +213,6 @@ public class LiveSingingActivity extends AppCompatActivity {
         getSongInfo();
         getSongEndTime();
         microphoneOn();
-
-
     }
 
     public void createMediaPlayer(){
@@ -460,7 +429,7 @@ public class LiveSingingActivity extends AppCompatActivity {
             final float pitchInHz = res.getPitch();
             String note = ProcessPitch.processPitch(pitchInHz);
             runOnUiThread(() -> {
-                pitchGraph.setY(1000 - pitchInHz);
+//                pitchGraph.setY(1000 - pitchInHz);
             });
         };
 

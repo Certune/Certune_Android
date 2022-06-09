@@ -429,7 +429,7 @@ public class LiveSingingActivity extends AppCompatActivity {
             final float pitchInHz = res.getPitch();
             String note = ProcessPitch.processPitch(pitchInHz);
             runOnUiThread(() -> {
-                pitchGraph.setY((float) (1600 - pitchInHz * 3.3));
+                pitchGraph.setY((float) (1600 - pitchInHz * 3.4));
             });
         };
 

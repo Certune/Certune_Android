@@ -190,6 +190,8 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         // db로부터 소절정보 가져오기
         getSentenceInfo();
 
+        microphoneOn();
+
     }
 
     public void checkLoading() {
@@ -231,7 +233,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
             final float pitchInHz = res.getPitch();
             String note = ProcessPitch.processPitch(pitchInHz);
             runOnUiThread(() -> {
-                pitchGraph.setY((float) (1600 - pitchInHz * 3.3));
+                pitchGraph.setY((float) (1600 - pitchInHz * 3.4));
             });
         };
 

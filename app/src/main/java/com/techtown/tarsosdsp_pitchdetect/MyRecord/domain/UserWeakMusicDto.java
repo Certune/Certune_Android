@@ -1,34 +1,20 @@
 package com.techtown.tarsosdsp_pitchdetect.MyRecord.domain;
 
-import com.techtown.tarsosdsp_pitchdetect.score.domain.UserNoteDto;
+import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 
 import java.util.ArrayList;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Builder
 public class UserWeakMusicDto {
-    public String startTime;
-    public String noteScore;
-    public String rhythmScore;
-    public String totalScore;
-    public Boolean isPoor;
-    public ArrayList<UserWeakNoteDto> notes;
+    String startTime;
+    ArrayList<NoteDto> notes;
+    String noteScore;
+    String rhythmScore;
+    String totalScore;
 
-    @Builder
-    public UserWeakMusicDto(String startTime, String noteScore, String rhythmScore, String totalScore, Boolean isPoor, ArrayList<UserWeakNoteDto> notes) {
-        this.startTime = startTime;
-        this.noteScore = noteScore;
-        this.rhythmScore = rhythmScore;
-        this.totalScore = totalScore;
-        this.isPoor = isPoor;
-        this.notes = notes;
-    }
-
-    public ArrayList<UserWeakNoteDto> getNote() {
-        return  notes;
+    public ArrayList<NoteDto> getNotes(){
+        return notes;
     }
 }

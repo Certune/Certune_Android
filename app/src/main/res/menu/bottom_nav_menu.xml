@@ -4,25 +4,21 @@
     <item
         android:id="@+id/navigation_songList"
         android:icon="@drawable/ic_baseline_playlist_play_24"
-        android:checked="false"
-        android:title="" />
+        android:title="노래목록" />
 
     <item
         android:id="@+id/navigation_myRecord"
         android:icon="@drawable/headphones"
-        android:checked="false"
-        android:title="" />
+        android:title="마이레코드" />
 
     <item
         android:id="@+id/navigation_pitch"
         android:icon="@drawable/ic_baseline_music_note_24"
-        android:checked="false"
-        android:title="" />
+        android:title="음정연습" />
 
     <item
         android:id="@+id/navigation_rhythm"
         android:icon="@drawable/drum"
-        android:checked="false"
-        android:title="" />
+        android:title="박자연습" />
 
 </menu>

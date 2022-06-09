@@ -16,8 +16,8 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection;
-import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.PitchCorrection.PitchCorrection;
+import com.techtown.tarsosdsp_pitchdetect.correction.RhythmCorrection.RhythmCorrection;
 import com.techtown.tarsosdsp_pitchdetect.global.CustomSongListDto;
 import com.techtown.tarsosdsp_pitchdetect.MyRecord.MyRecordActivity;
 
@@ -45,6 +45,7 @@ public class SongListActivity extends AppCompatActivity {
 
         getData();
 
+        navigationView.setSelectedItemId(R.id.navigation_songList);
         navigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

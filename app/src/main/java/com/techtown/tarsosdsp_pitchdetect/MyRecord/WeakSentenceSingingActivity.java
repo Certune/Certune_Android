@@ -190,6 +190,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         // db로부터 소절정보 가져오기
         getSentenceInfo();
 
+        // 마이크 on
         microphoneOn();
 
     }

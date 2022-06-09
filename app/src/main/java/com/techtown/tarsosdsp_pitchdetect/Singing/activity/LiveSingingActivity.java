@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
@@ -55,6 +56,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioProcessor;
@@ -88,6 +91,7 @@ public class LiveSingingActivity extends AppCompatActivity {
 
     ArrayList<Double> startTimeList;
     ArrayList<Double> endTimeList;
+    ArrayList<String> lyricList;
     ArrayList<MusicDto> musicTotalInfoList;
 
     MediaPlayer mediaPlayer;
@@ -97,10 +101,10 @@ public class LiveSingingActivity extends AppCompatActivity {
     boolean isRecording = false;
     String filename = "singingResult.wav";
 
-    Handler timeHandler = new Handler();
-
     ArrayList<SingingNoteDto> noteDtoList = new ArrayList<>();
     ArrayList<SentenceInfoDto> sentenceInfoList = new ArrayList<>();
+
+    View pitchGraph;
 
     private HorizontalScrollView scrollView;
     GridLayout gridLayout;
@@ -117,6 +121,9 @@ public class LiveSingingActivity extends AppCompatActivity {
     Boolean isMusicLoad = false;
 
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
+
+
+    final Handler timeHandler = new Handler();
 
     final Handler handlerSong = new Handler();
     final Handler handlerSetting = new Handler();
@@ -158,6 +165,37 @@ public class LiveSingingActivity extends AppCompatActivity {
         }
     };
 
+    int timerCnt = 0;
+    int tmp = 0;
+    long duration = 1;
+    final Runnable runnableLyric = new Runnable() {
+        @Override
+        public void run() {
+            currentLyric.setText(lyricList.get(tmp));
+            nextLyric.setText(lyricList.get(tmp+1));
+            duration = (long) ((endTimeList.get(tmp) - startTimeList.get(tmp)) * 1000 - 95);
+            Log.v("lyric ***", lyricList.get(tmp));
+            if (tmp < (startTimeList.size() - 2)) tmp++;
+            timeHandler.postDelayed(this, duration);
+        }
+    };
+
+//
+//    public void startTimer() {
+//        Timer timer = new Timer();
+//        timer.schedule(new TimerTask() {
+//            public void run() {
+//                setLyric();
+//
+//                System.out.println("period = " + duration);
+//                timer.cancel(); // cancel time
+//
+//                if(tmp != startTimeList.size() - 2) tmp++;
+//                duration = (long) (endTimeList.get(tmp) - startTimeList.get(tmp));
+//                startTimer();   // start the time again with a new period time
+//            }
+//        }, endTimeList.get(0).longValue() * 1000, duration * 1000);}
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -165,12 +203,14 @@ public class LiveSingingActivity extends AppCompatActivity {
 
         handlerSetting.post(runnableSetting);
         handlerSetting2.post(runnableSetting2);
+//        timeHandler.post(runnableLyric);
 
         // Get xml instances
 //        mChart = findViewById(R.id.chart);
         scrollView = findViewById(R.id.horizontalScrollView);
         gridLayout = findViewById(R.id.gridLayout);
         gridLayout.setUseDefaultMargins(false);
+        pitchGraph = findViewById(R.id.pitchGraph);
 
         currentLyric = findViewById(R.id.currentLyricTextView);
         nextLyric = findViewById(R.id.nextLyricTextView);
@@ -201,21 +241,9 @@ public class LiveSingingActivity extends AppCompatActivity {
 
         getSongInfo();
         getSongEndTime();
-//        microphoneOn();
-//        setChart();
-//        setAxis();
+        microphoneOn();
 
-        timeHandler.postDelayed(new Runnable() {
-            @Override public void run() {
-                currentLyric.setText("가려한 날 막아서네 난 갈 길이 먼데");
-                nextLyric.setText("새빨간 얼굴로 화를 냈던 친구가 생각나네");
-            } }, 30000);
 
-        timeHandler.postDelayed(new Runnable() {
-            @Override public void run() {
-                currentLyric.setText("새빨간 얼굴로 화를 냈던 친구가 생각나네");
-                nextLyric.setText("이미 난 발걸음을 떼었지만");
-            } }, 36000);
     }
 
     public void createMediaPlayer(){
@@ -266,6 +294,7 @@ public class LiveSingingActivity extends AppCompatActivity {
                             List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
                             startTimeList = new ArrayList<>();
                             endTimeList = new ArrayList<>();
+                            lyricList = new ArrayList<>();
                             musicTotalInfoList = new ArrayList<>();
                             for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
                                 HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
@@ -290,6 +319,7 @@ public class LiveSingingActivity extends AppCompatActivity {
                                 // ArrayList에 소절별 시작 시간과 끝 시간 담기
                                 startTimeList.add(Double.parseDouble(musicDto.getStartTime()));
                                 endTimeList.add(Double.parseDouble(musicDto.getEndTime()));
+                                lyricList.add(musicDto.getLyrics());
                                 // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
                                 musicTotalInfoList.add(musicDto);
 
@@ -299,6 +329,8 @@ public class LiveSingingActivity extends AppCompatActivity {
                             Log.v("ERROR", "not enough records for calculating");
                         }
                     }
+
+                    timeHandler.postDelayed(runnableLyric, (long) (endTimeList.get(0) * 1000) - 1000);
                 }
         );
     }
@@ -414,120 +446,37 @@ public class LiveSingingActivity extends AppCompatActivity {
 
                     }
                     settingView();
-
-//                    } catch (Exception e) {
-//                        Log.e("endTimeImport", e.getMessage());
-//                    }
                 }
             }
         });
     }
 
+    public void microphoneOn() {
+        releaseDispatcher();
 
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
-//
-//    public void addEntry(Float pitch) {
-//        LineData data = mChart.getData();
-//
-//        if(data != null) {
-//            // Check that data has a set. If not, create and add a set to data
-//            ILineDataSet set = data.getDataSetByIndex(0);
-//
-//            if (set == null) {
-//                set = createSet();
-//                data.addDataSet(set);
-//            }
-//
-//            data.addEntry(new Entry(set.getEntryCount(), pitch * 10), 0);
-//            data.notifyDataChanged();
-//
-//            mChart.notifyDataSetChanged();
-//            mChart.moveViewToX(data.getEntryCount());
-//        }
-//    }
-//
-//    public ILineDataSet createSet() {
-//        LineDataSet set = new LineDataSet(null, null);
-//        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-//        set.setLineWidth(1f);
-//        set.setColor(Color.GREEN);
-//        set.setHighlightEnabled(false);
-//        set.setDrawValues(false);
-//        set.setDrawCircles(false);
-//        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        set.setCubicIntensity(0.2f);
-//
-//        return set;
-//    }
-//
-//    public void setChart() {
-//        mChart.setVisibleXRangeMaximum(15);
-//        mChart.getDescription().setEnabled(false);
-//        mChart.setTouchEnabled(false);
-//        mChart.setDragEnabled(false);
-//        mChart.setScaleYEnabled(false);
-//        mChart.setPinchZoom(false);
-//        mChart.setDrawGridBackground(false);
-//
-//        LineData data = new LineData();
-//
-//        // add empty data
-//        mChart.setData(data);
-//
-//        mChart.setScaleMinima(100f, 1f);
-//
-//        // set legend
-//        Legend l = mChart.getLegend();
-//        l.setEnabled(false);
-//    }
-//
-//    public void setAxis() {
-//        XAxis xAxis = mChart.getXAxis();
-//        xAxis.setDrawAxisLine(false);
-//        xAxis.setEnabled(false);
-//
-//        YAxis leftYAxis = mChart.getAxisLeft();
-//        // leftYAxis.setAxisMinimum(0f);
-//        // leftYAxis.setAxisMaximum(200f);
-//        leftYAxis.setDrawAxisLine(false);
-//        leftYAxis.setEnabled(false);
-//
-//        YAxis rightYAxis = mChart.getAxisRight();
-//        rightYAxis.setDrawAxisLine(false);
-//        rightYAxis.setEnabled(false);
-//
-//        mChart.getXAxis().setDrawGridLines(false);
-//        mChart.getAxisLeft().setDrawGridLines(false);
-//        mChart.setDrawBorders(false);
-//    }
-//
-//    public void microphoneOn() {
-//        releaseDispatcher();
-//        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
-//
-//        PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
-//            final float pitchInHz = res.getPitch();
-//            String note = ProcessPitch.processPitch(pitchInHz);
-//            runOnUiThread(() -> {
-//                if(pitchInHz > 40) {
-//                    addEntry((float) noteToIdx(note));
-//                }
-//            });
-//        };
-//
-//        AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
-//        dispatcher.addAudioProcessor(pitchProcessor);
-//
-//        Thread audioThread = new Thread(dispatcher, "Audio Thread");
-//        audioThread.start();
-//    }
-//
-//    public void releaseDispatcher() {
-//        if (dispatcher != null) {
-//            if (!dispatcher.isStopped())
-//                dispatcher.stop();
-//            dispatcher = null;
-//        }
-//    }
+        PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
+            final float pitchInHz = res.getPitch();
+            String note = ProcessPitch.processPitch(pitchInHz);
+            runOnUiThread(() -> {
+                pitchGraph.setY(1000 - pitchInHz);
+            });
+        };
+
+        AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
+        dispatcher.addAudioProcessor(pitchProcessor);
+
+        Thread audioThread = new Thread(dispatcher, "Audio Thread");
+        audioThread.start();
+    }
+
+    public void releaseDispatcher() {
+        if (dispatcher != null) {
+            if (!dispatcher.isStopped())
+                dispatcher.stop();
+            dispatcher = null;
+        }
+    }
 
 }

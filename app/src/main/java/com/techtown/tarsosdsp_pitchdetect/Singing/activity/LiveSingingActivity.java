@@ -1,7 +1,9 @@
 package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
 import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
-import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessPitch.processPitch;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.CalcStartTimeRange.calcStartTimeRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessNoteRange.processNoteRange;
+import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessTimeRange.processTimeRange;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,115 +28,131 @@ import android.widget.TextView;
 
 import androidx.gridlayout.widget.GridLayout;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.techtown.tarsosdsp_pitchdetect.MyRecord.domain.UserWeakMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SentenceInfoDto;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingNoteDto;
-import com.techtown.tarsosdsp_pitchdetect.global.MusicDto;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserScoreDto;
+import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SingingUserUploadDto;
 import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
+import com.techtown.tarsosdsp_pitchdetect.global.SongSentenceDto;
+import com.techtown.tarsosdsp_pitchdetect.score.domain.UserMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessPitch;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteOrder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import be.tarsos.dsp.AudioDispatcher;
+import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
 import be.tarsos.dsp.io.TarsosDSPAudioFormat;
 import be.tarsos.dsp.io.android.AudioDispatcherFactory;
 import be.tarsos.dsp.pitch.PitchDetectionHandler;
+import be.tarsos.dsp.pitch.PitchDetectionResult;
 import be.tarsos.dsp.pitch.PitchProcessor;
+import be.tarsos.dsp.writer.WriterProcessor;
 
 public class LiveSingingActivity extends AppCompatActivity {
-    // 로그인된 유저의 이름, 이메일, uid 정보
-    String userName;
-    String userEmail = "nitronium007@gmail.com";
-    String userSex;
-    String uid;
 
-    String songName = "신호등";
+    /* DB 접근용 */
+    String userEmail;
+    String songName;
     String singerName;
     Boolean isShifting;
+
+    /* 계산용 변수 */
+    // 곡 전체 변수
+    ArrayList<SongSentenceDto> sentenceInfoList;
+
+    // 소절용 변수
+    double sentenceStartTime;
+    double sentenceEndTime;
+    double sentenceFinalNoteEndTime;
+    List<NoteDto> sentenceNoteDtoList;
     private Double songEndTime;
 
-    String musicUrl;
-    private long startTime;
-
-    AudioDispatcher dispatcher;
-    TarsosDSPAudioFormat tarsosDSPAudioFormat;
-
-    LineChart mChart;
-
-    Map<Double, String> map; // {key : octav}
-    Map<Double, String> musicMap;
-
+    // 가사용
+    ArrayList<String> lyricList;
     ArrayList<Double> startTimeList;
     ArrayList<Double> endTimeList;
-    ArrayList<String> lyricList;
-    ArrayList<MusicDto> musicTotalInfoList;
 
+    /* cell용 변수 */
+    ArrayList<SentenceInfoDto> singingSentenceInfoList = new ArrayList<>();
+    ArrayList<SingingNoteDto> singingNoteDtoList = new ArrayList<>();
+
+    /* 유저 음정 정리 */
+    String prevOctave;
+    Map<Double, String> userMap; // {key : octav}
+    double calcStartTime;
+
+    /* 음악 재생 */
+    String musicUrl;
     MediaPlayer mediaPlayer;
 
+    /* TarsosDSP 및 파일 설정 */
+    TarsosDSPAudioFormat tarsosDSPAudioFormat;
+    AudioDispatcher dispatcher;
     File file;
-
-    boolean isRecording = false;
     String filename = "singingResult.wav";
 
-    ArrayList<SingingNoteDto> noteDtoList = new ArrayList<>();
-    ArrayList<SentenceInfoDto> sentenceInfoList = new ArrayList<>();
 
-    View pitchGraph;
-
+    /* 레이아웃 */
+    // 기본 요소
     private HorizontalScrollView scrollView;
     GridLayout gridLayout;
     Button cell;
-    LoadingDialog dialog;
+    View pitchGraph;
 
+    // 가사 변경
+    final Handler timeHandler = new Handler();
     TextView currentLyric;
     TextView nextLyric;
 
     int firstNoteStartTime;
     Long showStartTime;
 
+    // 로딩창
+    LoadingDialog dialog;
     Boolean isNoteLoad = false;
     Boolean isMusicLoad = false;
+    boolean isSongFirebaseLoad = false;
+    boolean isSingingFirebaseLoad = false;
 
+    // Firestore 설정
     private static FirebaseFirestore database = FirebaseFirestore.getInstance();
 
-
-    final Handler timeHandler = new Handler();
-
+    // cell 세팅
     final Handler handlerSong = new Handler();
-    final Handler handlerSetting = new Handler();
-    final Handler handlerSetting2 = new Handler();
+    final Handler handlerRowSetting = new Handler();
+    final Handler handlerColSetting = new Handler();
 
 
     final Runnable runnableSong = new Runnable() {
         @Override
         public void run() {
-            setScrollSettings();
-            for (SingingNoteDto noteDto : noteDtoList) {
+            Log.e("runnableSong", "얍");
+            for (SingingNoteDto noteDto : singingNoteDtoList) {
                 int noteIdx = noteToIdx(noteDto.getNote());
                 int startTime = (int) Math.round(Double.parseDouble(noteDto.getStartTime()) * 10);
                 int endTime = (int) Math.round(Double.parseDouble(noteDto.getEndTime()) * 10);
@@ -147,18 +165,20 @@ public class LiveSingingActivity extends AppCompatActivity {
         }
     };
 
-    final Runnable runnableSetting = new Runnable() {
+    final Runnable runnableRow = new Runnable() {
         @Override
         public void run() {
+            Log.e("runnableRow", "얍");
             for (int j = 0; j < gridLayout.getRowCount(); j++) {
                 setCell(j, 0, 1, false, true);
             }
         }
     };
 
-    final Runnable runnableSetting2 = new Runnable() {
+    final Runnable runnableCol = new Runnable() {
         @Override
         public void run() {
+            Log.e("runnableCol", "얍");
             for (int i = 0; i < gridLayout.getColumnCount(); i++) {
                 setCell(0, i, i + 1, false, true);
             }
@@ -171,6 +191,7 @@ public class LiveSingingActivity extends AppCompatActivity {
     final Runnable runnableLyric = new Runnable() {
         @Override
         public void run() {
+            Log.e("runnableLyric", "얍");
             currentLyric.setText(lyricList.get(tmp));
             nextLyric.setText(lyricList.get(tmp+1));
             duration = (long) ((endTimeList.get(tmp) - startTimeList.get(tmp)) * 1000 - 95);
@@ -201,16 +222,29 @@ public class LiveSingingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_live_singing);
 
-        handlerSetting.post(runnableSetting);
-        handlerSetting2.post(runnableSetting2);
+        // intent 설정
+        Intent subIntent = getIntent();
+        songName = subIntent.getStringExtra("songName");
+        singerName = subIntent.getStringExtra("singerName");
+        isShifting = subIntent.getBooleanExtra("isShifting", false);
+
+        handlerRowSetting.post(runnableRow);
+        handlerColSetting.post(runnableCol);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null)
+            userEmail = user.getEmail();
+
 //        timeHandler.post(runnableLyric);
 
         // Get xml instances
 //        mChart = findViewById(R.id.chart);
+
+        // layout 설정
         scrollView = findViewById(R.id.horizontalScrollView);
         gridLayout = findViewById(R.id.gridLayout);
         gridLayout.setUseDefaultMargins(false);
-        pitchGraph = findViewById(R.id.pitchGraph);
+//        pitchGraph = findViewById(R.id.pitchGraph);
 
         currentLyric = findViewById(R.id.currentLyricTextView);
         nextLyric = findViewById(R.id.nextLyricTextView);
@@ -220,11 +254,23 @@ public class LiveSingingActivity extends AppCompatActivity {
         dialog.setCancelable(false);
         dialog.show();
 
+        // url 설정
         fetchAudioUrlFromFirebase();
+
+        // tarsosDSP 관련 설정
+        setTarsosDSPSettings();
+
+        // db로부터 점수 계산용 song info 가져오기
+        getSentenceInfo();
+
+        // graph 용
+        microphoneOn();
+    }
+
+    private void setTarsosDSPSettings(){
         File sdCard = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
         file = new File(sdCard, filename);
 
-        // Basic Setting for tarsosDSP AudioFormat
         tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
                 22050,
                 2 * 8,
@@ -232,21 +278,291 @@ public class LiveSingingActivity extends AppCompatActivity {
                 2 * 1,
                 22050,
                 ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
-
-//
-//        Intent subIntent = new Intent();
-//        songName = subIntent.getStringExtra("songName");
-//        userEmail = subIntent.getStringExtra("userEmail");
-//        isShifting = subIntent.getBooleanExtra("isShifting", false);
-
-        getSongInfo();
-        getSongEndTime();
-        microphoneOn();
+    }
 
 
+    private void stopPitchDetection() {
+        Object[] mapkey = userMap.keySet().toArray();
+        Arrays.sort(mapkey);
+        for (Object key : mapkey) {
+            Log.v("result", String.valueOf(key) + "/ value: " + userMap.get(key));
+        }
+        ArrayList<NoteDto> sortedMapKey = sortMapKey(mapkey);
+        for (NoteDto noteDto : sortedMapKey) {
+            Log.v("sortedResult", noteDto.getStartTime() + " : " + noteDto.getNote() + " : " + noteDto.getEndTime());
+        }
+        addWAVToFireStorage();
+        addDataToFireStore(sortedMapKey);
+
+        releaseDispatcher();
+    }
+
+    private ArrayList<NoteDto> sortMapKey(Object[] mapkey) {
+        ArrayList<NoteDto> userKeyList = new ArrayList();
+        String keyStartTime = mapkey[0].toString();
+        String keyEndTime = "0.0";
+
+        Object key;
+        String keyValue;
+
+        for (int i = 1; i < mapkey.length; i++) {
+            // 이전 값을 넣어줌
+            key = mapkey[i];
+            keyValue = userMap.get(key);
+
+            if (!keyValue.equals("Nope")) {
+                keyEndTime = key.toString();
+                NoteDto keyNoteDto = NoteDto.builder()
+                        .startTime(keyStartTime)
+                        .note(keyValue)
+                        .endTime(keyEndTime)
+                        .build();
+                userKeyList.add(keyNoteDto);
+            }
+            // 현재 key의 시작 시간 update
+            keyStartTime = key.toString();
+        }
+
+        key = mapkey[mapkey.length - 1];
+        keyValue = userMap.get(key);
+        if (!keyValue.equals("Nope")) {
+            NoteDto keyNoteDto = NoteDto.builder()
+                    .startTime(keyStartTime)
+                    .note(keyValue)
+                    .endTime(keyStartTime + 0.05)
+                    .build();
+            userKeyList.add(keyNoteDto);
+        }
+
+        return userKeyList;
+    }
+
+    private void addDataToFireStore(ArrayList<NoteDto> sortedMapKey) {
+        ArrayList<UserWeakMusicDto> userMusicInfo = checkUserDataIsInRange(sortedMapKey);
+        SingingUserScoreDto singingUserScoreDto = calcUserScore(userMusicInfo);
+        Intent intent = new Intent(getApplicationContext(), SingingResult.class);
+        intent.putExtra("songName", songName);
+        intent.putExtra("singerName", singerName);
+        intent.putExtra("noteScore", Double.parseDouble(singingUserScoreDto.getNoteScore()));
+        intent.putExtra("rhythmScore", Double.parseDouble(singingUserScoreDto.getRhythmScore()));
+        intent.putExtra("totalScore", Double.parseDouble(singingUserScoreDto.getTotalScore()));
+        startActivity(intent);
+    }
+
+    private ArrayList<UserWeakMusicDto> checkUserDataIsInRange(ArrayList<NoteDto> sortedMapKey) {
+
+        ArrayList<UserWeakMusicDto> userNoteList = new ArrayList<>();
+
+        int sentenceIdx = 0;
+        double sentenceFirstNoteStartTime = sentenceInfoList.get(0).getSentenceStartTime();
+        double sentenceStartTime = sentenceInfoList.get(0).getSentenceStartTime();
+        double sentenceNoteEndTime = sentenceInfoList.get(0).getSentenceNoteEndTime();
+
+        ArrayList<NoteDto> noteList = new ArrayList<>();
+        boolean isFinal = false;
+
+        for (NoteDto noteDto : sortedMapKey) {
+            double noteDtoEndTime = Double.parseDouble(noteDto.getEndTime());
+            double noteDtoStartTime = Double.parseDouble(noteDto.getStartTime());
+            // song 범위를 벗어난 note는 처리하지 않는다
+            if (noteDtoEndTime >= songEndTime)
+                break;
+            // 첫 번째 sentence 전에 있는 note는 처리하지 않는다
+            if (noteDtoStartTime < sentenceFirstNoteStartTime)
+                continue;
+
+            if (Double.parseDouble(noteDto.getStartTime()) > sentenceStartTime
+                    || Double.parseDouble(noteDto.getEndTime()) > sentenceNoteEndTime){
+                // 현재 소절 정보 저장
+                UserWeakMusicDto userMusicDto = UserWeakMusicDto.builder()
+                        .startTime(String.valueOf(sentenceStartTime))
+                        .notes(noteList)
+                        .noteScore("null")
+                        .rhythmScore("null")
+                        .totalScore("null")
+                        .build();
+                userNoteList.add(userMusicDto);
+
+                // 다음 소절 정보로 update
+                noteList = new ArrayList<>();
+                sentenceIdx++;
+                if (sentenceIdx >= sentenceInfoList.size()) {
+                    isFinal = true;
+                    break;
+                }
+                else {
+                    sentenceStartTime = sentenceInfoList.get(sentenceIdx).getSentenceStartTime();
+                    sentenceNoteEndTime = sentenceInfoList.get(sentenceIdx).getSentenceNoteEndTime();
+                }
+            }
+            if (isFinal)
+                break;
+            noteList.add(noteDto);
+        }
+        return userNoteList;
+    }
+
+    private SingingUserScoreDto calcUserScore(ArrayList<UserWeakMusicDto> userMusicInfo) {
+
+        int userTotalCorrectNoteNum = 0;
+        int songTotalCorrectNoteNum = 0;
+        double userTotalSentenceTime = 0;
+        double songTotalSentenceTime = 0;
+
+        ArrayList<String> weakSentenceIdxList = new ArrayList<>();
+        ArrayList<SingingMusicDto> userMusicInfoList = new ArrayList<>();
+
+        int sentenceIdx = 0;
+        DecimalFormat df = new DecimalFormat("0.00");
+        // [sentence별]
+        for (UserWeakMusicDto userMusicDto : userMusicInfo){
+            int noteIdx = 0;
+            int userSentenceCorrectNoteNum = 0;
+            double userSentenceTotalTime = 0.0;
+            // TODO : songTotalNoteTimeDto 만들기
+            ArrayList<NoteDto> userNoteList = userMusicDto.getNotes();
+
+            double userNoteStartTime = 0.0;
+
+            boolean isWrongNote = false;
+            boolean isFirstNote = false;
+
+            // song sentence 정보
+            SongSentenceDto sentenceInfoDto = sentenceInfoList.get(sentenceIdx);
+            double sentenceStartTime = sentenceInfoDto.getSentenceStartTime();
+            double sentenceEndTime = sentenceInfoDto.getSentenceEndTime();
+            double sentenceFinalNoteEndTime = sentenceInfoDto.getSentenceNoteEndTime();
+            double sentenceDurationTime = sentenceInfoDto.getSentenceDurationTime();
+            ArrayList<NoteDto> sentenceNoteList = sentenceInfoDto.getSentenceNoteDtoList();
+
+            double sentenceNoteEndTime = Double.parseDouble(sentenceNoteList.get(noteIdx).getEndTime());
+
+            for (NoteDto userNoteDto : userNoteList) {
+                userNoteStartTime = Double.parseDouble(userNoteDto.getStartTime());
+                ArrayList<Double> timeRangeList = processTimeRange(sentenceNoteList.get(noteIdx).getStartTime());
+
+                if (sentenceNoteEndTime <= userNoteStartTime){
+                    noteIdx++;
+                    sentenceNoteEndTime = Double.parseDouble(sentenceNoteList.get(noteIdx).getEndTime());
+
+                    timeRangeList = processTimeRange(sentenceNoteList.get(noteIdx).getStartTime());
+                    isFirstNote = false;
+                }
+                if (!isFirstNote && calcStartTimeRange(timeRangeList, userNoteDto.getStartTime())) {
+                    userSentenceCorrectNoteNum++;
+                    isFirstNote = true;
+                }
+                ArrayList<String> noteRangeList = processNoteRange(sentenceNoteList.get(noteIdx).getNote());
+                if (noteRangeList.contains(userNoteDto.getNote())) {
+                    userSentenceTotalTime += Double.parseDouble(userNoteDto.getEndTime()) - Double.parseDouble(userNoteDto.getStartTime());
+                }
+            }
+            userTotalCorrectNoteNum += userSentenceCorrectNoteNum;
+            songTotalCorrectNoteNum += sentenceNoteList.size();
+            userTotalSentenceTime += userSentenceTotalTime;
+            songTotalSentenceTime += sentenceDurationTime;
+
+            double sentenceNoteScore = (userSentenceTotalTime / sentenceDurationTime);
+            double sentenceRhythmScore = ((double) userSentenceCorrectNoteNum / sentenceNoteList.size());
+
+            boolean isPoor = false;
+            // 취약소절 여부 판정
+            if (sentenceNoteScore <= 70 || sentenceRhythmScore <= 70){
+                isPoor = true;
+                weakSentenceIdxList.add(String.valueOf(sentenceIdx));
+            }
+
+            SingingMusicDto userUploadMusicDto = SingingMusicDto.builder()
+                    .noteScore(df.format(sentenceNoteScore))
+                    .rhythmScore(df.format(sentenceRhythmScore))
+                    .totalScore(df.format((sentenceNoteScore + sentenceRhythmScore)/2))
+                    .isPoor(isPoor)
+                    .notes(userMusicDto.getNotes())
+                    .build();
+
+            userMusicInfoList.add(userUploadMusicDto);
+            sentenceIdx++;
+        }
+
+        // UPLOAD LOGIC
+        double totalNoteScore = (userTotalSentenceTime / songTotalSentenceTime) * 100;
+        double totalRhythmScore = ((double) userTotalCorrectNoteNum / songTotalCorrectNoteNum) * 100;
+        double totalScore = (totalNoteScore + totalRhythmScore) / 2;
+
+        SingingUserScoreDto singingUserScoreDto = SingingUserScoreDto
+                .builder()
+                .noteScore(df.format(totalNoteScore))
+                .rhythmScore(df.format(totalRhythmScore))
+                .totalScore(df.format(totalScore))
+                .build();
+
+        Log.v("SCORE", totalNoteScore + "/" + totalRhythmScore + "/" + totalScore);
+        uploadUserScore(userMusicInfoList, singingUserScoreDto);
+        uploadWeakSentenceList(weakSentenceIdxList);
+        return singingUserScoreDto;
+    }
+
+    private void uploadUserScore(ArrayList<SingingMusicDto> userMusicInfo, SingingUserScoreDto singingUserScoreDto) {
+        SingingUserUploadDto singingUserUploadDto = SingingUserUploadDto.builder()
+                .result(userMusicInfo)
+                .singerName(singerName)
+                .totalScore(singingUserScoreDto.getTotalScore())
+                .noteScore(singingUserScoreDto.getNoteScore())
+                .rhythmScore(singingUserScoreDto.getRhythmScore())
+                .build();
+
+        database.collection("User").document(userEmail).collection("userSongList").document("신호등")
+                .set(singingUserUploadDto)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("음정 점수 산출 성공", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("음정 점수 산출 실패", "failed");
+                    }
+                });
+    }
+
+    private void uploadWeakSentenceList(ArrayList<String> weakSentenceIdxList) {
+        Map<String, ArrayList<String>> userWeakSentenceMap = new HashMap<>();
+        userWeakSentenceMap.put("weakSentence", weakSentenceIdxList);
+
+        database.collection("User").document(userEmail).collection("userWeakSentenceList").document(songName)
+                .set(userWeakSentenceMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.v("취약 소절 산출 성공", "success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.v("취약 소절 산출 실패", "failed");
+                    }
+                });
+    }
+
+    private void addWAVToFireStorage() {
+        // TODO : 장고 서버 연결
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        StorageReference filepath = mStorage.child("User").child(userEmail).child("songs").child(songName).child(filename + ".wav");
+
+        Uri uri = Uri.fromFile(file);
+        filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.v("wav", "upload success");
+            }
+        });
     }
 
     public void createMediaPlayer(){
+        Log.v("mediaplayer", "짠");
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(musicUrl);
@@ -259,6 +575,12 @@ public class LiveSingingActivity extends AppCompatActivity {
                 }
             });
             mediaPlayer.prepareAsync();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    stopPitchDetection();
+                }
+            });
         } catch (Exception e) {
             Log.e("MEDIAPLAYER", e.getMessage());
         }
@@ -269,11 +591,14 @@ public class LiveSingingActivity extends AppCompatActivity {
         StorageReference storage = FirebaseStorage.getInstance().getReference();
         StorageReference storageRef = storage.child("songs").child(songName).child("song.mp3");
 
+        Log.v("db에서mr가져오기", "얍");
         storageRef.getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+                        Log.v("진입 성공", "얍");
                         musicUrl = uri.toString();
+                        Log.v("url", musicUrl);
                         createMediaPlayer();
                     }
                 })
@@ -285,63 +610,129 @@ public class LiveSingingActivity extends AppCompatActivity {
                 });
     }
 
-    private void getSongInfo() {
-        // get music info from database
+    /* DB로부터 점수 계산에 필요한 점수를 가져옴 */
+    private void getSentenceInfo() {
         database.collection("Song").document(songName).get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         try {
+                            songEndTime = Double.parseDouble(String.valueOf(document.getData().get("endTime")));
                             List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
                             startTimeList = new ArrayList<>();
                             endTimeList = new ArrayList<>();
                             lyricList = new ArrayList<>();
-                            musicTotalInfoList = new ArrayList<>();
+                            sentenceInfoList = new ArrayList<>();
                             for (int i = 0; i < Objects.requireNonNull(list).size(); i++) {
                                 HashMap<String, ArrayList<HashMap<String, Object>>> map = (HashMap) list.get(i);
                                 ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
 
-                                ArrayList<NoteDto> noteDtoArrayList = new ArrayList<>();
+                                double sentenceTotalTime = 0;
+                                double sentenceNoteEndTime = 0;
+
+                                // [Note] 정보
+                                ArrayList<NoteDto> sentenceNoteDtoList = new ArrayList<>();
                                 for (HashMap<String, Object> notemap : arrayMap) {
-                                    NoteDto noteDto = new NoteDto(
-                                            String.valueOf(notemap.get("start_time")),
-                                            String.valueOf(notemap.get("end_time")),
-                                            String.valueOf(notemap.get("note"))
-                                    );
-                                    noteDtoArrayList.add(noteDto);
+                                    NoteDto noteDto = NoteDto.builder()
+                                            .startTime(String.valueOf(notemap.get("start_time")))
+                                            .note(String.valueOf(notemap.get("note")))
+                                            .endTime(String.valueOf(notemap.get("end_time")))
+                                            .build();
+                                    sentenceNoteDtoList.add(noteDto);
+                                    sentenceTotalTime += Double.parseDouble(noteDto.getEndTime()) - Double.parseDouble(noteDto.getStartTime());
+                                    sentenceNoteEndTime = Double.parseDouble(noteDto.getEndTime());
                                 }
 
-                                MusicDto musicDto = new MusicDto(
-                                        String.valueOf(map.get("start_time")),
-                                        String.valueOf(map.get("end_time")),
-                                        String.valueOf(map.get("lyrics")),
-                                        noteDtoArrayList
-                                );
-                                // ArrayList에 소절별 시작 시간과 끝 시간 담기
-                                startTimeList.add(Double.parseDouble(musicDto.getStartTime()));
-                                endTimeList.add(Double.parseDouble(musicDto.getEndTime()));
-                                lyricList.add(musicDto.getLyrics());
-                                // TODO : MusicDto 전체 받아오는 LIST 만들기(점수 산출용)
-                                musicTotalInfoList.add(musicDto);
+                                // [Sentence] 정보
+                                double sentenceStartTime = Double.parseDouble(String.valueOf(map.get("start_time")));
+                                double sentenceEndTime = Double.parseDouble(String.valueOf(map.get("end_time")));
 
-                                NoteDto noteDtoTest = musicDto.getNotes().get(0);
+                                SongSentenceDto songSentenceDto = SongSentenceDto.builder()
+                                        .sentenceStartTime(sentenceStartTime)
+                                        .sentenceDurationTime(sentenceTotalTime)
+                                        .sentenceNoteEndTime(sentenceNoteEndTime)
+                                        .sentenceEndTime(sentenceEndTime)
+                                        .sentenceNoteDtoList(sentenceNoteDtoList)
+                                        .sentenceNoteNum(sentenceNoteDtoList.size())
+                                        .build();
+
+                                // ArrayList에 소절별 시작 시간과 끝 시간 담기
+                                startTimeList.add(sentenceStartTime);
+                                endTimeList.add(sentenceEndTime);
+                                lyricList.add(String.valueOf(map.get("lyrics")));
+
+                                sentenceInfoList.add(songSentenceDto);
                             }
+                            isSongFirebaseLoad = true;
+                            checkFirebaseLoad();
+                            getSingingInfo();
                         } catch (Exception e) {
                             Log.v("ERROR", "not enough records for calculating");
                         }
                     }
-
-                    timeHandler.postDelayed(runnableLyric, (long) (endTimeList.get(0) * 1000) - 1000);
                 }
         );
     }
 
+    private void getSingingInfo() {
+
+        database.collection("Singing").document(songName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    try {
+                        List list = (List) (document.getData().get("sentence"));
+                        for (int i = 0; i < list.size(); i++) {
+                            HashMap<String, Object> map = (HashMap) list.get(i);
+
+                            // sentence 정보
+                            String lyrics = (String) map.get("lyrics");
+                            String startTime = (String) map.get("start_time");
+                            String endTime = (String) map.get("end_time");
+
+                            SentenceInfoDto sentenceInfoDto = SentenceInfoDto.builder()
+                                    .lyrics(lyrics)
+                                    .startTime(startTime)
+                                    .endTime(endTime)
+                                    .build();
+                            singingSentenceInfoList.add(sentenceInfoDto);
+
+                            // note 정보
+                            ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
+                            for (HashMap<String, Object> notemap : arrayMap) {
+                                SingingNoteDto noteDto = SingingNoteDto.builder()
+                                        .startTime(String.valueOf(notemap.get("start_time")))
+                                        .endTime(String.valueOf(notemap.get("end_time")))
+                                        .note(String.valueOf(notemap.get("note")))
+                                        .isNote((Boolean) notemap.get("isNote"))
+                                        .build();
+
+                                singingNoteDtoList.add(noteDto);
+                            }
+                        }
+                        isSingingFirebaseLoad = true;
+                        checkFirebaseLoad();
+                    } catch (Exception e) {
+                        Log.e("getSingingInfo", e.getMessage());
+                    }
+                }
+            }
+        });
+    }
+
+    private void checkFirebaseLoad() {
+        Log.v("db 로딩", isSongFirebaseLoad + " : " + isSingingFirebaseLoad);
+        if (isSongFirebaseLoad && isSingingFirebaseLoad) {
+            settingView();
+        }
+    }
+
     public void checkLoading() {
-        // TODO : mp3 player 로딩 완료창도 추가
         Log.v("로딩완?", isNoteLoad + " : " + isMusicLoad);
         if (isNoteLoad && isMusicLoad) {
             dialog.dismiss();
-            showStartTime = System.currentTimeMillis();
             mediaPlayer.start();
+            startPitchDetection();
 
             final Handler handlerStart = new Handler();
 
@@ -351,6 +742,54 @@ public class LiveSingingActivity extends AppCompatActivity {
                     setScrollSettings();
                 }
             }, firstNoteStartTime * 1000L);
+        }
+    }
+
+    private void startPitchDetection() {
+        prevOctave = "";
+        userMap = new HashMap<>(); // 노긍ㅁ할 때마다 사용자 음성 담은 map 초기화
+        calcStartTime = System.nanoTime();
+        Log.v("로딩 종료 시간", String.valueOf(calcStartTime));
+
+        releaseDispatcher();
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+
+        try {
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            AudioProcessor recordProcessor = new WriterProcessor(tarsosDSPAudioFormat, randomAccessFile);
+            dispatcher.addAudioProcessor(recordProcessor);
+
+            PitchDetectionHandler pitchDetectionHandler = new PitchDetectionHandler() {
+                @Override
+                public void handlePitch(PitchDetectionResult res, AudioEvent e) {
+                    final float pitchInHz = res.getPitch();
+                    String octav = ProcessPitch.processPitch(pitchInHz);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            long end = System.nanoTime();
+                            double time = (end - calcStartTime) / (1000000000.0);
+
+                            // 의미있는 값일 때만 입력받음
+                            Log.v("time", String.valueOf(time));
+                            if (!prevOctave.equals(octav)) {
+                                Log.v("time / octave", String.valueOf(time) + " / " + octav);
+                                userMap.put(time, octav);
+                                prevOctave = octav;
+                            }
+                        }
+                    });
+                }
+            };
+
+            AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
+            dispatcher.addAudioProcessor(pitchProcessor);
+
+            Thread audioThread = new Thread(dispatcher, "Audio Thread");
+            audioThread.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -384,10 +823,14 @@ public class LiveSingingActivity extends AppCompatActivity {
     }
 
     public void settingView() {
-        Log.v("row 개수", String.valueOf(gridLayout.getRowCount()));
         gridLayout.setColumnCount((int) Math.round(songEndTime * 10));
 
+        Log.v("row 개수", String.valueOf(gridLayout.getRowCount()));
+        Log.v("column개수", String.valueOf(gridLayout.getColumnCount()));
+
+        // row, col 그려놓기
         handlerSong.post(runnableSong);
+        timeHandler.postDelayed(runnableLyric, (long) (endTimeList.get(0) * 1000) - 1000);
     }
 
     private void setScrollSettings() {
@@ -403,54 +846,6 @@ public class LiveSingingActivity extends AppCompatActivity {
         });
     }
 
-    private void getSongEndTime() {
-
-        database.collection("Singing").document("신호등")
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-//                    try {
-//                        songEndTime = Double.parseDouble((String) document.getData().get("endTime"));
-                    songEndTime = 231.3;
-                    List list = (List) Objects.requireNonNull(document.getData()).get("sentence");
-
-                    for (int i = 0; i < list.size(); i++) {
-                        HashMap<String, Object> map = (HashMap) list.get(i);
-
-                        // sentence 정보
-                        String lyrics = (String) map.get("lyrics");
-                        String startTime = (String) map.get("start_time");
-                        String endTime = (String) map.get("end_time");
-
-                        SentenceInfoDto sentenceInfoDto = SentenceInfoDto.builder()
-                                .lyrics(lyrics)
-                                .startTime(startTime)
-                                .endTime(endTime)
-                                .build();
-                        sentenceInfoList.add(sentenceInfoDto);
-
-                        // note 정보
-                        ArrayList<HashMap<String, Object>> arrayMap = (ArrayList<HashMap<String, Object>>) map.get("notes");
-                        for (HashMap<String, Object> notemap : arrayMap) {
-                            SingingNoteDto noteDto = SingingNoteDto.builder()
-                                    .startTime(String.valueOf(notemap.get("start_time")))
-                                    .endTime(String.valueOf(notemap.get("end_time")))
-                                    .note(String.valueOf(notemap.get("note")))
-                                    .isNote((Boolean) notemap.get("isNote"))
-                                    .build();
-
-                            noteDtoList.add(noteDto);
-                        }
-
-                    }
-                    settingView();
-                }
-            }
-        });
-    }
-
     public void microphoneOn() {
         releaseDispatcher();
 
@@ -460,7 +855,7 @@ public class LiveSingingActivity extends AppCompatActivity {
             final float pitchInHz = res.getPitch();
             String note = ProcessPitch.processPitch(pitchInHz);
             runOnUiThread(() -> {
-                pitchGraph.setY(1000 - pitchInHz);
+//                pitchGraph.setY(1000 - pitchInHz);
             });
         };
 

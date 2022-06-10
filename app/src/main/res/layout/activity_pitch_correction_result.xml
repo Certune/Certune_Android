@@ -36,12 +36,13 @@
         android:id="@+id/endButton"
         android:layout_width="307dp"
         android:layout_height="51dp"
-        android:layout_marginBottom="196dp"
+        android:layout_marginTop="184dp"
         android:background="#8cdbd2"
         android:text="확인"
-        android:textColor="#455A64"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scoreTextButton" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

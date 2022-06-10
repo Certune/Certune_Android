@@ -5,8 +5,10 @@ import com.techtown.tarsosdsp_pitchdetect.global.NoteDto;
 import java.util.ArrayList;
 
 import lombok.Builder;
+import lombok.Setter;
 
 @Builder
+@Setter
 public class UserWeakMusicDto {
     String startTime;
     ArrayList<NoteDto> notes;

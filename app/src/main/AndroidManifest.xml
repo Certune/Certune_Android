@@ -64,9 +64,6 @@
             android:name=".Login.RegisterActivity"
             android:exported="true" />
         <activity
-            android:name=".Singing.activity.SingingActivity"
-            android:exported="true" />
-        <activity
             android:name=".OctaveTest.activity.TestStandbyActivity"
             android:exported="true" />
         <activity

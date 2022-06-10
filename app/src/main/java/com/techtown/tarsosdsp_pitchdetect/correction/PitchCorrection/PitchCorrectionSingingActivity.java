@@ -536,7 +536,7 @@ public class PitchCorrectionSingingActivity extends AppCompatActivity {
     public void microphoneOn() {
         releaseDispatcher();
 
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
         PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
             final float pitchInHz = res.getPitch();

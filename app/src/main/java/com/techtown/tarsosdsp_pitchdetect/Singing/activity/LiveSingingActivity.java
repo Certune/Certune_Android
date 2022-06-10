@@ -481,7 +481,6 @@ public class LiveSingingActivity extends AppCompatActivity {
             int noteIdx = 0;
             int userSentenceCorrectNoteNum = 0;
             double userSentenceTotalTime = 0.0;
-            // TODO : songTotalNoteTimeDto 만들기
             ArrayList<NoteDto> userNoteList = userMusicDto.getNotes();
 
             double userNoteStartTime = 0.0;
@@ -610,10 +609,10 @@ public class LiveSingingActivity extends AppCompatActivity {
     }
 
     private void addWAVToFireStorage() {
-        // TODO : 장고 서버 연결
         StorageReference mStorage = FirebaseStorage.getInstance().getReference();
         StorageReference filepath = mStorage.child("User").child(userEmail).child("songs").child(songName).child(filename + ".wav");
 
+        // TODO : 장고 서버 연결
         Uri uri = Uri.fromFile(file);
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override

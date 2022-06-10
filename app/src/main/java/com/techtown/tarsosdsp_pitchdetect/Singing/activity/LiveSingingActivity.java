@@ -1,9 +1,12 @@
 package com.techtown.tarsosdsp_pitchdetect.Singing.activity;
 
+import static android.content.ContentValues.TAG;
 import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
 import static com.techtown.tarsosdsp_pitchdetect.score.logics.CalcStartTimeRange.calcStartTimeRange;
 import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessNoteRange.processNoteRange;
 import static com.techtown.tarsosdsp_pitchdetect.score.logics.ProcessTimeRange.processTimeRange;
+
+import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,8 +37,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -87,10 +93,6 @@ public class LiveSingingActivity extends AppCompatActivity {
     ArrayList<SongSentenceDto> sentenceInfoList;
 
     // 소절용 변수
-    double sentenceStartTime;
-    double sentenceEndTime;
-    double sentenceFinalNoteEndTime;
-    List<NoteDto> sentenceNoteDtoList;
     private Double songEndTime;
 
     // 가사용
@@ -110,6 +112,17 @@ public class LiveSingingActivity extends AppCompatActivity {
     /* 음악 재생 */
     String musicUrl;
     MediaPlayer mediaPlayer;
+
+    /* shifting용 */
+    String userLowKey;
+    String userHighKey;
+    int lowKeyIdx;
+    int highKeyIdx;
+    int midKeyIdx;
+    ArrayList<Integer> midNoteIdxList = new ArrayList<>();
+    ArrayList<Integer> shiftingList = new ArrayList<>();
+    int shiftingIdx;
+
 
     /* TarsosDSP 및 파일 설정 */
     TarsosDSPAudioFormat tarsosDSPAudioFormat;
@@ -212,7 +225,9 @@ public class LiveSingingActivity extends AppCompatActivity {
         songName = subIntent.getStringExtra("songName");
         singerName = subIntent.getStringExtra("singerName");
         isShifting = subIntent.getBooleanExtra("isShifting", false);
+        shiftingIdx = subIntent.getIntExtra("shiftingIdx", 0);
 
+        Log.v("livesinging", String.valueOf(shiftingIdx));
         handlerRowSetting.post(runnableRow);
         handlerColSetting.post(runnableCol);
 
@@ -256,6 +271,62 @@ public class LiveSingingActivity extends AppCompatActivity {
 
         // graph 용
         microphoneOn();
+    }
+
+    private void findUserKeyInfo() {
+        DocumentReference docRef = database.collection("User").document(userEmail);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        userLowKey = (String) document.getData().get("minUserPitch");
+                        userHighKey = (String) document.getData().get("maxUserPitch");
+
+                        lowKeyIdx = noteToIdx(userLowKey);
+                        highKeyIdx = noteToIdx(userLowKey);
+                        midKeyIdx = (lowKeyIdx + highKeyIdx) / 2;
+                        compareMidNote();
+
+                    } else {
+                        Log.e("유저 정보 오류", "사용자 정보가 존재하지 않습니다.");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    private void compareMidNote() {
+        database.collection("Singing").document(songName).collection("shifting")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        shiftingList.add(Integer.parseInt(document.getId()));
+                        String midNoteIdx = document.getData().get("midKey").toString();
+                        midNoteIdxList.add(Integer.parseInt(midNoteIdx));
+                    }
+
+                    shiftingIdx = 0;
+                    int minVal = abs(midNoteIdxList.get(0) - midKeyIdx);
+                    for (int i=0; i<shiftingList.size(); i++){
+                        int curVal = abs(midNoteIdxList.get(i) - midKeyIdx);
+                        if (curVal < minVal) {
+                            minVal = curVal;
+                            shiftingIdx = shiftingList.get(i);
+                        }
+                    }
+                    Log.v("맞춤 note shift", String.valueOf(shiftingIdx));
+                }
+                else {
+                    Log.d("TAG", "Error getting documents");
+                }
+            }
+        });
     }
 
     private void setTarsosDSPSettings(){
@@ -579,7 +650,11 @@ public class LiveSingingActivity extends AppCompatActivity {
     // stream music directly from firebase
     private void fetchAudioUrlFromFirebase() {
         StorageReference storage = FirebaseStorage.getInstance().getReference();
-        StorageReference storageRef = storage.child("songs").child(songName).child("song.mp3");
+        StorageReference storageRef;
+        if (isShifting && shiftingIdx != 0)
+            storageRef = storage.child("songs").child(songName).child("mr_"+(shiftingIdx+4)+".mp3");
+        else
+            storageRef = storage.child("songs").child(songName).child("song.mp3");
 
         Log.v("db에서mr가져오기", "얍");
         storageRef.getDownloadUrl()
@@ -602,7 +677,12 @@ public class LiveSingingActivity extends AppCompatActivity {
 
     /* DB로부터 점수 계산에 필요한 점수를 가져옴 */
     private void getSentenceInfo() {
-        database.collection("Song").document(songName).get().addOnCompleteListener(task -> {
+        DocumentReference docRef;
+        if (isShifting && shiftingIdx != 0)
+            docRef = database.collection("Shifting").document(songName).collection("songShifting").document(String.valueOf(shiftingIdx));
+        else
+            docRef = database.collection("Song").document(songName);
+        docRef.get().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         try {
@@ -665,9 +745,12 @@ public class LiveSingingActivity extends AppCompatActivity {
 
     private void getSingingInfo() {
 
-        database.collection("Singing").document(songName).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+        DocumentReference docRef;
+        if (isShifting && shiftingIdx != 0)
+            docRef = database.collection("Singing").document(songName).collection("shifting").document(String.valueOf(shiftingIdx));
+        else
+            docRef = database.collection("Singing").document(songName);
+        docRef.get().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     try {
@@ -706,7 +789,6 @@ public class LiveSingingActivity extends AppCompatActivity {
                         Log.e("getSingingInfo", e.getMessage());
                     }
                 }
-            }
         });
     }
 

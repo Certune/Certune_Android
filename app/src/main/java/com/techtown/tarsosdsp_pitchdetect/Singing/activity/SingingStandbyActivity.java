@@ -7,6 +7,9 @@ import static android.content.ContentValues.TAG;
 import android.graphics.drawable.Drawable;
 import static com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx.noteToIdx;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,16 +31,20 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.NoteToIdx;
 import com.techtown.tarsosdsp_pitchdetect.SongListActivity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 public class SingingStandbyActivity extends AppCompatActivity {
 
+    private String userEmail;
     private String songName;
     private String singerName;
 
@@ -48,9 +55,14 @@ public class SingingStandbyActivity extends AppCompatActivity {
     private String userLowKey;
     private String userHighKey;
 
-    private String userEmail;
-
+    /* shifting 관련 정보 */
     private Boolean isShifting = false;
+    private int lowKeyIdx;
+    private int midKeyIdx;
+    private int highKeyIdx;
+    ArrayList<Integer> midNoteIdxList = new ArrayList<>();
+    ArrayList<Integer> shiftingList = new ArrayList<>();
+    private int shiftingIdx = 0;
 
     TextView songNameTextView;
     TextView singerNameTextView;
@@ -107,6 +119,7 @@ public class SingingStandbyActivity extends AppCompatActivity {
                 intent.putExtra("songName", songName);
                 intent.putExtra("singerName", singerName);
                 intent.putExtra("isShifting", isShifting);
+                intent.putExtra("shiftingIdx", shiftingIdx);
                 intent.putExtra("songLowKey", songLowKey);
                 intent.putExtra("songHighKey", songHighKey);
                 startActivity(intent);
@@ -183,6 +196,11 @@ public class SingingStandbyActivity extends AppCompatActivity {
                             userLowKey = (String) document.getData().get("minUserPitch");
                             userHighKey = (String) document.getData().get("maxUserPitch");
 
+                            lowKeyIdx = noteToIdx(userLowKey);
+                            highKeyIdx = noteToIdx(userLowKey);
+                            midKeyIdx = (lowKeyIdx + highKeyIdx) / 2;
+                            compareMidNote();
+
                             userLowKeyTextView.setText(userLowKey);
                             userHighKeyTextView.setText(userHighKey);
 
@@ -197,5 +215,35 @@ public class SingingStandbyActivity extends AppCompatActivity {
 
             });
         }
+    }
+
+    private void compareMidNote() {
+        database.collection("Singing").document(songName).collection("shifting")
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        shiftingList.add(Integer.parseInt(document.getId()));
+                        String midNoteIdx = document.getData().get("midKey").toString();
+                        midNoteIdxList.add(noteToIdx(midNoteIdx));
+                    }
+
+                    shiftingIdx = 0;
+                    int minVal = abs(midNoteIdxList.get(0) - midKeyIdx);
+                    for (int i=0; i<shiftingList.size(); i++){
+                        int curVal = abs(midNoteIdxList.get(i) - midKeyIdx);
+                        if (curVal < minVal) {
+                            minVal = curVal;
+                            shiftingIdx = shiftingList.get(i);
+                        }
+                    }
+                    Log.v("맞춤 note shift", String.valueOf(shiftingIdx));
+                }
+                else {
+                    Log.d("TAG", "Error getting documents");
+                }
+            }
+        });
     }
 }

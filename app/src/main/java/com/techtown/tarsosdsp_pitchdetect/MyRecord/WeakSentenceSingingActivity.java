@@ -475,9 +475,8 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
                 try {
                     ArrayList<HashMap<String, Object>> list = (ArrayList<HashMap<String, Object>>) document.getData().get("sentence");
 
-                    Log.v("songName", songName);
                     HashMap<String, Object> sentencemap = (HashMap<String, Object>) list.get(Integer.parseInt(sentenceIdx));
-                    Log.v("sentence 번호", sentenceIdx);
+
                     lyric = (String) sentencemap.get("lyrics");
                     sentenceEndTime = Double.parseDouble(String.valueOf(sentencemap.get("end_time")));
                     sentenceStartTime = Double.parseDouble(String.valueOf(sentencemap.get("start_time")));

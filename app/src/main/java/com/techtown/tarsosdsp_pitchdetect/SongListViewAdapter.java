@@ -84,7 +84,8 @@ public class SongListViewAdapter extends BaseAdapter {
                     intent.putExtra("songName", holder.songTitle.getText());
                     ((SongListActivity) v.getContext()).startActivity(intent);
                 }
-                Toast.makeText(v.getContext(), "현재는 신호등만 제공됩니다.", Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(v.getContext(), "현재는 신호등만 제공됩니다.", Toast.LENGTH_LONG).show();
             }
         });
 

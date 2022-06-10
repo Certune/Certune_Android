@@ -35,8 +35,8 @@ public class SingingResult extends AppCompatActivity {
 
     String userEmail;
 
-    String songName = "신호등";
-    String singerName = "이무진";
+    String songName;
+    String singerName;
 
     Double totalScore;
     Double noteScore;
@@ -63,6 +63,13 @@ public class SingingResult extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singing_result);
 
+        Intent subIntent = getIntent();
+        songName = subIntent.getStringExtra("songName");
+        singerName = subIntent.getStringExtra("singerName");
+        noteScore = subIntent.getDoubleExtra("noteScore", 0);
+        rhythmScore = subIntent.getDoubleExtra("rhythmScore", 0);
+        totalScore = subIntent.getDoubleExtra("totalScore", 0);
+
         checkBtn = findViewById(R.id.result_checkButton);
         checkBtn.setOnClickListener(v -> {
             Intent intent = new Intent(SingingResult.this, SongListActivity.class);
@@ -87,7 +94,7 @@ public class SingingResult extends AppCompatActivity {
         adapter = new WeakSentenceListViewAdapter();
         listview.setAdapter(adapter);
 
-        getScore();
+      //  getScore();
         totalScoreView = findViewById(R.id.scoreIcon);
         noteScoreTextView = findViewById(R.id.noteScoreTextView);
         rhythmScoreTextView = findViewById(R.id.rhythmScoreTextView);
@@ -158,9 +165,6 @@ public class SingingResult extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         DocumentSnapshot documentSnapshot = task.getResult();
                         weakSentenceIndexList = (List<String>) documentSnapshot.get("weakSentence");
-                        Log.v("index of weaky", weakSentenceIndexList.get(0));
-                        Log.v("index of weaky", weakSentenceIndexList.get(1));
-                        Log.v("index of weaky", weakSentenceIndexList.get(2));
                     } else {
                         Log.d(TAG, "Error getting collections: ", task.getException());
                     }

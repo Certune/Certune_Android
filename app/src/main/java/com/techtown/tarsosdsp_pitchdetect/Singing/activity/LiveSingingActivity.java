@@ -39,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.okhttp.Dispatcher;
 import com.techtown.tarsosdsp_pitchdetect.MyRecord.domain.UserWeakMusicDto;
 import com.techtown.tarsosdsp_pitchdetect.R;
 import com.techtown.tarsosdsp_pitchdetect.Singing.domain.SentenceInfoDto;
@@ -237,7 +238,18 @@ public class LiveSingingActivity extends AppCompatActivity {
         fetchAudioUrlFromFirebase();
 
         // tarsosDSP 관련 설정
-        setTarsosDSPSettings();
+        //setTarsosDSPSettings();
+
+        File sdCard = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+        file = new File(sdCard, filename);
+
+        tarsosDSPAudioFormat = new TarsosDSPAudioFormat(TarsosDSPAudioFormat.Encoding.PCM_SIGNED,
+                22050,
+                2 * 8,
+                1,
+                2 * 1,
+                22050,
+                ByteOrder.BIG_ENDIAN.equals(ByteOrder.nativeOrder()));
 
         // db로부터 점수 계산용 song info 가져오기
         getSentenceInfo();
@@ -553,6 +565,12 @@ public class LiveSingingActivity extends AppCompatActivity {
                 }
             });
             mediaPlayer.prepareAsync();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    stopPitchDetection();
+                }
+            });
         } catch (Exception e) {
             Log.e("MEDIAPLAYER", e.getMessage());
         }
@@ -821,7 +839,7 @@ public class LiveSingingActivity extends AppCompatActivity {
     public void microphoneOn() {
         releaseDispatcher();
 
-        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+        AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
 
         PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
             final float pitchInHz = res.getPitch();

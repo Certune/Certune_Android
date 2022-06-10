@@ -7,6 +7,14 @@
     android:background="#212121"
     tools:context=".correction.PitchCorrection.PitchCorrectionSingingActivity">
 
+    <Button
+        android:id="@+id/correction_pitchGraph"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="600dp"
+        android:background="#00ff00"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <!-- GridLayout part -->
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView_weakSentence"

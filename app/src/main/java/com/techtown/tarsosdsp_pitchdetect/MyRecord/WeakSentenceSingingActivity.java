@@ -86,6 +86,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
     Button cell;
     TextView lyricText;
     List<SingingNoteDto> singingNoteDtoList = new ArrayList<>();
+    Button pitchGraph;
 
     // 로딩창
     LoadingDialog dialog;
@@ -173,6 +174,7 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
         scrollView = findViewById(R.id.horizontalScrollView_weakSentence);
         gridLayout = findViewById(R.id.gridLayout_weakSentence);
         lyricText = findViewById(R.id.currentLyricTextView_weakSentence);
+        pitchGraph = findViewById(R.id.weak_pitchGraph);
 
         dialog = new LoadingDialog(this);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -187,6 +189,9 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
 
         // db로부터 소절정보 가져오기
         getSentenceInfo();
+
+        // 마이크 on
+        microphoneOn();
 
     }
 
@@ -218,6 +223,26 @@ public class WeakSentenceSingingActivity extends AppCompatActivity {
                 objectAnimator.start();
             }
         });
+    }
+
+    public void microphoneOn() {
+        releaseDispatcher();
+
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+
+        PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
+            final float pitchInHz = res.getPitch();
+            String note = ProcessPitch.processPitch(pitchInHz);
+            runOnUiThread(() -> {
+                pitchGraph.setY((float) (1600 - pitchInHz * 3.4));
+            });
+        };
+
+        AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
+        dispatcher.addAudioProcessor(pitchProcessor);
+
+        Thread audioThread = new Thread(dispatcher, "Audio Thread");
+        audioThread.start();
     }
 
     public void setCell(int noteIdx, int startTime, int endTime, boolean isNote, boolean isPrepare) {

@@ -76,6 +76,7 @@ public class PitchCorrectionSingingActivity extends AppCompatActivity {
     HorizontalScrollView scrollView;
     GridLayout gridLayout;
     Button cell;
+    Button pitchGraph;
 
     // 로딩창
     LoadingDialog dialog;
@@ -159,6 +160,7 @@ public class PitchCorrectionSingingActivity extends AppCompatActivity {
         // layout 설정
         scrollView = findViewById(R.id.horizontalScrollView_weakSentence);
         gridLayout = findViewById(R.id.gridLayout_weakSentence);
+        pitchGraph = findViewById(R.id.correction_pitchGraph);
 
         dialog = new LoadingDialog(this);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -173,6 +175,9 @@ public class PitchCorrectionSingingActivity extends AppCompatActivity {
 
         // db로부터 소절정보 가져오기
         getOctaveInfo();
+
+        // 마이크 on
+        microphoneOn();
 
     }
 
@@ -526,5 +531,25 @@ public class PitchCorrectionSingingActivity extends AppCompatActivity {
                         Log.i("음악 백그라운드 재생 실패", e.getMessage());
                     }
                 });
+    }
+
+    public void microphoneOn() {
+        releaseDispatcher();
+
+        dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050, 1024, 0);
+
+        PitchDetectionHandler pitchDetectionHandler = (res, e) -> {
+            final float pitchInHz = res.getPitch();
+            String note = ProcessPitch.processPitch(pitchInHz);
+            runOnUiThread(() -> {
+                pitchGraph.setY((float) (1600 - pitchInHz * 3.4));
+            });
+        };
+
+        AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pitchDetectionHandler);
+        dispatcher.addAudioProcessor(pitchProcessor);
+
+        Thread audioThread = new Thread(dispatcher, "Audio Thread");
+        audioThread.start();
     }
 }

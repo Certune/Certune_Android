@@ -119,10 +119,11 @@ public class LiveSingingActivity extends AppCompatActivity {
 
     /* 레이아웃 */
     // 기본 요소
+    Button pitchGraph;
+
     private HorizontalScrollView scrollView;
     GridLayout gridLayout;
     Button cell;
-    View pitchGraph;
 
     // 가사 변경
     final Handler timeHandler = new Handler();
@@ -185,7 +186,6 @@ public class LiveSingingActivity extends AppCompatActivity {
         }
     };
 
-    int timerCnt = 0;
     int tmp = 0;
     long duration = 1;
     final Runnable runnableLyric = new Runnable() {
@@ -200,22 +200,6 @@ public class LiveSingingActivity extends AppCompatActivity {
             timeHandler.postDelayed(this, duration);
         }
     };
-
-//
-//    public void startTimer() {
-//        Timer timer = new Timer();
-//        timer.schedule(new TimerTask() {
-//            public void run() {
-//                setLyric();
-//
-//                System.out.println("period = " + duration);
-//                timer.cancel(); // cancel time
-//
-//                if(tmp != startTimeList.size() - 2) tmp++;
-//                duration = (long) (endTimeList.get(tmp) - startTimeList.get(tmp));
-//                startTimer();   // start the time again with a new period time
-//            }
-//        }, endTimeList.get(0).longValue() * 1000, duration * 1000);}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,16 +219,11 @@ public class LiveSingingActivity extends AppCompatActivity {
         if (user != null)
             userEmail = user.getEmail();
 
-//        timeHandler.post(runnableLyric);
-
-        // Get xml instances
-//        mChart = findViewById(R.id.chart);
-
         // layout 설정
         scrollView = findViewById(R.id.horizontalScrollView);
         gridLayout = findViewById(R.id.gridLayout);
         gridLayout.setUseDefaultMargins(false);
-//        pitchGraph = findViewById(R.id.pitchGraph);
+        pitchGraph = findViewById(R.id.pitchGraph);
 
         currentLyric = findViewById(R.id.currentLyricTextView);
         nextLyric = findViewById(R.id.nextLyricTextView);
@@ -562,7 +541,6 @@ public class LiveSingingActivity extends AppCompatActivity {
     }
 
     public void createMediaPlayer(){
-        Log.v("mediaplayer", "짠");
         mediaPlayer = new MediaPlayer();
         try {
             mediaPlayer.setDataSource(musicUrl);
@@ -575,12 +553,6 @@ public class LiveSingingActivity extends AppCompatActivity {
                 }
             });
             mediaPlayer.prepareAsync();
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    stopPitchDetection();
-                }
-            });
         } catch (Exception e) {
             Log.e("MEDIAPLAYER", e.getMessage());
         }
@@ -856,6 +828,7 @@ public class LiveSingingActivity extends AppCompatActivity {
             String note = ProcessPitch.processPitch(pitchInHz);
             runOnUiThread(() -> {
 //                pitchGraph.setY(1000 - pitchInHz);
+                pitchGraph.setY((float) (1600 - pitchInHz * 3.4));
             });
         };
 

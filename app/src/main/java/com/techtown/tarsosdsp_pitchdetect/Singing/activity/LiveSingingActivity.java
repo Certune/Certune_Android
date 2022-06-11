@@ -205,7 +205,6 @@ public class LiveSingingActivity extends AppCompatActivity {
     final Runnable runnableLyric = new Runnable() {
         @Override
         public void run() {
-            Log.e("runnableLyric", "얍");
             currentLyric.setText(lyricList.get(tmp));
             nextLyric.setText(lyricList.get(tmp+1));
             duration = (long) ((endTimeList.get(tmp) - startTimeList.get(tmp)) * 1000 - 95);
@@ -214,6 +213,9 @@ public class LiveSingingActivity extends AppCompatActivity {
             timeHandler.postDelayed(this, duration);
         }
     };
+
+
+   // Button stopButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,6 +250,14 @@ public class LiveSingingActivity extends AppCompatActivity {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false);
         dialog.show();
+
+//        stopButton = findViewById(R.id.stopButton);
+//        stopButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                stopPitchDetection();
+//            }
+//        });
 
         // url 설정
         fetchAudioUrlFromFirebase();
@@ -372,29 +382,26 @@ public class LiveSingingActivity extends AppCompatActivity {
             key = mapkey[i];
             keyValue = userMap.get(key);
 
-            if (!keyValue.equals("Nope")) {
-                keyEndTime = key.toString();
-                NoteDto keyNoteDto = NoteDto.builder()
-                        .startTime(keyStartTime)
-                        .note(keyValue)
-                        .endTime(keyEndTime)
-                        .build();
-                userKeyList.add(keyNoteDto);
-            }
+            keyEndTime = key.toString();
+            NoteDto keyNoteDto = NoteDto.builder()
+                    .startTime(keyStartTime)
+                    .note(keyValue)
+                    .endTime(keyEndTime)
+                    .build();
+            userKeyList.add(keyNoteDto);
             // 현재 key의 시작 시간 update
             keyStartTime = key.toString();
         }
 
         key = mapkey[mapkey.length - 1];
         keyValue = userMap.get(key);
-        if (!keyValue.equals("Nope")) {
-            NoteDto keyNoteDto = NoteDto.builder()
-                    .startTime(keyStartTime)
-                    .note(keyValue)
-                    .endTime(keyStartTime + 0.05)
-                    .build();
-            userKeyList.add(keyNoteDto);
-        }
+        NoteDto keyNoteDto = NoteDto.builder()
+                .startTime(keyStartTime)
+                .note(keyValue)
+                .endTime(String.valueOf(Double.parseDouble(keyStartTime) + 0.05))
+                .build();
+        userKeyList.add(keyNoteDto);
+
 
         return userKeyList;
     }
@@ -423,9 +430,11 @@ public class LiveSingingActivity extends AppCompatActivity {
         ArrayList<NoteDto> noteList = new ArrayList<>();
         boolean isFinal = false;
 
+        Log.v("sentenceInfo", "sentenceStartTime : "+sentenceStartTime+ " sentenceEndTime : "+sentenceNoteEndTime);
         for (NoteDto noteDto : sortedMapKey) {
             double noteDtoEndTime = Double.parseDouble(noteDto.getEndTime());
             double noteDtoStartTime = Double.parseDouble(noteDto.getStartTime());
+            Log.v("noteInfo", "noteDtoStartTime : "+noteDtoStartTime+ " noteDtoEndTime : "+noteDtoEndTime);
             // song 범위를 벗어난 note는 처리하지 않는다
             if (noteDtoEndTime >= songEndTime)
                 break;
@@ -433,8 +442,8 @@ public class LiveSingingActivity extends AppCompatActivity {
             if (noteDtoStartTime < sentenceFirstNoteStartTime)
                 continue;
 
-            if (Double.parseDouble(noteDto.getStartTime()) > sentenceStartTime
-                    || Double.parseDouble(noteDto.getEndTime()) > sentenceNoteEndTime){
+            if (noteDtoStartTime > sentenceNoteEndTime
+                    || noteDtoEndTime > sentenceNoteEndTime){
                 // 현재 소절 정보 저장
                 UserWeakMusicDto userMusicDto = UserWeakMusicDto.builder()
                         .startTime(String.valueOf(sentenceStartTime))
@@ -445,6 +454,11 @@ public class LiveSingingActivity extends AppCompatActivity {
                         .build();
                 userNoteList.add(userMusicDto);
 
+                Log.v("userMusicDto", "================ "+userNoteList.size()+" ====================");
+                for (int i=0; i<noteList.size(); i++)
+                    Log.v("noteList", noteList.get(i).getNote() + " : " +noteList.get(i).getStartTime() + " : " + noteList.get(i).getEndTime());
+
+                Log.v("sentenceInfo", "sentenceStartTime : "+sentenceStartTime+ " sentenceEndTime : "+sentenceNoteEndTime);
                 // 다음 소절 정보로 update
                 noteList = new ArrayList<>();
                 sentenceIdx++;
@@ -541,6 +555,14 @@ public class LiveSingingActivity extends AppCompatActivity {
                     .notes(userMusicDto.getNotes())
                     .build();
 
+
+            Log.v("소절별 점수 산출", "==========="+userMusicInfoList.size()+"====================");
+            Log.v("음정 점수", userUploadMusicDto.getNoteScore());
+            Log.v("박자 점수", userUploadMusicDto.getRhythmScore());
+            Log.v("노트 리스트", "=====");
+            for (NoteDto noteDto : userUploadMusicDto.getNote()){
+                Log.v("노트 정보", noteDto.getStartTime() + " : " + noteDto.getNote() + " : "+ noteDto.getEndTime());
+            }
             userMusicInfoList.add(userUploadMusicDto);
             sentenceIdx++;
         }
@@ -843,7 +865,7 @@ public class LiveSingingActivity extends AppCompatActivity {
 
                             // 의미있는 값일 때만 입력받음
                             Log.v("time", String.valueOf(time));
-                            if (!prevOctave.equals(octav)) {
+                            if (!prevOctave.equals(octav) && !octav.equals("Nope")) {
                                 Log.v("time / octave", String.valueOf(time) + " / " + octav);
                                 userMap.put(time, octav);
                                 prevOctave = octav;

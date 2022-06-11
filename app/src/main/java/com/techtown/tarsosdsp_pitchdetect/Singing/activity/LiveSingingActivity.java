@@ -215,7 +215,7 @@ public class LiveSingingActivity extends AppCompatActivity {
     };
 
 
-   // Button stopButton;
+    Button stopButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -13,9 +13,14 @@
         android:layout_height="1dp"
         android:layout_marginTop="600dp"
         android:background="#00ff00"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <!-- GridLayout part -->
+
+    <!-- lyric text part -->
+
+
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
         android:layout_width="match_parent"
@@ -38,7 +43,14 @@
 
     </HorizontalScrollView>
 
-    <!-- lyric text part -->
+<!--    <Button-->
+<!--        android:id="@+id/stopButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:text="멈춤"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
     <TextView
         android:id="@+id/currentLyricTextView"
